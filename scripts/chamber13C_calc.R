@@ -1,26 +1,21 @@
-### extra d13C of chamber from 10-2pm (use this in steady state respiration 'e' calculation for gm)
 
-
-flux_files <- list.files(path = "raw data/chamber_13C/", pattern="chflux", full.names = TRUE)
-##make names of list with file names minus extension
-# flux_months <- gsub("raw data/chamber_13C/", "", flux_files)
-# flux_months <- gsub(".csv", "", flux_months)
-# flux_months <- gsub("chflux_", "", flux_months)
+flux_files <- list.files(path = "raw data/chamber_13C_clean/", pattern="chflux", full.names = TRUE)
+  ##make names of list with file names minus extension
+  flux_names <- gsub("raw data/chamber_13C_clean/", "", flux_files)
+  flux_names <- gsub(".csv", "", flux_files)
+  flux_names <- gsub("chflux_", "", flux_files)
 
 flux_months <- lapply(flux_files, function(x) read.csv(x, stringsAsFactors = FALSE))
-##add names to list
-# names(flux_list) <- flux_months
+  ##add names to list
+   names(flux_months) <- flux_names
 
 
 chamber13_func <- function(x){ #run on tdl formatted lists
-  #set Date, subset between measurement times:10am and 2pm
   x$Date <- as.Date(x$Date, format = "%d/%m/%Y")
   x$datetime <- paste(x$Date, x$time, sep=" ")
   library(lubridate)
   x$datetime <- ymd_hms(x$datetime)
-  #subset times for normal gmes measurements
-  x2 <- with( x , x[ hour( datetime ) >= 10 & hour( datetime ) < 14 , ])
-  
+
   #remove reference gases
   dat <- x2[x2$SiteOutput != 3 & x2$SiteOutput != 4, c("SiteOutput","Corrdel13C_Avg")]
   #subset even gas lines as they are the sample line that reprsent chamber13C
