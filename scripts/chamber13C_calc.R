@@ -1,5 +1,8 @@
+##This script makes neat 15 minute averages of delta 13C chamber flux 
 
-flux_files <- list.files(path = "raw data/chamber_13C_clean/", pattern="chflux", full.names = TRUE)
+# read delta flux files into a list ---------------------------------------
+
+flux_files <- list.files(path = "data/chamber_13C_clean/", pattern="chflux", full.names = TRUE)
   ##make names of list with file names minus extension
   flux_names <- gsub("raw data/chamber_13C_clean/", "", flux_files)
   flux_names <- gsub(".csv", "", flux_files)
@@ -7,29 +10,33 @@ flux_files <- list.files(path = "raw data/chamber_13C_clean/", pattern="chflux",
 
 flux_months <- lapply(flux_files, function(x) read.csv(x, stringsAsFactors = FALSE))
   ##add names to list
-   names(flux_months) <- flux_names
+  names(flux_months) <- flux_names
 
-
-chamber13_func <- function(x){ #run on tdl formatted lists
-  x$Date <- as.Date(x$Date, format = "%d/%m/%Y")
-  x$datetime <- paste(x$Date, x$time, sep=" ")
-  library(lubridate)
-  x$datetime <- ymd_hms(x$datetime)
-
+# format delta flux files -------------------------------------------------
+cham13format_func <- function(x){
+  x$Date <- strptime(x$Date, format = "%d/%m/%Y",  tz="UTC")
+  x$calendar <- as.character(x$Date)
+  x$clock <- as.character(x$time)
+  x$datetime <- paste(x$calendar, x$clock, sep=" ")  
+  x$datetime <- strptime(x$datetime,  format = "%Y-%m-%d  %I:%M:%S %p",  tz="UTC")
   #remove reference gases
-  dat <- x2[x2$SiteOutput != 3 & x2$SiteOutput != 4, c("SiteOutput","Corrdel13C_Avg")]
-  #subset even gas lines as they are the sample line that reprsent chamber13C
-  is.even <- function(v) v %% 2 == 0
-  dat2 <- dat[which(is.even(dat$SiteOutput)),]
-  #caluclate mean corr del from gmes eq
-  dat3 <- mean(dat2$Corrdel13C_Avg)
-  dat3 <- as.data.frame(dat3)
-  return(dat3)
+  x2 <- x[x$SiteOutput != 3 & x$SiteOutput != 4, ]  
+  #15minute time interval
+  x2$dateteimeFM <- HIEv::nearestTimeStep(x2$datetime, nminutes=15, align="ceiling")
+  
+  dfr <- x2[,c("SiteOutput", "chamber", "line", "CorrConcA_Avg","CorrConcB_Avg",  "Corrdel13C_Avg", 
+               "flux_campaign",  "Date","datetime","dateteimeFM")]
+  
+  return(dfr)
 }
 
-library(plyr)
-test <- flux_months[5]
-test2 <- as.data.frame(test)
+#formated list of delta files by campaign
+delta_files <- lapply(flux_months, cham13format_func)
 
-c13chamber <- ldply(flux_months, function(x) chamber13_func(x))
-mean_c13chamber <- mean(c13chamber[,1])
+# calculate 15m means per chamber per line -----------------------------------------
+delta_FM <- lapply(delta_files, function(x) 
+  doBy::summaryBy(. ~ dateteimeFM + chamber + line, FUN=mean, keep.names = TRUE, data=x))
+
+delta_FM_all <- plyr::rbind.fill(delta_FM)
+
+write.csv(delta_FM_all, "calculated_data/deltaflux_fm.csv", row.names=FALSE)
