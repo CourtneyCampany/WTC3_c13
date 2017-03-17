@@ -1,5 +1,5 @@
 
-# read in chamber fllux data ----------------------------------------------
+# read in chamber flux data ----------------------------------------------
 
 chamflux <- read.csv("data/chamberflux_15m.csv")
 library(lubridate)  
@@ -17,3 +17,6 @@ chamlist <- split(chamflux, "id")
 plot(FluxCO2 ~ datetime, col=chamber, data=chamflux[chamflux$id == "4-2",])
 
 
+##calculate ci from flux data
+
+test <-chamflux[chamflux$id == "4-2",]
