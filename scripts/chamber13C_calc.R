@@ -42,6 +42,16 @@ delta_FM <- lapply(delta_files, function(x)
   doBy::summaryBy(. ~ datetimeFM + chamber + line, FUN=mean, keep.names = TRUE, data=x))
 
 delta_FM_all <- plyr::rbind.fill(delta_FM)
-delta_FM_all$id <- as.factor(paste(delta_FM_all$flux_campaign, delta_FM_all$day, sep="-"))
+  delta_FM_all$id <- as.factor(paste(delta_FM_all$flux_campaign, delta_FM_all$day, sep="-"))
 
-write.csv(delta_FM_all, "calculated_data/deltaflux_fm.csv", row.names=FALSE)
+#remove the 3 na rows and rows where missing pair(ref/samp) exists with manual testing below
+#sort(which(is.na(delta_FM_all)))
+# test <- delta_FM_all2[delta_FM_all2$id=="5-2",]
+# plyr::count(test$line)
+sapply(delta_FM_all2, function(x) sum(is.na(x)))
+  
+delta_FM_all2 <- delta_FM_all[-c(3504,4661,7013, 8168,9337,9338,10511,12534,12535,14028),]
+# plyr::count(delta_FM_all2$line)
+# delta_FM_all3 <- delta_FM_all2[complete.cases(delta_FM_all2),]
+
+write.csv(delta_FM_all2, "calculated_data/deltaflux_fm.csv", row.names=FALSE)

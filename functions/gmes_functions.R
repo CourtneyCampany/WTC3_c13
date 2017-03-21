@@ -84,8 +84,8 @@ xsicalc_func <- function(x){
       colnames(xsi_b)[(names(xsi_b) == "CO2_total")] <- "CO2_total_samp"
               
     #new dfr with xsi, deltadiff, DELTA, and timestamp for matching
-    deltadiff<- xsi_b$del13_sampxsi_a$del13_ref
-    xsi <- xsi_b$CO2_total_samp/(xsi_a$CO2_total_refxsi_b$CO2_total_samp)
+    deltadiff<- xsi_b$del13_samp - xsi_a$del13_ref
+    xsi <- xsi_b$CO2_total_samp/(xsi_a$CO2_total_ref - xsi_b$CO2_total_samp)
                 
     xsi_calc <-data.frame(cbind(deltadiff, xsi))
         xsi_calc$DELTA <- (1000 * xsi_calc$xsi * xsi_calc$deltadiff)/(1000+xsi_b$del13_samp-(xsi_calc$xsi*xsi_calc$deltadiff))
