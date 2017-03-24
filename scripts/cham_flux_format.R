@@ -3,8 +3,8 @@
 ##assign campaign id
 
 chamberflux_15 <- read.csv("data/chamberflux_15m.csv")
-  chamberflux_15$datetime <- lubridate::ymd_hms(chamberflux_15$datetime,tz='Australia/Sydney')
-  chamberflux_15$date <- as.Date(chamberflux_15$date,tz='Australia/Sydney')
+  chamberflux_15$datetime <- lubridate::ymd_hms(chamberflux_15$datetime,tz='UTC')
+  chamberflux_15$date <- as.Date(chamberflux_15$date,tz='UTC')
 
   campaignassign <- function(x) {
     
