@@ -5,20 +5,37 @@ trtkey <- read.csv("data/temp_trt.csv")
 
 #add warming treatments
 phloem2 <- merge(phloem, trtkey)
+  
 
 #add monthly 
 campaignassign <- function(x) {
+  x$campaign <- as.factor(x$campaign)
+  x$month <- ifelse(x$campaign == 1,"October", "missing")
+  x$month <- ifelse(x$campaign == 2, "December",  x$month)
+  x$month <- ifelse(x$campaign == 3, "January", x$month)
+  x$month <- ifelse(x$campaign == 4, "February",  x$month)
+  x$month <- ifelse(x$campaign == 5, "March", x$month)
+  xmonth <- as.factor(x$month)
   
-  x$month <- factor(format(chamberflux_15$datetime, "%B"))
-  
-  x$month <- ifelse(x$month == "October", 1, "missing")
-  x$month <- ifelse(x$month == "December", 2,  x$flux_campaign)
-  x$month <- ifelse(x$month == "January", 3,  x$flux_campaign)
-  x$month <- ifelse(x$month == "February", 4,  x$flux_campaign)
-  x$month <- ifelse(x$flux_campaign == "March", 5,  x$flux_campaign)
-  #timestep for calculating correct mean
-  x$datetimeFM <- HIEv::nearestTimeStep(x $datetime, nminutes=15, align="ceiling")
-  x$id <- as.factor(paste(x$flux_campaign, x$day, sep="-"))
+  x$id <- with(x, paste(month, temp, sep="-"))
   return(x)
 }
 
+
+phloem3 <- campaignassign(phloem2)
+phloem3$id <- factor(phloem3$id, c("October-ambient", "October-elevated", "December-ambient", "December-elevated", 
+                                   "January-ambient", "January-elevated", "February-ambient", "February-elevated",
+                                   "March-ambient","March-elevated"))
+
+monthlab <- c("October", "December", "January", "February", "March")
+#bar plot by month and treatment
+
+windows()
+palette(c("cornflowerblue", "red"))
+par(mar=c(5,5,2,2))
+boxplot(d13C ~ id, data = phloem3, col=palette(), outline=FALSE,at=c(1,2, 7,8, 10,11, 13,14, 16:17), xaxt='n',
+        ylab=expression(Phloem~{delta}^13*C~~('\211')))
+ axis(1, at=c(1.5, 7.5, 10.5, 13.5, 16.5), labels=monthlab)
+legend("bottomleft", c("Ambient", "Elevated"), pch=22, pt.bg=palette(),  bty='n', pt.cex=1.5)
+dev.copy2pdf(file="deltaphloem.pdf")
+dev.off()
