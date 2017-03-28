@@ -52,6 +52,17 @@ cham_xsi <- xsicalc_func(delta_FM)
 #dates wrong for campaign 2
 
 cham_gmes <- merge(cham_xsi, chamflux_FM, by=c("chamber", "id", "datetimeFM"))
+  cham_gmes$fluxC_gfm <- with(cham_gmes, FluxCO2*15*60*10^-3*12)
+  cham_gmes$fluxCO2_fm <- with(cham_gmes, FluxCO2*15*60*10^-3)
+  cham_gmes$fluxCO2_umols <- with(cham_gmes, FluxCO2*10^-3)
+  
+treatments <- read.csv("data/temp_trt.csv")
+
+cham_gmes2 <- merge(cham_gmes, treatments)
+
+testcham <- cham_gmes2[cham_gmes2$month =="March",]
+
+
 
 test1 <- cham_xsi[cham_xsi$id=="1-1" ,]
   test1 <- test1[order(test1$datetimeFM),]
@@ -60,7 +71,34 @@ test2 <- chamflux_FM[chamflux_FM$id=="1-1",]
   test2 <- test2[order(test2$datetimeFM),]
   
 test_merge <- merge(test1, test2, by=c("chamber", "id", "datetimeFM"))
+  test_merge$fluxC_gfm <- with(test_merge, FluxCO2*15*60*10^-3*12)
+  test_merge$fluxCO2_fm <- with(test_merge, FluxCO2*15*60*10^-3)
+  
+  test_merge2 <- merge(test_merge, treatments)
 
-testcham <- cham_gmes[cham_gmes$chamber==12 & cham_gmes$month =="March",]
-with(testcham, plot(FluxCO2~datetimeFM, type='l'))
-with(testcham, plot(del13_samp~datetimeFM, type='l'))
+# Chamber CO2 flux (mmol/s) 
+
+# mmol/s to 
+# ALEAF*15*60*10^-3*12)
+
+#two panel example
+  
+windows()
+png(filename = "flux_example.png", width = 8, height = 6, units = "in", res= 600)
+par(cex.axis=1, cex.lab=1,las=1,mgp=c(3,1,0),mfrow=c(2,1)) 
+
+par(mar=c(0,6,2,2))
+plot(FluxCO2~datetimeFM,data=testcham[testcham$chamber ==12,], type='l', col="red", lwd=2, xaxt='n',
+     ylab=expression(atop(Chamber~CO[2]~flux,~~(m*mol~m^-2~s^-1))))
+  points(FluxCO2~datetimeFM,data=testcham[testcham$chamber ==9,], type='l', col="cornflowerblue", lwd=2)
+  legend("topright", c("CH12-eTEMP", "CH09-aTEMP"), lty=1, col=c("red", "cornflowerblue"), title="March 23",
+         bty='n', inset=.02, lwd=2)
+  
+par(mar=c(3,6,0,2))
+plot(del13_samp~datetimeFM,data=testcham[testcham$chamber ==9,], type='l', col="cornflowerblue", lwd=2, 
+     xlab="", ylab=expression(atop(Chamber~flux~sample,~{delta}^13*C~~('\211'))), ylim=c(-13.5, -9))
+  points(del13_samp~datetimeFM,data=testcham[testcham$chamber ==12,], type='l', col="red", lwd=2)
+  
+# dev.copy2pdf(file="flux_example.pdf")
+dev.off()
+  
