@@ -59,6 +59,7 @@ cham_gmes <- merge(cham_xsi, chamflux_FM, by=c("chamber", "id", "datetimeFM"))
 treatments <- read.csv("data/temp_trt.csv")
 
 cham_gmes2 <- merge(cham_gmes, treatments)
+write.csv(cham_gmes2, "calculated_data/merge_test.csv", row.names=FALSE)
 
 #need CI
 #need C2sfc
@@ -70,6 +71,7 @@ cham_gmes2 <- merge(cham_gmes, treatments)
 
 
 testcham <- cham_gmes2[cham_gmes2$month =="March",]
+write.csv(testcham, "calculated_data/sample_march.csv", row.names=TRUE)
 
 test1 <- cham_xsi[cham_xsi$id=="1-1" ,]
   test1 <- test1[order(test1$datetimeFM),]
@@ -111,7 +113,7 @@ plot(del13_samp~datetimeFM,data=testcham[testcham$chamber ==9,], type='l', col="
   legend("topright", c("CH12-ET", "CH09-AT","reference", "sample" ), lty=c(1,1,3,1), 
          col=c("red", "cornflowerblue","black", "black"), bty='n', inset=.02, lwd=2)  
   
-dev.copy2pdf(file="flux_example.pdf")
+dev.copy2pdf(file="output/flux_example.pdf")
 dev.off()
   
 
