@@ -37,5 +37,5 @@ boxplot(d13C ~ id, data = phloem3, col=palette(), outline=FALSE,at=c(1,2, 7,8, 1
         ylab=expression(Phloem~{delta}^13*C~~('\211')))
  axis(1, at=c(1.5, 7.5, 10.5, 13.5, 16.5), labels=monthlab)
 legend("bottomleft", c("Ambient", "Elevated"), pch=22, pt.bg=palette(),  bty='n', pt.cex=1.5)
-dev.copy2pdf(file="deltaphloem.pdf")
+dev.copy2pdf(file="output/deltaphloem.pdf")
 dev.off()

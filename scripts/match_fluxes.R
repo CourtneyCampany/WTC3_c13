@@ -59,6 +59,7 @@ cham_gmes <- merge(cham_xsi, chamflux_FM, by=c("chamber", "id", "datetimeFM"))
 treatments <- read.csv("data/temp_trt.csv")
 
 cham_gmes2 <- merge(cham_gmes, treatments)
+write.csv(cham_gmes2, "calculated_data/merge_test.csv", row.names=FALSE)
 
 #need CI
 #need C2sfc
@@ -70,6 +71,7 @@ cham_gmes2 <- merge(cham_gmes, treatments)
 
 ##testing 
 testcham <- cham_gmes2[cham_gmes2$month =="March",]
+write.csv(testcham, "calculated_data/sample_march.csv", row.names=TRUE)
 
 test1 <- cham_xsi[cham_xsi$id=="1-1" ,]
   test1 <- test1[order(test1$datetimeFM),]
