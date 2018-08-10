@@ -37,9 +37,9 @@ delta_files <- lapply(flux_months, cham13format_func)
 
 # test <- plyr::rbind.fill(delta_files)
 #Optional graph mean and sd for 15 min averages between start and stop dates
-start <- lubridate::ymd_hm('2014-03-22 06:00')
-stop <- lubridate::ymd_hm('2014-03-23 22:00')
-source('scripts/plotSDmeansTDL.R')
+#start <- lubridate::ymd_hm('2014-03-22 06:00')
+#stop <- lubridate::ymd_hm('2014-03-23 22:00')
+#source('scripts/plotSDmeansTDL.R')
 # calculate 15m means per chamber per line -----------------------------------------
 delta_FM <- lapply(delta_files, function(x) 
   doBy::summaryBy(. ~ datetimeFM + chamber + line, FUN=mean, keep.names = TRUE, data=x))
