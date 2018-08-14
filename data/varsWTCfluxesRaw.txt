@@ -1,0 +1,53 @@
+"""chamber"""	chamber number 
+"""day"" not in service (??)	
+"""REFdataraw_Datetime"""	time stamp on reference data stream (ref read every 4 chambers) 
+"""REFdataraw_LinkTime"""	time used to link reference values to chamber values 
+"""RefCO2"""	li7000 ref CO2 conc umol/mol 
+"""RHrot"""	Reference capacitive RH sensor for WTC original system 
+"""TAref"""	Reference air temp for WTC original system 
+"""Patm"""	Atmospheric pressure from li7000 
+"""DPref"""	Reference Dew point from li7000 N.B. occasional condensation in lines 
+"""TArot"""	Air temp from original WTC system T/RH sensor. Use data from the new allerton sensors instead (TA_al) 
+"""TBrine"""	not in service 
+"""PAR"""	PAR on roof of WTC demountable (umol m-2 s-1) 
+"""Wind"""	wind speed m/s 
+"""Rain"""	Rainfall in last 15 mins mm 
+"""SVbrine"""	not in service 
+"""fluxesTable_Datetime"""	time stamp on chamber data stream 
+"""fluxesTable_LinkTime"""	time used to link reference values to chamber values 
+"""Tcycle"""	number of seconds in last cycle 
+"""Air_in"""	air flow into chamber std litres/sec 
+"""Air_out"""	air flow out of chamber std litres/sec 
+"""CO2Injection"""	Pure CO2 injected during last 15 min cycle (mmol /sec) 
+"""CO2out"""	CO2 leaving chamber in mass air flow (mmol/sec) 
+"""CO2in"""	CO2 entering chamber in mass air flow (mmol/sec) 
+"""DeltaCO2"""	change in storage of CO2 during cycle (mmol/sec) 
+"""H2Oin"""	H2O entering chamber in mass air flow (mol/sec) 
+"""H2Oout"""	H2O leaving chamber in mass air flow (mol/sec) 
+"""DeltaH2O"""	change in storage of H2O during cycle (mol/sec) 
+"""CondH2O"""	water condensed from air (mol/s) 
+"""FluxH2O"""	Chamber water flux (mol/s) 
+"""FluxCO2"""	Chamber CO2 flux (mmol/s) 
+"""Tair_al"""	Chamber air temperature (new allerton system) 
+"""Taref_al"""	Reference air temp (new system) 
+"""RH_al"""	Chamber RH (new system) 
+"""RHref_al"""	Reference RH (new system) 
+"""Twtc"""	Chamber temperature (old system not maintained) 
+"""CO2L"""	Chamber CO2 concentratration (local Ppsystems IRGA). 
+"""DiffP"""	Differential pressure across flow restrictor on fresh air supply (Pa) 
+"""CO2Flow"""	CO2 flow rate while valve open (std ml / min) 
+"""DPWTC"""	Dew Point of chamber (new system) calculated from RH and T 
+"""Tbox"""	instrument box temperature 
+"""DoorCount"""	how many time door was open during the 15 min cycle 
+"""datetime"""	time stamp 
+"""VPDair"""	Chamber VPD 
+"""WU"""	Water use ? 
+"""timed"""	time of day 
+"""period""" night or day 
+"""dooropen"""	door open flag 1= this cycle 2=previous cycle. 
+"""WUE""" Water use efficiency (FluxCO2 / FluxH2O) 
+"""weekno""" Week number 
+"""FluxH2O_15""" Flux of H2O in 15-minute data (mols per 15 minutes) 
+"""FluxCO2_15"""" Flux of CO2 in 15-minute data (mmols per 5 minutes) 
+"""wtreat""" Water treatment (control or drydown) 
+"""ttreat""" Temperature treatment, ambient or warmed

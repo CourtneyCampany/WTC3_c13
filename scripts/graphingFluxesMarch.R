@@ -3,9 +3,9 @@ march <- subset(allPaired, datetimeFM>=lubridate::ymd_hm('2014-03-22 06:00') &
                   datetimeFM<=lubridate::ymd_hm('2014-03-23 22:00'))
 march <- doBy::orderBy(~datetimeFM, march)
 
-windows(12,8)
-par(cex.axis=1, cex.lab=1,las=1,mgp=c(3,1,0),mfrow=c(2,3)) 
-par(mar=c(0,6,2,2))
+windows(9,6)
+par(cex.axis=1, cex.lab=1,las=1,mgp=c(3,1,0),mfrow=c(1,3)) 
+par(mar=c(3,6,2,2))
 plot(FluxCO2~datetimeFM,data=march[march$chamber =='C12',], type='l', col="red", 
      lwd=2, xaxt='n',ylab=expression(atop(Chamber~CO[2]~flux~~(m*mol~s^-1))))
 lines(FluxCO2~datetimeFM,data=march[march$chamber =="C09",], type='l', 
