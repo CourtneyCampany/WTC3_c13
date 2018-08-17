@@ -20,6 +20,13 @@ plot(Ci~datetimeFM,data=march[march$chamber =='C12',], type='l', col="red",
      lwd=2, xaxt='n',ylab=expression(atop(Chamber~italic(C)[i]~~(mu*mol~mol^-1))))
 lines(Ci~datetimeFM,data=march[march$chamber =="C09",], type='l', 
       col="cornflowerblue", lwd=2)
+lines(totalCO2~datetimeFM,data=march[march$chamber =="C12",], type='l', 
+      col="red", lwd=2, lty=2)
+lines(totalCO2~datetimeFM,data=march[march$chamber =="C09",], type='l', 
+      col="cornflowerblue", lwd=2, lty=2)
+legend('bottomright', c("CH12-ET", "CH09-AT", 'Ca', 'Ci'), lty=c(1,1,1,2), lwd=2,
+       col=c("red", "cornflowerblue", 'black', 'black'), bty='n', inset=.02)
+
 par(mar=c(3,6,2,2))
 plot(Corrdel13C_Avg~datetimeFM,data=march[march$chamber =='C12',], type='l', col="red", 
      lwd=2, xaxt='n', ylab=expression(atop(Chamber~{delta}^13*C~~('\211'))), ylim=c(-14,-8))

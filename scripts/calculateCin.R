@@ -1,0 +1,5 @@
+library(HIEv)
+setToken()
+rawWTC <- downloadCSV(filename="WTC_Temp_CM_WTCFLUX_20130910-20140530_L0_V1.csv")
+rawWTC$DateTime <- ymd_hms(as.character(rawWTC$REFdataraw_Datetime))
+rawWTCmarch <- subset(rawWTC, DateTime>=ymd_hm('2014-03-22 06:00') & DateTime<=ymd_hm('2014-03-23 22:00'))
