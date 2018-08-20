@@ -34,6 +34,7 @@ cham13format_func <- function(x){
 
 #formated list of delta files by campaign
 delta_files <- lapply(flux_months, cham13format_func)
+TDLraw <- plyr::rbind.fill(delta_files)
 
 # test <- plyr::rbind.fill(delta_files)
 #Optional graph mean and sd for 15 min averages between start and stop dates
