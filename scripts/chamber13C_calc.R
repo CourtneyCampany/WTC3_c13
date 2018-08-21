@@ -34,9 +34,8 @@ cham13format_func <- function(x){
 
 #formated list of delta files by campaign
 delta_files <- lapply(flux_months, cham13format_func)
-TDLraw <- plyr::rbind.fill(delta_files)
 
-# test <- plyr::rbind.fill(delta_files)
+#test <- plyr::rbind.fill(delta_files)
 #Optional graph mean and sd for 15 min averages between start and stop dates
 #start <- lubridate::ymd_hm('2014-03-22 06:00')
 #stop <- lubridate::ymd_hm('2014-03-23 22:00')
@@ -59,3 +58,16 @@ delta_FM_all2 <- delta_FM_all[-c(3504,4661,7013, 8168,9337,9338,10511,12534,1253
 # delta_FM_all3 <- delta_FM_all2[complete.cases(delta_FM_all2),]
 
 write.csv(delta_FM_all2, "calculated_data/deltaflux_fm.csv", row.names=FALSE)
+
+TDL <- delta_FM_all2
+TDL$pairID <- as.factor(paste0(TDL$datetimeFM, '-', TDL$chamber))
+TDL$totalCO2 <- (TDL$CorrConcA_Avg+TDL$CorrConcB_Avg)/(1-0.00474)
+dfSample <- subset(TDL, line=='samp')
+dfRef <- subset(TDL, line=='ref')[,c('CorrConcA_Avg','CorrConcB_Avg','Corrdel13C_Avg','totalCO2','pairID')]
+colnames(dfRef)[1:(ncol(dfRef)-1)] <- paste0(colnames(dfRef)[1:(ncol(dfRef)-1)], '_ref')
+deltaPaired <- merge(dfSample, dfRef, by='pairID', all=T)[,c('datetimeFM','chamber','totalCO2','Corrdel13C_Avg',
+                                                             'totalCO2_ref','Corrdel13C_Avg_ref')]
+deltaPaired$datetimeFM <- ymd_hms(as.character(deltaPaired$datetimeFM))
+deltaPaired[which(deltaPaired$totalCO2<=0),c('totalCO2','Corrdel13C_Avg')] <- NA
+deltaPaired[which(deltaPaired$totalCO2_ref<=0),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
+deltaPaired[which(deltaPaired$totalCO2_ref>=600),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
