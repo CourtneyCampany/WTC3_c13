@@ -13,21 +13,19 @@ getCifromE <- function(E, VPD, ChamberCO2, Photo){
   return(Ci)
 }
 
-#Photosynthetic discrimination against 13C excluding boundary layer, internal transfer,
-#respiration and photorespirataion (DELTAi)
-# a is 13C diffusion fractionation in permil
-a <- 4.4
-# ai is 13C fractionation during internal (mesophyll) transfer in permil (including tranfer into water)
-ai <- 1.8
-# b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
-b <- 30
+# DELTAi is photosynthetic discrimination against 13C excluding boundary layer, 
+# internal transfer, respiration and photorespirataion
 calcDELTAi <- function(a, b, Ci, Ca){
   DELTAi <- a+(b-a)*(Ci/Ca)
   return(DELTAi)
 }
+# a is 13C diffusion fractionation in permil
+a <- 4.4
+# b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
+b <- 30
 
 # Greek leter xi, ratio of the CO2 entering the well mixed leaf cuvette to the CO2 draw down
-#in the gas stream by the leaf
+# in the gas stream by the leaf
 # you can also calculate xi from photo and flow (Warren et al. 2003)
 getXi <- function(chamberCO2, refCO2){
   xi <- refCO2/(refCO2-chamberCO2)
@@ -35,28 +33,36 @@ getXi <- function(chamberCO2, refCO2){
 }
 
 # Observed photosynthetic discrimination (DELTAobs)
+# Equation (2) in supplementary methods Campany et al. 2016 PCE
 calcDELTAobs <- function(xi, deltaSample, deltaRef){
-  DELTAobs <- xi*(deltaSample-deltaRef)/(1+deltaSample-xi*(deltaSample-deltaRef))
+  DELTAobs <- xi*(deltaSample-deltaRef)/(1000+deltaSample-xi*(deltaSample-deltaRef))
   return(DELTAobs)
 }
 
-#Use the approach of Warren et al. 2003 PCE: ignore ternary effects, respiration and photorespiration fractionation.
+# Calculate gmes ignoring ternary effects, respiration and photorespiration fractionation
+# equation 8 in Urbiena & Marshall 2011 PCE
 gmesW <- function(Photo, b, ai, DELTAi, DELTAobs, refCO2){
   gmesW <- Photo*(b-ai)/((DELTAi-DELTAobs)*refCO2)
   return(gmesW)
 }
+# ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including tranfer into water)
+ai <- 1.8
 
 # first attempt to calculate gmes
+# read flux data cleaned and averaged for 15-min intervals
 WTCflux <- read.csv('calculated_data/chamflux_fm.csv')
-WTCflux$datetimeFM <- ymd_hms(as.character(WTCflux$datetimeFM))
+WTCflux$datetimeFM <- lubridate::ymd_hms(as.character(WTCflux$datetimeFM))
+WTCflux$chamber <- as.character(WTCflux$chamber)
+# This script calculates the 'CO2 concentration entering the cuvette' (sum of ambient and injection)
+# and the d13C of the CO2 entering taking into account the d13C of the injected CO2
 source('scripts/calculateCin.R')
 allPaired <- merge(WTCflux, deltaPaired, by=c('datetimeFM','chamber'), all.x=F, all.y=T)
 allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheric pressure
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$FluxH2O, VPD=allPaired$VPDmol,
-                           ChamberCO2=allPaired$totalCO2, Photo=allPaired$FluxCO2*1000)
+                           ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$FluxCO2*1000)
 allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci=allPaired$Ci, Ca=allPaired$Cin)
-allPaired$xi <- getXi(chamberCO2 = deltaPaired$totalCO2, refCO2 = deltaPaired$Cin)
+allPaired$xi <- getXi(chamberCO2 = deltaPaired$CO2sampleWTC, refCO2 = deltaPaired$Cin)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
 allPaired$gmes <- gmesW(Photo = allPaired$FluxCO2*1000, b, ai, allPaired$DELTAi, allPaired$DELTAobs, refCO2 = deltaPaired$Cin)
@@ -66,3 +72,10 @@ allPaired$chamber <- ifelse(nchar(allPaired$chamber2)==2, paste0('C',allPaired$c
 allPaired$chamber <- ifelse(nchar(allPaired$chamber2)==1, paste0('C0',allPaired$chamber2), allPaired$chamber)
 keysChamber <- read.csv('data/treatment_key.csv')
 allPaired <- merge(allPaired, keysChamber, by=c('chamber','Date'), all.x=T, all.y=F)
+# get leaf area for each chamber from the final harvest
+source('scripts/leafArea.R')
+allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
+allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+allPaired$gsc <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol)
+allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
+allPaired$gmes_area <- allPaired$gmes/allPaired$leafArea

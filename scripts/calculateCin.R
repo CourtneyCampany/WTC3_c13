@@ -1,28 +1,39 @@
 library(HIEv)
 setToken()
+# download the file with the raw flow data
 WTCraw <- downloadCSV(filename="WTC_Temp_CM_WTCFLUX_20130910-20140530_L0_V1.csv")
 WTCraw$datetime <- ymd_hms(as.character(WTCraw$fluxesTable_Datetime))
+#select the dates for the TDL measurements
 source('scripts/selectDatesRawWTCflux.R')
-#WTCraw <- subset(WTCraw, DateTime>=ymd_hm('2014-03-22 06:00') & DateTime<=ymd_hm('2014-03-23 22:00'))
-# In a open system: Anet = (flow in x Cin) - (flow out x Cout)
-# In the WTC: Anet = (flow in x Cin) - (flow out x Cout) - (Change in CO2 storage)
-# Hence: Cin = [Anet + (flow out x Cout) + (Change CO2 storage)]/flow in
 # assuming the flow addition by the injection is negligible
-#WTCraw$Cin <- (WTCraw$FluxCO2+WTCraw$CO2out+WTCraw$DeltaCO2)*1000/(WTCraw$Air_in/22.4)
-# also in the WTC: flow in x Cin_actual = Injection + (flow in x Cin_amb)
-#renders exactly the same result
+# in the WTC: flow in x Cin_actual = Injection + (flow in x Cin_amb)
 WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawShort$Air_in/22.4)
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
+WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
+# get cleaned data from the TDL with 15-min averages
+# this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
 deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','Air_in','CO2in',
-                                                 'CO2Injection','Cin')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
+                                                 'CO2Injection','Cin','CO2out','Air_out')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
+deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out
 deltaPaired[which(deltaPaired$totalCO2_ref>=500 & deltaPaired$CO2refWTC<=400),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
-plot(deltaPaired$totalCO2_ref~deltaPaired$CO2refWTC, pch=19, ylim=c(375,575), xlim=c(375,575),
-     ylab='TDL Amb CO2 (ppm)', xlab='WTC Amb CO2 (ppm)')
+plot(deltaPaired$CO2refWTC~deltaPaired$totalCO2_ref, pch=19, ylim=c(375,575), xlim=c(375,575),
+     ylab='WTC Amb CO2 (ppm)', xlab='TDL Amb CO2 (ppm)')
 abline(1,1)
-summary(lm(totalCO2_ref~CO2refWTC, data=deltaPaired))
+corrCO2amb <- lm(deltaPaired$CO2refWTC~totalCO2_ref, data=deltaPaired)
+legend('bottomright', legend=c(expression(R^2~0.86), 
+                               paste0('Intercept:', round(corrCO2amb$coefficients[1], digits = 0), ' ppm'),
+                               paste0('slope: ', round(corrCO2amb$coefficients[2], digits = 2))), bty='n')
+
 # the reference ambient line for the TDL and the WTC system are very nicely correlated
-# the d13C of the pure CO2 injected is: -33.4 permil
-deltaPaired$del13C_theor_ref <- (deltaPaired$CO2in * deltaPaired$Corrdel13C_Avg_ref +
-                                   deltaPaired$CO2Injection*(-33.4))/(deltaPaired$CO2in + deltaPaired$CO2Injection)
+# the TDL seems to be underestimated by 3-6% with respect to the WTC measurement
+# I need to double check if this correction improves after taking into account the fact that
+# the TDL is measuring [CO2] in dry air and the WTC system is not dry air
+
+# convert concentrations measured by the TDL (in ppm) to flow rates (in mmol/s)
+deltaPaired$totalCO2_ref_flow <- deltaPaired$totalCO2_ref * deltaPaired$Air_in/(1000*22.4)
+# the d13C of the pure CO2 injected is: -31.9 permil (on 9 Oct 2013)
+deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Corrdel13C_Avg_ref +
+                                   deltaPaired$CO2Injection*(-31.9))/(deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
+rm(delta_files, delta_FM, delta_FM_all, delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, WTCrawShort)
