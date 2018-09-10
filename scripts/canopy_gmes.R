@@ -42,7 +42,7 @@ calcDELTAobs <- function(xi, deltaSample, deltaRef){
 # Calculate gmes ignoring ternary effects, respiration and photorespiration fractionation
 # equation 8 in Urbiena & Marshall 2011 PCE
 gmesW <- function(Photo, b, ai, DELTAi, DELTAobs, refCO2){
-  gmesW <- Photo*(b-ai)/((DELTAi-DELTAobs)*refCO2)
+  gmesW <- Photo*(b-ai)/((DELTAi-DELTAobs*1000)*refCO2)
   return(gmesW)
 }
 # ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including tranfer into water)
@@ -58,14 +58,6 @@ WTCflux$chamber <- as.character(WTCflux$chamber)
 source('scripts/calculateCin.R')
 allPaired <- merge(WTCflux, deltaPaired, by=c('datetimeFM','chamber'), all.x=F, all.y=T)
 allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheric pressure
-# calculate gms
-allPaired$Ci <- getCifromE(E=allPaired$FluxH2O, VPD=allPaired$VPDmol,
-                           ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$FluxCO2*1000)
-allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci=allPaired$Ci, Ca=allPaired$Cin)
-allPaired$xi <- getXi(chamberCO2 = deltaPaired$CO2sampleWTC, refCO2 = deltaPaired$Cin)
-allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
-                                   deltaRef=allPaired$del13C_theor_ref)
-allPaired$gmes <- gmesW(Photo = allPaired$FluxCO2*1000, b, ai, allPaired$DELTAi, allPaired$DELTAobs, refCO2 = deltaPaired$Cin)
 allPaired$Date <- as.Date(allPaired$datetimeFM)
 allPaired$chamber2 <- as.character(allPaired$chamber)
 allPaired$chamber <- ifelse(nchar(allPaired$chamber2)==2, paste0('C',allPaired$chamber2), 'x')
@@ -76,6 +68,14 @@ allPaired <- merge(allPaired, keysChamber, by=c('chamber','Date'), all.x=T, all.
 source('scripts/leafArea.R')
 allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
-allPaired$gsc <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol)
 allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
-allPaired$gmes_area <- allPaired$gmes/allPaired$leafArea
+# calculate gms
+allPaired$Ci <- getCifromE(E=allPaired$FluxH2O/allPaired$leafArea, VPD=allPaired$VPDmol,
+                           ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$FluxCO2*1000/allPaired$leafArea)
+allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci=allPaired$Ci, Ca=allPaired$Cin)
+allPaired$xi <- getXi(chamberCO2 = deltaPaired$CO2sampleWTC, refCO2 = deltaPaired$Cin)
+allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
+                                   deltaRef=allPaired$del13C_theor_ref)
+allPaired$gmes_area <- gmesW(Photo = allPaired$FluxCO2*1000/allPaired$leafArea, b, ai, allPaired$DELTAi,
+                        allPaired$DELTAobs, refCO2 = deltaPaired$Cin)
+allPaired[which(allPaired$condAlert=='yes'),c('gmes','Ci')] <- NA

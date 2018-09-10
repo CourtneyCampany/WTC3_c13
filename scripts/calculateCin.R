@@ -1,3 +1,4 @@
+calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
 library(HIEv)
 setToken()
 # download the file with the raw flow data
@@ -10,11 +11,16 @@ source('scripts/selectDatesRawWTCflux.R')
 WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawShort$Air_in/22.4)
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
+# filter data suspicious for condensation
+WTCrawShort$satVap <- calcVapSat(WTCrawShort$Taref_al)/101.3 #101.3 kPa is the standard atmospheric pressure
+WTCrawShort$H2Oin_conc <- WTCrawShort$H2Oin*22.4/(WTCrawShort$Air_in)
+WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCrawShort$H2Oout < WTCrawShort$H2Oin | 
+                                WTCrawShort$H2Oin_con >= WTCrawShort$satVap ,'yes', 'no')
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
-deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','Air_in','CO2in',
-                                                 'CO2Injection','Cin','CO2out','Air_out')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
+deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','condAlert','CO2Injection',
+                                                 'Cin','CO2in','CO2out','Air_in','Air_out')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
 deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out
 deltaPaired[which(deltaPaired$totalCO2_ref>=500 & deltaPaired$CO2refWTC<=400),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
@@ -27,7 +33,7 @@ legend('bottomright', legend=c(expression(R^2~0.86),
                                paste0('slope: ', round(corrCO2amb$coefficients[2], digits = 2))), bty='n')
 
 # the reference ambient line for the TDL and the WTC system are very nicely correlated
-# the TDL seems to be underestimated by 3-6% with respect to the WTC measurement
+# the TDL seems to be underestimating by 3-6% with respect to the WTC measurement
 # I need to double check if this correction improves after taking into account the fact that
 # the TDL is measuring [CO2] in dry air and the WTC system is not dry air
 
