@@ -19,7 +19,7 @@ WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCra
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
-deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','condAlert','CO2Injection',
+deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','condAlert','CO2Injection','H2Oin','H2Oout',
                                                  'Cin','CO2in','CO2out','Air_in','Air_out')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
 deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out

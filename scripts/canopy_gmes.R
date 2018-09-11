@@ -68,14 +68,19 @@ allPaired <- merge(allPaired, keysChamber, by=c('chamber','Date'), all.x=T, all.
 source('scripts/leafArea.R')
 allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+allPaired$E_area <- allPaired$FluxH2O/allPaired$leafArea
 allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
 # calculate gms
-allPaired$Ci <- getCifromE(E=allPaired$FluxH2O/allPaired$leafArea, VPD=allPaired$VPDmol,
-                           ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$FluxCO2*1000/allPaired$leafArea)
-allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci=allPaired$Ci, Ca=allPaired$Cin)
-allPaired$xi <- getXi(chamberCO2 = deltaPaired$CO2sampleWTC, refCO2 = deltaPaired$Cin)
+allPaired$Ci <- getCifromE(E=allPaired$E_area, VPD=allPaired$VPDmol,
+                           ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
+allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci=allPaired$Ci, Ca=allPaired$CO2sampleWTC)
+allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
-allPaired$gmes_area <- gmesW(Photo = allPaired$FluxCO2*1000/allPaired$leafArea, b, ai, allPaired$DELTAi,
-                        allPaired$DELTAobs, refCO2 = deltaPaired$Cin)
-allPaired[which(allPaired$condAlert=='yes'),c('gmes','Ci')] <- NA
+allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
+                        allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
+allPaired[which(allPaired$condAlert=='yes'), c('gmes_area','Ci','gsc_area','E_area','A_area')] <- NA
+allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci')] <- NA
+allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area')] <- NA
+allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci')] <- NA
+allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
