@@ -68,6 +68,9 @@ colnames(dfRef)[1:(ncol(dfRef)-1)] <- paste0(colnames(dfRef)[1:(ncol(dfRef)-1)],
 deltaPaired <- merge(dfSample, dfRef, by='pairID', all=T)[,c('datetimeFM','chamber','totalCO2','Corrdel13C_Avg',
                                                              'totalCO2_ref','Corrdel13C_Avg_ref')]
 deltaPaired$datetimeFM <- ymd_hms(as.character(deltaPaired$datetimeFM))
+deltaPaired$chamber2 <- as.character(deltaPaired$chamber)
+deltaPaired$chamber <- ifelse(nchar(deltaPaired$chamber2)==2, paste0('C',deltaPaired$chamber2), 'x')
+deltaPaired$chamber <- ifelse(nchar(deltaPaired$chamber2)==1, paste0('C0',deltaPaired$chamber2), deltaPaired$chamber)
 deltaPaired[which(deltaPaired$totalCO2<=0),c('totalCO2','Corrdel13C_Avg')] <- NA
 deltaPaired[which(deltaPaired$totalCO2_ref<=0),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
 deltaPaired[which(deltaPaired$totalCO2_ref>=600),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA

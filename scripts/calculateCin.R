@@ -2,8 +2,10 @@ calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
 library(HIEv)
 setToken()
 # download the file with the raw flow data
-WTCraw <- downloadCSV(filename="WTC_Temp_CM_WTCFLUX_20130910-20140530_L0_V1.csv")
-WTCraw$datetime <- ymd_hms(as.character(WTCraw$fluxesTable_Datetime))
+WTCraw <- downloadCSV(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
+#alternatively use a file from a local directory
+#WTCraw <- read.csv(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
+WTCraw$datetime <- ymd_hms(as.character(WTCraw$DateTime))
 #select the dates for the TDL measurements
 source('scripts/selectDatesRawWTCflux.R')
 # assuming the flow addition by the injection is negligible
@@ -19,8 +21,9 @@ WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCra
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
-deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','condAlert','CO2Injection','H2Oin','H2Oout',
-                                                 'Cin','CO2in','CO2out','Air_in','Air_out')], by=c('chamber','datetimeFM'),all.x=T, all.y=F)
+deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2','condAlert','T_treatment','Water_treatment',
+                                                 'PAR','CO2Injection','H2Oin','H2Oout','Cin','CO2in','CO2out','Air_in','Air_out','VPDair')],
+                     by=c('chamber','datetimeFM'), all.x=T, all.y=F)
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
 deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out
 deltaPaired[which(deltaPaired$totalCO2_ref>=500 & deltaPaired$CO2refWTC<=400),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
@@ -33,7 +36,7 @@ legend('bottomright', legend=c(expression(R^2~0.86),
                                paste0('slope: ', round(corrCO2amb$coefficients[2], digits = 2))), bty='n')
 
 # the reference ambient line for the TDL and the WTC system are very nicely correlated
-# the TDL seems to be underestimating by 3-6% with respect to the WTC measurement
+# the TDL seems to be underestimating by 19% with respect to the WTC measurement
 # I need to double check if this correction improves after taking into account the fact that
 # the TDL is measuring [CO2] in dry air and the WTC system is not dry air
 

@@ -49,21 +49,13 @@ gmesW <- function(Photo, b, ai, DELTAi, DELTAobs, refCO2){
 ai <- 1.8
 
 # first attempt to calculate gmes
-# read flux data cleaned and averaged for 15-min intervals
-WTCflux <- read.csv('calculated_data/chamflux_fm.csv')
-WTCflux$datetimeFM <- lubridate::ymd_hms(as.character(WTCflux$datetimeFM))
-WTCflux$chamber <- as.character(WTCflux$chamber)
+
 # This script calculates the 'CO2 concentration entering the cuvette' (sum of ambient and injection)
 # and the d13C of the CO2 entering taking into account the d13C of the injected CO2
 source('scripts/calculateCin.R')
-allPaired <- merge(WTCflux, deltaPaired, by=c('datetimeFM','chamber'), all.x=F, all.y=T)
+allPaired <- deltaPaired
 allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheric pressure
 allPaired$Date <- as.Date(allPaired$datetimeFM)
-allPaired$chamber2 <- as.character(allPaired$chamber)
-allPaired$chamber <- ifelse(nchar(allPaired$chamber2)==2, paste0('C',allPaired$chamber2), 'x')
-allPaired$chamber <- ifelse(nchar(allPaired$chamber2)==1, paste0('C0',allPaired$chamber2), allPaired$chamber)
-keysChamber <- read.csv('data/treatment_key.csv')
-allPaired <- merge(allPaired, keysChamber, by=c('chamber','Date'), all.x=T, all.y=F)
 # get leaf area for each chamber from the final harvest
 source('scripts/leafArea.R')
 allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
@@ -80,6 +72,7 @@ allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
 allPaired[which(allPaired$condAlert=='yes'), c('gmes_area','Ci','gsc_area','E_area','A_area')] <- NA
+allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs')] <- NA
 allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci')] <- NA
 allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area')] <- NA
 allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci')] <- NA
