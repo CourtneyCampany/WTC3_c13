@@ -1,5 +1,8 @@
 calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
+# library(devtools)
+# install_bitbucket("remkoduursma/HIEv")
 library(HIEv)
+
 setToken()
 # download the file with the raw flow data
 WTCraw <- downloadCSV(filename="WTC_Temp_CM_WTCFLUX_20130910-20140530_L0_V1.csv")
