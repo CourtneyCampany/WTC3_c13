@@ -2,6 +2,7 @@
 source('scripts/canopy_gmes.R')
 ##Teresa can you copy paste your token below so I can use it:
 ##put token here
+token <- rdL6pPFYS4BW2EpQQoYe
 
 library(lubridate)
 march <- subset(allPaired, datetimeFM>=lubridate::ymd_hm('2014-03-22 06:00') & 
