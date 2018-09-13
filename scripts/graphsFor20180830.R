@@ -1,5 +1,9 @@
 # Teresa's Token: rdL6pPFYS4BW2EpQQoYe 
 source('scripts/canopy_gmes.R')
+##Teresa can you copy paste your token below so I can use it:
+##put token here
+
+library(lubridate)
 march <- subset(allPaired, datetimeFM>=lubridate::ymd_hm('2014-03-22 06:00') & 
                   datetimeFM<=lubridate::ymd_hm('2014-03-23 20:00'))
 march <- doBy::orderBy(~datetimeFM, march)
