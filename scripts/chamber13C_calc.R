@@ -74,6 +74,3 @@ deltaPaired$chamber <- ifelse(nchar(deltaPaired$chamber2)==2,
 deltaPaired[which(deltaPaired$totalCO2<=0),c('totalCO2','Corrdel13C_Avg')] <- NA
 deltaPaired[which(deltaPaired$totalCO2_ref<=0),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
 deltaPaired[which(deltaPaired$totalCO2_ref>=600),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
-
-rm(flux_files, flux_months, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
-   delta_FM_all2, TDL, dfSample, dfRef)
