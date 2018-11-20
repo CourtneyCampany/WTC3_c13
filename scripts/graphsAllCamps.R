@@ -47,20 +47,20 @@ for (i in 1:length(camps)){
 
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
-  plot(campsLA[[i]][[1]][,'E_area']*1000~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+  plot(campsLA[[i]][[1]][,'E_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
        xlab = '', ylab = expression(italic(E)~(mmol~m^-2~s^-1)), ylim=c(0, 3),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
-    points(campsLA[[i]][[j]][,'E_area']*1000~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+    points(campsLA[[i]][[j]][,'E_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
   }
 }
 for (i in 1:length(camps)){
   par(mar=c(3,4,0,1))
-  plot(campsLE[[i]][[1]][,'E_area']*1000~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+  plot(campsLE[[i]][[1]][,'E_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
        xlab = '', ylab = expression(italic(E)~(mmol~m^-2~s^-1)), ylim=c(0, 3.5),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
-    points(campsLE[[i]][[j]][,'E_area']*1000~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+    points(campsLE[[i]][[j]][,'E_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
   }
 }
 
@@ -89,7 +89,7 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
   plot(campsLA[[i]][[1]][,'Ci']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
-       xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 530),
+       xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 540),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
     points(campsLA[[i]][[j]][,'Ci']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
@@ -98,7 +98,7 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(3,4,0,1))
   plot(campsLE[[i]][[1]][,'Ci']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
-       xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 530),
+       xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 540),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
     for (j in 2:length(chambsE)){
     points(campsLE[[i]][[j]][,'Ci']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
