@@ -1,0 +1,512 @@
+campsLE[[i]][[j]] <- subset(allPaired, condAlert == 'no' & month == camps[i] & chamber == chambsE[j])
+}
+}
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'A_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(A)~(mu*mol~m^-2~s^-1)), main = campsLA[[i]][[1]][1,'month'], ylim=c(-4, 13),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'A_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'A_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(A)~(mu*mol~m^-2~s^-1)), ylim=c(-4, 13),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+#legend('bottomright', pch=19, legend=chambsE, col=myPalEle, bty='n')
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'A_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'E_area']*1000~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(E)~(mmol~m^-2~s^-1)), ylim=c(0, 3),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'E_area']*1000~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'E_area']*1000~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(E)~(mmol~m^-2~s^-1)), ylim=c(0, 3.5),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'E_area']*1000~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'gsc_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(g)[sc]~(mol~m^-2~s^-1)), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 0.7),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'gsc_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'gsc_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(g)[sc]~(mol~m^-2~s^-1)), ylim=c(0, 0.7),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'gsc_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'Ci']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 530),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'Ci']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(C)[i]~(mu*mol~mol^-1)), ylim=c(5, 530),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'Ci']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'Ci.Ca']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(C)[i]/italic(C)[a]), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'Ci.Ca']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(C)[i]/italic(C)[a]), ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'Ci.Ca']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'DELTAi']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(Delta[i]~('\u2030')), ylim=c(4, 30),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'DELTAi']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'DELTAi']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(Delta[i]~('\u2030')), ylim=c(4, 30),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'DELTAi']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+max(allPaired$DELTAobs, na.rm=T)
+warnings()
+str(allPaired$DELTAobs)
+max(allPaired$DELTAobs)
+max(allPaired$DELTAobs, na.rm=T)
+min(allPaired$DELTAobs, na.rm=T)
+max(allPaired$gmes_area)
+max(allPaired$gmes_area, na.rm=T)
+min(allPaired$gmes_area, na.rm=T)
+hist(allPaired$gmes_area)
+subset(allPaired, gmes_area>=1)
+hist(allPaired$CO2Injection)
+hist(subset(allPaired, CO2Injection>0)[,'CO2Injection'])
+mar(c(4,4,4,4))
+par(mar(c(4,4,4,4)))
+par(mar=c(4,4,4,4))
+hist(subset(allPaired, CO2Injection>0)[,'CO2Injection'])
+nrow(allPaired[which(!is.na(allPaired$gmes_area)),])
+boxplot(allPaired$gmes_area)
+allPaired[which(allPaired$gmes >= 1), 'gmes_area'] <- NA
+allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+allPaired$E_area <- allPaired$FluxH2O/allPaired$leafArea
+allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area')] <- NA
+# calculate gms
+allPaired$Ci <- getCifromE(E=allPaired$E_area, VPD=allPaired$VPDmol,
+ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
+allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
+allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
+allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
+allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
+allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
+deltaRef=allPaired$del13C_theor_ref)
+allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
+allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
+allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs')] <- NA
+allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
+allPaired[which(allPaired$gmes >= 1), 'gmes_area'] <- NA
+allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+myPalEle <- c('red', 'darkorange1', 'deeppink', 'yellow', 'chocolate4', 'darkgoldenrod1')
+myPalAmb <- c('blue', 'cornflowerblue', 'navyblue', 'cyan', 'darkturquoise', 'deepskyblue')
+chambsA <- c(paste0('C0', seq(1, 9, 2)), 'C11')
+chambsE <- c(paste0('C0', seq(2, 8, 2)), 'C10', 'C12')
+camps <- c('Oct', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr')
+campsLA <- list()
+for (i in 1:length(camps)){
+campsLA[[i]] <- list()
+for (j in 1:length(chambsA)){
+campsLA[[i]][[j]] <- subset(allPaired, condAlert == 'no' & month == camps[i] & chamber == chambsA[j])
+}
+}
+campsLE <- list()
+for (i in 1:length(camps)){
+campsLE[[i]] <- list()
+for (j in 1:length(chambsE)){
+campsLE[[i]][[j]] <- subset(allPaired, condAlert == 'no' & month == camps[i] & chamber == chambsE[j])
+}
+}
+max(allPaired$gmes_area, na.rm=T)
+minq(allPaired$gmes_area, na.rm=T)
+min(allPaired$gmes_area, na.rm=T)
+k <- allPaired[which(!is.na(allPaired$gmes_area)),]
+head(k)
+nrow(k)
+nrow(k)/12*6
+nrow(k)/(12*6)
+nrow(k)/72
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'gmes_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'gmes_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'gmes_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(4, 30),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(0, 1.1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'gmes_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'gmes_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'gmes_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+min(allPaired$DELTAobs)
+min(allPaired$DELTAobs, na.rm=T)
+max(allPaired$DELTAobs, na.rm=T)
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(-2.5, 0.5),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(-2.5, 0.5),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'gmes_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'gmes_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'gmes_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+allPaired$E_area <- allPaired$FluxH2O/allPaired$leafArea
+allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area')] <- NA
+# calculate gms
+allPaired$Ci <- getCifromE(E=allPaired$E_area, VPD=allPaired$VPDmol,
+ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
+allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
+allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
+allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
+allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
+allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
+deltaRef=allPaired$del13C_theor_ref)
+allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
+allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
+allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs')] <- NA
+allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
+allPaired[which(allPaired$DELTAobs < 0), c('gmes_area','DELTAobs')] <- NA
+allPaired[which(allPaired$gmes >= 1), 'gmes_area'] <- NA
+allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+myPalEle <- c('red', 'darkorange1', 'deeppink', 'yellow', 'chocolate4', 'darkgoldenrod1')
+myPalAmb <- c('blue', 'cornflowerblue', 'navyblue', 'cyan', 'darkturquoise', 'deepskyblue')
+chambsA <- c(paste0('C0', seq(1, 9, 2)), 'C11')
+chambsE <- c(paste0('C0', seq(2, 8, 2)), 'C10', 'C12')
+camps <- c('Oct', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr')
+campsLA <- list()
+for (i in 1:length(camps)){
+campsLA[[i]] <- list()
+for (j in 1:length(chambsA)){
+campsLA[[i]][[j]] <- subset(allPaired, condAlert == 'no' & month == camps[i] & chamber == chambsA[j])
+}
+}
+campsLE <- list()
+for (i in 1:length(camps)){
+campsLE[[i]] <- list()
+for (j in 1:length(chambsE)){
+campsLE[[i]][[j]] <- subset(allPaired, condAlert == 'no' & month == camps[i] & chamber == chambsE[j])
+}
+}
+min(allPaired$DELTAobs, na.rm+T)
+min(allPaired$DELTAobs, na.rm=T)
+max(allPaired$DELTAobs, na.rm=T)
+max(allPaired$gmes_area, na.rm=T)
+min(allPaired$gmes_area, na.rm=T)
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+par(mar=c(0,4,2,1))
+plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 0.5),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(0, 0.5),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(0,4,0,1))
+plot(campsLA[[i]][[1]][,'gmes_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsA)){
+points(campsLA[[i]][[j]][,'gmes_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+}
+}
+for (i in 1:length(camps)){
+par(mar=c(3,4,0,1))
+plot(campsLE[[i]][[1]][,'gmes_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+for (j in 2:length(chambsE)){
+points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+}
+}
+getCifromE <- function(E, VPD, ChamberCO2, Photo){
+#calculate stomtal conductance to water (gsw) from transpiration for a well-coupled canopy:
+gs <- E/VPD
+# I assume boundary layer conductance is neglibile (well mixed canopy inside the WTC constantly blown!)
+# Thus, gsw is equivalent to total conductance to water: gtw=gsw (Eq. 1-19 in LI-6400 manual)
+# To convert from gsw to conductance to CO2 (gc), I divide by the diffusivity ratio of CO2/H2O in air
+gc <- gs/1.6
+# from Eq. 1-18 in the LI-COR 6400 manual
+Ci <- ((gc-E*0.5)*ChamberCO2-Photo)/(gc+E*0.5)
+return(Ci)
+}
+# DELTAi is photosynthetic discrimination against 13C excluding boundary layer,
+# internal transfer, respiration and photorespirataion
+calcDELTAi <- function(a, b, Ci.Ca){
+DELTAi <- a+(b-a)*(Ci.Ca)
+return(DELTAi)
+}
+# a is 13C diffusion fractionation in permil
+a <- 4.4
+# b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
+b <- 30
+# Greek leter xi, ratio of the CO2 entering the well mixed leaf cuvette to the CO2 draw down
+# in the gas stream by the leaf
+# you can also calculate xi from photo and flow (Warren et al. 2003)
+getXi <- function(chamberCO2, refCO2){
+xi <- refCO2/(refCO2-chamberCO2)
+return(xi)
+}
+# Observed photosynthetic discrimination (DELTAobs)
+# Equation (2) in supplementary methods Campany et al. 2016 PCE
+calcDELTAobs <- function(xi, deltaSample, deltaRef){
+DELTAobs <- xi*(deltaSample-deltaRef)/(1000+deltaSample-xi*(deltaSample-deltaRef))
+return(DELTAobs)
+}
+# Calculate gmes ignoring ternary effects, respiration and photorespiration fractionation
+# equation 8 in Urbiena & Marshall 2011 PCE
+gmesW <- function(Photo, b, ai, DELTAi, DELTAobs, refCO2){
+gmesW <- Photo*(b-ai)/((DELTAi-DELTAobs*1000)*refCO2)
+return(gmesW)
+}
+# ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including tranfer into water)
+ai <- 1.8
+# first attempt to calculate gmes
+# This script calculates the 'CO2 concentration entering the cuvette' (sum of ambient and injection)
+# and the d13C of the CO2 entering taking into account the d13C of the injected CO2
+source('scripts/calculateCin.R')
+allPaired <- deltaPaired
+allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheric pressure
+allPaired$Date <- as.Date(allPaired$datetimeFM)
+# get leaf area for each chamber from the final harvest
+source('scripts/leafArea.R')
+allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
+allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+allPaired$E_area <- allPaired$FluxH2O/allPaired$leafArea
+allPaired$gsc_area <- allPaired$FluxH2O/(1.6 * allPaired$VPDmol * allPaired$leafArea)
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area')] <- NA
+# calculate gms
+allPaired$Ci <- getCifromE(E=allPaired$E_area, VPD=allPaired$VPDmol,
+ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
+allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
+allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
+allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
+getXi
+allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
+allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
+deltaRef=allPaired$del13C_theor_ref)
+allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
+allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
+allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs')] <- NA
+allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
+allPaired[which(allPaired$gmes >= 1), 'gmes_area'] <- NA
+allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+k <- subset(allPaired, chamber=='C09' & month=='Apr')
+head(k)
+k <- subset(k, del13C_theor_ref >= Corrdel13C_Avg)
+par(mfrow=c(2,3))
+windows(14,8)
+par(mfrow=c(2,3))
+max(k$Corrdel13C_Avg)
+min(k$Corrdel13C_Avg)
+min(k$del13C_theor_ref)
+max(k$del13C_theor_ref)
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')))
+windows(14,8)
+par(mfrow=c(2,3))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col= red)
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue')
+points(k$Corrdel13C_Avg~k$datetimeFM, pch=19, col='red')
+windows(14,8)
+par(mfrow=c(2,3))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue')
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+windows(14,8)
+par(mfrow=c(2,3))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue')
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+legend('topleft', pch=c(19,19), col=c('blue','red'), legend=c(expression(italic(C)[e]), expression(italic(C)[o])), bty='n')
+windows(14,8)
+par(mfrow=c(2,3))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue')
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+legend('topleft', pch=c(19,19), col=c('blue','red'), legend=c(expression(italic(C)[e]), expression(italic(C)[o])), bty='n', cex=1.5)
+windows(14,8)
+par(mfrow=c(2,3), mar=c(2,4,1,1))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue', cex.lab=1.5)
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+legend('topleft', pch=c(19,19), col=c('blue','red'), legend=c(expression(italic(C)[e]), expression(italic(C)[o])), bty='n', cex=1.5)
+windows(14,8)
+par(mfrow=c(2,3), mar=c(2,6,1,1))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue', cex.lab=1.5)
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+legend('topleft', pch=c(19,19), col=c('blue','red'), legend=c(expression(italic(C)[e]), expression(italic(C)[o])), bty='n', cex=1.5)
+plot(x=k$datetimeFM, y=(k$del13C_theor_ref-k$Corrdel13C_Avg), ylab=expression(delta^13*C[o]~'-'~delta^13*C[e]~('\u2030')), xlab='', cex.lab=1.5)
+windows(14,8)
+par(mfrow=c(2,3), mar=c(2,6,1,1))
+plot(k$Corrdel13C_Avg~k$datetimeFM, ylim=c(-12, -8.5), xlab='', ylab=expression(delta^13*C~('\u2030')), pch=19, col='blue', cex.lab=1.5)
+points(k$del13C_theor_ref~k$datetimeFM, pch=19, col='red')
+legend('topleft', pch=c(19,19), col=c('blue','red'), legend=c(expression(italic(C)[e]), expression(italic(C)[o])), bty='n', cex=1.5)
+plot(x=k$datetimeFM, y=(k$del13C_theor_ref-k$Corrdel13C_Avg), ylab=expression(delta^13*C[o]~'-'~delta^13*C[e]~('\u2030')), xlab='', cex.lab=1.5)
