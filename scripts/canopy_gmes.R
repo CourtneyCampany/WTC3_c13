@@ -62,10 +62,12 @@ allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
-allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area')] <- NA
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area',
+                                               'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
+allPaired[which(allPaired$Ci < 0), 'Ci'] <- NA
 allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
 allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
 allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
@@ -75,9 +77,9 @@ allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
 allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs')] <- NA
-allPaired[which(allPaired$A_area < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
-allPaired[which(allPaired$E_area < 0), c('gmes_area','Ci','gsc_area','E_area', 'DELTAi', 'DELTAobs')] <- NA
-allPaired[which(allPaired$Ci < 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$A_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
+allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
 allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
+allPaired[which(allPaired$gmes > 1), 'gmes_area'] <- NA
 #allPaired[which(allPaired$gmes >= 1), 'gmes_area'] <- NA
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
