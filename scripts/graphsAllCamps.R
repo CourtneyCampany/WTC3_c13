@@ -221,13 +221,53 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(3,4,0,1))
   plot(campsLE[[i]][[1]][,'Corrdel13C_Avg']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
-       xlab = '', ylab = expression(italic(C)[out]~(mu*mol~mol^-1)), ylim=c(-17, -7),
+       xlab = '', ylab = expression(delta^13*C[out]~('\u2030')), ylim=c(-17, -7),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
     points(campsLE[[i]][[j]][,'Corrdel13C_Avg']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
   }
 }
 
+#plot Xi and d13Cout-d13Centering per campaign and chamber
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+  par(mar=c(0,4,2,1))
+  plot(campsLA[[i]][[1]][,'xi']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1], cex.lab=1.5,
+       xlab = '', ylab = expression(xi), main = campsLA[[i]][[1]][1,'month'], ylim=c(0.5,100),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsA)){
+    points(campsLA[[i]][[j]][,'xi']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+  }
+}
+for (i in 1:length(camps)){
+  par(mar=c(0,4,0,1))
+  plot(campsLE[[i]][[1]][,'xi']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+       xlab = '', ylab = expression(xi), ylim=c(0.5, 100), cex.lab=1.5,
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsE)){
+    points(campsLE[[i]][[j]][,'xi']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+  }
+}
+
+for (i in 1:length(camps)){
+  par(mar=c(0,4,0,1))
+  plot(campsLA[[i]][[1]][,'diff']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+       xlab = '', ylab = expression(delta^13*C[out]~'-'~delta^13*C[ent]~('\u2030')), ylim=c(0, 14),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsA)){
+    points(campsLA[[i]][[j]][,'diff']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+  }
+}
+for (i in 1:length(camps)){
+  par(mar=c(3,4,0,1))
+  plot(campsLE[[i]][[1]][,'diff']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+       xlab = '', ylab = expression(delta^13*C[out]~'-'~delta^13*C[ent]~('\u2030')), ylim=c(0, 14),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsE)){
+    points(campsLE[[i]][[j]][,'diff']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+  }
+}
 
 #plot DELTAobs and gmes per campaign and chamber
 windows(16,8)
@@ -235,16 +275,16 @@ par(mfrow=c(4,6))
 for (i in 1:length(camps)){
   par(mar=c(0,4,2,1))
   plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
-       xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 0.5),
+       xlab = '', ylab = expression(Delta[obs]~('\u2030')), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 0.115),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
-    points(campsLA[[i]][[j]][,'Ci.Ca']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+    points(campsLA[[i]][[j]][,'DELTAobs']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
   }
 }
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
   plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
-       xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(0, 0.5),
+       xlab = '', ylab = expression(Delta[obs]~('\u2030')), ylim=c(0, 0.115),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
     points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
