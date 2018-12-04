@@ -64,7 +64,9 @@ allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area',
                                                'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
-allPaired$diff <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
+allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area * 1.6)
+allPaired$diffConc <- allPaired$Cin - allPaired$C
+allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
