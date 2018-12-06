@@ -65,7 +65,7 @@ allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area',
                                                'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
 allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area * 1.6)
-allPaired$diffConc <- allPaired$Cin - allPaired$C
+allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
@@ -80,7 +80,6 @@ allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13
                                    deltaRef=allPaired$del13C_theor_ref)
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
-allPaired[which(allPaired$del13C_theor_ref >= allPaired$Corrdel13C_Avg), c('gmes_area','DELTAobs', 'diff')] <- NA
 allPaired[which(allPaired$A_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'xi')] <- NA
 allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
 allPaired[which(allPaired$gmes < 0), 'gmes_area'] <- NA
