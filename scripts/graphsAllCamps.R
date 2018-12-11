@@ -234,7 +234,7 @@ par(mfrow=c(4,6))
 for (i in 1:length(camps)){
   par(mar=c(0,4,2,1))
   plot(campsLA[[i]][[1]][,'xi']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1], cex.lab=1.5,
-       xlab = '', ylab = expression(xi), main = campsLA[[i]][[1]][1,'month'], ylim=c(0.5,100),
+       xlab = '', ylab = expression(xi), main = campsLA[[i]][[1]][1,'month'], ylim=c(0.5,47),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
     points(campsLA[[i]][[j]][,'xi']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
@@ -243,7 +243,7 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
   plot(campsLE[[i]][[1]][,'xi']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
-       xlab = '', ylab = expression(xi), ylim=c(0.5, 100), cex.lab=1.5,
+       xlab = '', ylab = expression(xi), ylim=c(0.5, 47), cex.lab=1.5,
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
     points(campsLE[[i]][[j]][,'xi']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
