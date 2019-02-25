@@ -8,6 +8,11 @@ max.na <- function(x){
   return(mm)
 }
 
+min.na <- function(x){
+  mm <- min(x, na.rm=T)
+  return(mm)
+}
+
 countNA <- function(x){
   l <- length(x)-length(which(is.na(x)))
   return(l)

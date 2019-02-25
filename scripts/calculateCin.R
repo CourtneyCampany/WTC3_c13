@@ -26,6 +26,7 @@ WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCra
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
 deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2','Tair_al',
+                                                 'RH_al','RHref_al',
                                                  'Taref_al','condAlert','T_treatment','Water_treatment',
                                                  'PAR','CO2Injection','H2Oin','H2Oout','Cin',
                                                  'CO2in','CO2out','Air_in','Air_out','VPDair')],
