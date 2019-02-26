@@ -58,13 +58,14 @@ allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheri
 allPaired$Date <- as.Date(allPaired$datetimeFM)
 # get leaf area for each chamber from the final harvest
 source('scripts/leafArea.R')
-allPaired <- merge(allPaired, treeLeaf, by='chamber', all=T)
+allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area',
                                                'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
-allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area)
+allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area*1.6)
+allPaired$iWUE2 <- allPaired$A_area/allPaired$E_area
 allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
@@ -75,14 +76,14 @@ allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
 allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
 allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
 allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
-allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes' | allPaired$diffConc < 10, NA, allPaired$xi)
+allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
 allPaired[which(allPaired$A_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'xi')] <- NA
-allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs')] <- NA
-allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0 | allPaired$gmes_area > 1 | 
+allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area')] <- NA
+allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$diffConc < 10 |
                                 allPaired$diffDel < 0 , NA, allPaired$gmes_area)
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 

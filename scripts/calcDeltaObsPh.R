@@ -15,6 +15,10 @@ calcDELTAobsMat <- function(del13Camb, del13Cmat){
 }
 allPaired$DELTAobsPhCont <- calcDELTAobsMat(del13Camb=allPaired$Corrdel13C_Avg, del13Cmat=allPaired$d13Cph)
 allPaired$DELTAobsPhCont2 <- calcDELTAobsMat(del13Camb=allPaired$del13C_theor_ref, del13Cmat=allPaired$d13Cph)
+allPaired$DELTAobsPhCont <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0,
+                                   NA, allPaired$DELTAobsPhCont)
+allPaired$DELTAobsPhCont2 <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0,
+                                   NA, allPaired$DELTAobsPhCont2)
 del13CcampAvg <- doBy::summaryBy(Cin + totalCO2 + del13C_theor_ref + Corrdel13C_Avg ~ month + chamber,
                                   FUN=c(mean.na, max.na, min.na), data=subset(allPaired, PAR > 1))
 phl <- merge(phl, del13CcampAvg, by=c('month','chamber'), all.x=T, all.y=F)
