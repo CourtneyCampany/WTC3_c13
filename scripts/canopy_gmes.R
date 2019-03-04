@@ -62,10 +62,10 @@ allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
-allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area',
-                                               'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
-allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area*1.6)
+allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area)
 allPaired$iWUE2 <- allPaired$A_area/allPaired$E_area
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','iWUE2',
+                                               'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
 allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
@@ -79,18 +79,20 @@ allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
 allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
+source('scripts/plotDELTAobsVSdiffConc.R')
+allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35 | allPaired$diffDel <= 0, NA, allPaired$DELTAobs)
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
-allPaired[which(allPaired$A_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'xi')] <- NA
-allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area')] <- NA
-allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$diffConc < 10 | allPaired$gmes_area > 1.1 |
+allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','iWUE2')] <- NA
+allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area', 'iWUE','iWUE2')] <- NA
+allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$diffConc < 35 | allPaired$gmes_area > 1.1 |
                                 allPaired$diffDel < 0 , NA, allPaired$gmes_area)
-allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+allPaired$month <- as.character(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
 for (i in 1:length(levels(as.factor(allPaired$chamber)))){
-  gmesL[[i]] <- subset(allPaired, chamber==chambs[i] & gmes_area < 0.3 & gmes_area>=0)
+  gmesL[[i]] <- subset(allPaired, chamber==chambs[i] & gmes_area < 0.3)
 }
 lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'), row.names = F))

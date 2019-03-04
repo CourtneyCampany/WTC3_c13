@@ -54,4 +54,4 @@ deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Cor
                                    deltaPaired$CO2Injection*(-31.9))/
   (deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
 rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
-   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, WTCrawShort)
+   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, WTCrawShort, corrCO2amb)
