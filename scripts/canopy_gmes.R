@@ -80,7 +80,7 @@ allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, all
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
 source('scripts/plotDELTAobsVSdiffConc.R')
-allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35 | allPaired$diffDel <= 0, NA, allPaired$DELTAobs)
+allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
 allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','iWUE2')] <- NA
