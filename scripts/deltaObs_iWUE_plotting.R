@@ -14,24 +14,24 @@ for(i in 1:length(campaigns)){
   campsE[[i]] <- subset(allPaired, month==campaigns[i] & T_treatment=='warmed')
 }
 
-# gmes over time
+# DELTAobs over time
 plotDELTAobs <- function(x, pal, chamNames){
   k <- subset(x, chamber==chamNames[1])
-  plot(k$DELTAobs*1000~k$Time, ylim=c(0,29), pch=19, col=pal[1],
+  plot(k$DELTAobs*1000~k$Time, ylim=c(0,29), pch=20, col=pal[1],
        main=paste0(k$month[1], '-', k$T_treatment[1]), xlim=c(5,18),
-       xlab='Time (h)', ylab=expression(Delta^13*C[obs]), cex=0.7)
-  points(subset(x, chamber==chamNames[1])[,'DELTAobsPhCont2']~
+       xlab='Time (h)', ylab=expression(Delta^13*C[obs]))
+  points(subset(x, chamber==chamNames[1])[,'DELTAobsPhCont']~
            subset(x, chamber==chamNames[1])[,'Time'], pch=17, col=pal[1])
-  lines(subset(x, chamber==chamNames[1])[,'DELTAobsMin2']~
-          subset(x, chamber==chamNames[1])[,'Time'], lwd=1.5, col=pal[1])
+  lines(subset(x, chamber==chamNames[1])[,'DELTAobsMin']~
+          subset(x, chamber==chamNames[1])[,'Time'], lwd=2, col=pal[1])
   legend('bottomleft', legend=chamNames, pch=19, col=pal, bty='n')
   for (i in 2:length(chamNames)){
     points(subset(x, chamber==chamNames[i])[,'DELTAobs']*1000~
-             subset(x, chamber==chamNames[i])[,'Time'], pch=19, col=pal[i], cex=0.7)
-    points(subset(x, chamber==chamNames[i])[,'DELTAobsPhCont2']~
+             subset(x, chamber==chamNames[i])[,'Time'], pch=20, col=pal[i])
+    points(subset(x, chamber==chamNames[i])[,'DELTAobsPhCont']~
                     subset(x, chamber==chamNames[i])[,'Time'], pch=17, col=pal[i])
-    lines(subset(x, chamber==chamNames[i])[,'DELTAobsMin2']~
-                    subset(x, chamber==chamNames[i])[,'Time'], lwd=1.5, col=pal[i])
+    lines(subset(x, chamber==chamNames[i])[,'DELTAobsMin']~
+                    subset(x, chamber==chamNames[i])[,'Time'], lwd=2, col=pal[i])
   }
 }
 windows(15,8)
@@ -45,15 +45,15 @@ plotDELTAobs <- function(x, pal, chamNames){
   k <- subset(x, chamber==chamNames[1])
   plot(k$iWUE~k$Time, ylim=c(0,310), pch=19, col=pal[1],
        main=paste0(k$month[1], '-', k$T_treatment[1]), xlim=c(5,18),
-       xlab='Time (h)', ylab='iWUE', cex=0.7)
+       xlab='Time (h)', ylab='iWUE')
   lines(subset(x, chamber==chamNames[1])[,'iWUEph']~
-          subset(x, chamber==chamNames[1])[,'Time'], lwd=1.5, col=pal[1])
+          subset(x, chamber==chamNames[1])[,'Time'], lwd=2, col=pal[1])
   legend('topright', legend=chamNames, pch=19, col=pal, bty='n')
   for (i in 2:length(chamNames)){
     points(subset(x, chamber==chamNames[i])[,'iWUE']~
-             subset(x, chamber==chamNames[i])[,'Time'], pch=19, col=pal[i], cex=0.7)
+             subset(x, chamber==chamNames[i])[,'Time'], pch=19, col=pal[i])
     lines(subset(x, chamber==chamNames[i])[,'iWUEph']~
-            subset(x, chamber==chamNames[i])[,'Time'], lwd=1.5, col=pal[i])
+            subset(x, chamber==chamNames[i])[,'Time'], lwd=2, col=pal[i])
   }
 }
 windows(15,8)
