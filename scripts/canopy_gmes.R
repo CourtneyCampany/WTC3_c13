@@ -45,7 +45,7 @@ gmesW <- function(Photo, b, ai, DELTAi, DELTAobs, refCO2){
   gmesW <- Photo*(b-ai)/((DELTAi-DELTAobs*1000)*refCO2)
   return(gmesW)
 }
-# ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including tranfer into water)
+# ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including transfer into water)
 ai <- 1.8
 
 # first attempt to calculate gmes
