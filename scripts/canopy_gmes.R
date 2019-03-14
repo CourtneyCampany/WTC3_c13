@@ -87,8 +87,11 @@ allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi
 allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area', 'iWUE','iWUE2')] <- NA
 allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$diffConc < 35 | allPaired$gmes_area > 1.1 |
                                 allPaired$diffDel < 0 , NA, allPaired$gmes_area)
-allPaired$month <- as.character(lubridate::month(allPaired$datetimeFM, label=T))
+allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60
+allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
+allPaired$lgGmes <- log(allPaired$gmes_area*1000)
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))

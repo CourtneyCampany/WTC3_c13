@@ -31,5 +31,10 @@ allPaired$DELTAobsPhCont <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area
                                      allPaired$E_area <= 0, NA, allPaired$DELTAobsPhCont)
 #allPaired$DELTAobsPhCont2 <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0| allPaired$E_area <= 0
  #                                   | allPaired$PAR < 3, NA, allPaired$DELTAobsPhCont2)
-iWUEsumm <- doBy::summaryBy(iWUE ~ month + chamber, FUN=max.na, data=allPaired[which(!is.na(allPaired$gmes_area)),])
+trtkey$chamber <- c(paste0('C0', 1:9), paste0('C', 10:12))
+names(trtkey)[2] <- 'T_treatment'
+
+iWUEsumm <- doBy::summaryBy(iWUE ~ month + chamber, FUN=mean, data=allPaired[which(!is.na(allPaired$gmes_area)),])
 iWUEsumm <- merge(iWUEsumm, phl, by=c('month', 'chamber'), all=T)
+iWUEsumm <- merge(iWUEsumm, trtkey, by='chamber', all=T)
+
