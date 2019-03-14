@@ -18,6 +18,7 @@ WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawSh
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
 # filter data suspicious for condensation
+# THIS SHOULD use Tair_al
 WTCrawShort$satVap <- calcVapSat(WTCrawShort$Taref_al)/101.3 #101.3 kPa is the standard atmospheric pressure
 WTCrawShort$H2Oin_conc <- WTCrawShort$H2Oin*22.4/(WTCrawShort$Air_in)
 WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCrawShort$H2Oout < WTCrawShort$H2Oin | 
