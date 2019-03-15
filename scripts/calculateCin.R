@@ -1,4 +1,5 @@
 calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
+calcDewPoint <- function(waterP){240.97 * log(waterP/0.611)/(17.502-log(waterP/0.611))}
 # library(devtools)
 # install_bitbucket("remkoduursma/HIEv")
 library(HIEv)
