@@ -19,11 +19,17 @@ WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawSh
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
 # filter data suspicious for condensation
-# THIS SHOULD use Tair_al
-WTCrawShort$satVap <- calcVapSat(WTCrawShort$Taref_al)/101.3 #101.3 kPa is the standard atmospheric pressure
-WTCrawShort$H2Oin_conc <- WTCrawShort$H2Oin*22.4/(WTCrawShort$Air_in)
-WTCrawShort$condAlert <- ifelse(WTCrawShort$RH_al < WTCrawShort$RHref_al | WTCrawShort$H2Oout < WTCrawShort$H2Oin | 
-                                WTCrawShort$H2Oin_con >= WTCrawShort$satVap ,'yes', 'no')
+# calculate water vapor pressure inside the chamber in kPa, eq. 14-20 in the LI-COR 6400 manual
+WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
+WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa)
+# calculate difference in water concentration between air flow in and out
+WTCrawShort$H2OmyFlux <- ((WTCrawShort$H2Oout/WTCrawShort$Air_out)-(WTCrawShort$H2Oin/WTCrawShort$Air_in))*22.4
+WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb <= (WTCrawShort$Taref_al-0.5) |
+                                WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
+WTCrawShort$condAlert1 <- ifelse(WTCrawShort$RH_al <= WTCrawShort$RHref_al, 'yes', 'no')
+WTCrawShort$condAlert2 <- ifelse(WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
+WTCrawShort$condAlert3 <- ifelse(WTCrawShort$dewPointInsideChamb <= WTCrawShort$Taref_al, 'yes', 'no')
+WTCrawShort$condAlert4 <- ifelse(WTCrawShort$dewPointInsideChamb <= (WTCrawShort$Taref_al-0.5), 'yes', 'no')
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
