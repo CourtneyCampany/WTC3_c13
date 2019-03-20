@@ -1,4 +1,6 @@
+# equation 3.8 in Campbell & Norman 'Introduction to environ. biophysics'
 calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
+# equation 3.14 in Campbell & Norman 'Introduction to environ. biophysics'
 calcDewPoint <- function(waterP){240.97 * log(waterP/0.611)/(17.502-log(waterP/0.611))}
 # library(devtools)
 # install_bitbucket("remkoduursma/HIEv")

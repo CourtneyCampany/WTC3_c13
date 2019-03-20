@@ -8,7 +8,7 @@ points(WTCrawShort$H2Oout*1000*22.4/WTCrawShort$Air_out, pch=19, cex=0.8, col='b
 points(WTCrawShort$H2OmyFlux*1000, pch=19, cex=0.8, col=as.factor(WTCrawShort$condAlert2))
 abline(0,0)
 legend('topleft', legend=c('in','out'), pch=19, col=c('magenta','blue'), bty='n', cex=1.1)
-legend('bottomleft', legend='24% out')
+legend('bottomleft', legend='24% out', bty='n')
 
 plot(WTCrawShort$RH_al, pch=19, cex=0.8, col='blue', ylim=c(-5,100),
      ylab='RH (%)', xlab='')
