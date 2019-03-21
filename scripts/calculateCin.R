@@ -1,5 +1,7 @@
 # equation 3.8 in Campbell & Norman 'Introduction to environ. biophysics'
 calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
+# combining eq. 3.8 & 3.11 in Campbell & Norman
+calcWaterP <- function(RH, temp){RH*0.01*0.611*exp(17.502*temp/(240.97 + temp))}
 # equation 3.14 in Campbell & Norman 'Introduction to environ. biophysics'
 calcDewPoint <- function(waterP){240.97 * log(waterP/0.611)/(17.502-log(waterP/0.611))}
 # library(devtools)
@@ -21,17 +23,16 @@ WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawSh
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
 # filter data suspicious for condensation
-# calculate water vapor pressure inside the chamber in kPa, eq. 14-20 in the LI-COR 6400 manual
-WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
-WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa)
 # calculate difference in water concentration between air flow in and out
+WTCrawShort$waterP_kPa_out <- calcWaterP(RH=WTCrawShort$RH_al, temp=WTCrawShort$Tair_al)
+# Alternatively using eq. 14-20 in the LI-COR 6400 manual
+# WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
+WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa_out)
 WTCrawShort$H2OmyFlux <- ((WTCrawShort$H2Oout/WTCrawShort$Air_out)-(WTCrawShort$H2Oin/WTCrawShort$Air_in))*22.4
-WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb <= (WTCrawShort$Taref_al-0.5) |
-                                WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
-WTCrawShort$condAlert1 <- ifelse(WTCrawShort$RH_al <= WTCrawShort$RHref_al, 'yes', 'no')
-WTCrawShort$condAlert2 <- ifelse(WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
-WTCrawShort$condAlert3 <- ifelse(WTCrawShort$dewPointInsideChamb <= WTCrawShort$Taref_al, 'yes', 'no')
-WTCrawShort$condAlert4 <- ifelse(WTCrawShort$dewPointInsideChamb <= (WTCrawShort$Taref_al-0.5), 'yes', 'no')
+WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb >= (WTCrawShort$Taref_al-1.5) |
+                                   WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
+# optional
+# source('scripts/visualizeCondensation.R')
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
