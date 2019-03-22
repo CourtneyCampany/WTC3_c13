@@ -39,7 +39,40 @@ legend('bottomright', legend=('32% out'), bty = 'n')
 abline(0,0)
 abline(1.5, 0, lty=2)
 
-k <- subset(WTCrawShort, chamber=='C09' & datetimeFM>=as.Date('2014-03-10') & datetimeFM<=as.Date('2014-03-31'))
+kk <- subset(WTCrawShort, chamber=='C12')
+kk$Time <- lubridate::hour(kk$datetimeFM) + lubridate::minute(kk$datetimeFM)/60
+kk$month <- as.factor(lubridate::month(kk$datetimeFM, label=T))
+myMonths <- c('Oct','Dec','Jan','Feb','Mar','Apr')
+myPoints <- c(15:20)
+kk$diff <- kk$Taref_al-kk$dewPointInsideChamb
+
+myCondPlot <- function(k, myPoint){
+  plot(k$dewPointInsideChamb~k$Time, pch=myPoint, col='grey',
+       ylab='Temp (c)', xlab='Time (h)', cex=0.8, ylim=c(-2, 40.5), main=k$month[1])
+  points(k$Taref_al~k$Time, pch=myPoint, cex=0.8, col='blue')
+  points(subset(k, diff>1.5)[,'diff']~subset(k, diff>1.5)[,'Time'],
+         pch=myPoint, cex=0.8, col='black')
+  points(subset(k, diff>1 & diff <= 1.5)[,'diff']~subset(k, diff>1 & diff <= 1.5)[,'Time'],
+         pch=myPoint, cex=0.8, col='green')
+  points(subset(k, diff>0.5 & diff <= 1)[,'diff']~subset(k, diff>0.5 & diff <= 1)[,'Time'],
+         pch=myPoint, cex=0.8, col='red')
+  points(subset(k, diff>0 & diff <= 0.5)[,'diff']~subset(k, diff>0 & diff <= 0.5)[,'Time'],
+         pch=myPoint, cex=0.8, col='yellow')
+  points(subset(k, diff<=0)[,'diff']~subset(k, diff<=0)[,'Time'],
+         pch=myPoint, cex=0.8, col='magenta')
+  abline(0,0)
+  legend('topleft', pch=19, col=c('black','green','red','yellow','magenta','blue','grey'),
+         legend=c('Good','1.5C','1C','0.5C','0C','Tair Out','Tdp'), bty='n')
+}
+
+empty <- list()
+for (i in 1:6){
+  empty[[i]] <- subset(kk, month==myMonths[i])
+}
+
+windows(12,8)
+par(mfrow=c(2,3))
+lapply(empty, function(x) myCondPlot(x, myPoint=19))
 
 plot((k$H2Oin*1000*22.4/k$Air_in)~k$datetimeFM, pch=19,
      cex=0.8, ylim=c(-5, 31), ylab='H2O conc (mmol/mol)', xlab='', col='magenta')
