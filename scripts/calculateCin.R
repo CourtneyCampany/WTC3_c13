@@ -24,10 +24,10 @@ WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes =
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
 # filter data suspicious for condensation
 # calculate difference in water concentration between air flow in and out
-WTCrawShort$waterP_kPa_out <- calcWaterP(RH=WTCrawShort$RH_al, temp=WTCrawShort$Tair_al)
+WTCrawShort$waterP_kPa_air_inside <- calcWaterP(RH=WTCrawShort$RHref_al, temp=WTCrawShort$Taref_al)
 # Alternatively using eq. 14-20 in the LI-COR 6400 manual
 # WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
-WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa_out)
+WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa_air_inside)
 WTCrawShort$H2OmyFlux <- ((WTCrawShort$H2Oout/WTCrawShort$Air_out)-(WTCrawShort$H2Oin/WTCrawShort$Air_in))*22.4
 WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb >= (WTCrawShort$Taref_al-1.5) |
                                    WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
