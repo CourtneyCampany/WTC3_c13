@@ -54,7 +54,7 @@ ai <- 1.8
 # and the d13C of the CO2 entering taking into account the d13C of the injected CO2
 source('scripts/calculateCin.R')
 allPaired <- deltaPaired
-allPaired$VPDmol <- allPaired$VPDair/101.3 #101.3 kPa is the standard atmospheric pressure
+allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm #101.3 kPa is the standard atmospheric pressure
 allPaired$Date <- as.Date(allPaired$datetimeFM)
 # get leaf area for each chamber from the final harvest
 source('scripts/leafArea.R')
@@ -63,8 +63,8 @@ allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area)
-allPaired$iWUE2 <- allPaired$A_area/allPaired$E_area
-allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','iWUE2',
+allPaired$WUE <- allPaired$A_area/allPaired$E_area
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE',
                                                'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
 allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
@@ -79,14 +79,17 @@ allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
 allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
-source('scripts/plotDELTAobsVSdiffConc.R')
+# source('scripts/plotDELTAobsVSdiffConc.R')
 allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
 allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
-allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','iWUE2')] <- NA
-allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area', 'iWUE','iWUE2')] <- NA
-allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$diffConc < 35 | allPaired$gmes_area > 1.1 |
+allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','WUE')] <- NA
+allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area', 'iWUE','WUE')] <- NA
+allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$gmes_area > 1.1 |
                                 allPaired$diffDel < 0 , NA, allPaired$gmes_area)
+allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
+allPaired[which(allPaired$Cc < 0), 'Cc'] <- NA
+allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60

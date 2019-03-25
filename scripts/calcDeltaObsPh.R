@@ -12,23 +12,26 @@ calcDELTAobsMat <- function(del13Camb, del13Cmat){
   return(DELTAobsMat)
 }
 
-del13CcampAvg <- doBy::summaryBy(#del13C_theor_ref +
-  Corrdel13C_Avg + CO2sampleWTC ~ month + chamber,
-                                  FUN=c(mean.na, min.na), data=subset(allPaired, PAR > 3 & condAlert=='no'
+del13CcampAvg <- doBy::summaryBy(Corrdel13C_Avg + CO2sampleWTC + Cc + diff_Ci.Cc~ month + chamber,
+                                  FUN=mean.na, data=subset(allPaired, PAR > 3 & condAlert=='no'
                                                                       & A_area > 0 & E_area > 0))
 phl <- merge(phl, del13CcampAvg, by=c('month','chamber'), all.x=T, all.y=F)
 phl$DELTAobsAvg <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13Cph)
 #phl$DELTAobsAvg2 <- calcDELTAobsMat(del13Camb = phl$del13C_theor_ref.mean.na, del13Cmat = phl$d13Cph)
-phl$DELTAobsMin <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.min.na, del13Cmat = phl$d13Cph)
+#phl$DELTAobsMin <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.min.na, del13Cmat = phl$d13Cph)
 #phl$DELTAobsMin2 <- calcDELTAobsMat(del13Camb = phl$del13C_theor_ref.min.na, del13Cmat = phl$d13Cph)
-phl$iWUEph <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13Cph-a)/(b-a)))
+phl$iWUEph_uncorr <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13Cph-a)/(b-a)))
+phl$iWUEph_corr <- phl$iWUEph_uncorr - phl$diff_Ci.Cc.mean.na
 
-allPaired <- merge(allPaired, phl[,c('d13Cph','month','chamber','DELTAobsAvg','iWUEph',
-                                     'DELTAobsMin')], by=c('month','chamber'), all=T)
+allPaired <- merge(allPaired, phl[,c('month','chamber','d13Cph','DELTAobsAvg','iWUEph_uncorr',
+                                     'iWUEph_corr')], by=c('month','chamber'), all=T)
 allPaired$DELTAobsPhCont <- calcDELTAobsMat(del13Camb=allPaired$Corrdel13C_Avg, del13Cmat=allPaired$d13Cph)
 #allPaired$DELTAobsPhCont2 <- calcDELTAobsMat(del13Camb=allPaired$del13C_theor_ref, del13Cmat=allPaired$d13Cph)
-allPaired$DELTAobsPhCont <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0 | allPaired$PAR < 3|
+allPaired$DELTAobsPhCont <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0 | allPaired$PAR < 3 |
                                      allPaired$E_area <= 0, NA, allPaired$DELTAobsPhCont)
+allPaired$iWUEph_corr2 <- allPaired$iWUEph_uncorr - allPaired$diff_Ci.Cc
+allPaired$iWUEph_corr2 <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0 | allPaired$PAR < 3 |
+                                     allPaired$E_area <= 0, NA, allPaired$iWUEph_corr2)
 #allPaired$DELTAobsPhCont2 <- ifelse(allPaired$condAlert=='yes' | allPaired$A_area <= 0| allPaired$E_area <= 0
  #                                   | allPaired$PAR < 3, NA, allPaired$DELTAobsPhCont2)
 trtkey$chamber <- c(paste0('C0', 1:9), paste0('C', 10:12))

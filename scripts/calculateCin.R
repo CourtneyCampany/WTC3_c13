@@ -23,11 +23,11 @@ WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawSh
 WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
 WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
 # filter data suspicious for condensation
-# calculate difference in water concentration between air flow in and out
-WTCrawShort$waterP_kPa_air_inside <- calcWaterP(RH=WTCrawShort$RHref_al, temp=WTCrawShort$Taref_al)
+WTCrawShort$waterP_kPa_air_inside <- calcWaterP(RH=WTCrawShort$RH_al, temp=WTCrawShort$Tair_al)
 # Alternatively using eq. 14-20 in the LI-COR 6400 manual
 # WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
 WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa_air_inside)
+# calculate difference in water concentration between air flow in and out
 WTCrawShort$H2OmyFlux <- ((WTCrawShort$H2Oout/WTCrawShort$Air_out)-(WTCrawShort$H2Oin/WTCrawShort$Air_in))*22.4
 WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb >= (WTCrawShort$Taref_al-1.5) |
                                    WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
@@ -37,7 +37,7 @@ WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb >= (WTCrawShort$
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
 deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2','Tair_al',
-                                                 'RH_al','RHref_al',
+                                                 'RH_al','RHref_al','Patm',
                                                  'Taref_al','condAlert','T_treatment','Water_treatment',
                                                  'PAR','CO2Injection','H2Oin','H2Oout','Cin',
                                                  'CO2in','CO2out','Air_in','Air_out','VPDair')],

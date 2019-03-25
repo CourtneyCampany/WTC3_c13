@@ -309,3 +309,44 @@ for (i in 1:length(camps)){
     points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
   }
 }
+
+#plot Cc and Ci-CC
+windows(16,8)
+par(mfrow=c(4,6))
+for (i in 1:length(camps)){
+  par(mar=c(0,4,2,1))
+  plot(campsLA[[i]][[1]][,'Cc']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+       xlab = '', ylab = expression(italic(C)[c]~(mu*mol~mol^-2)), main = campsLA[[i]][[1]][1,'month'], ylim=c(5, 350),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsA)){
+    points(campsLA[[i]][[j]][,'Cc']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+  }
+}
+for (i in 1:length(camps)){
+  par(mar=c(0,4,0,1))
+  plot(campsLE[[i]][[1]][,'Cc']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+       xlab = '', ylab = expression(italic(C)[c]~(mu*mol~mol^-1)), ylim=c(5, 350),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsE)){
+    points(campsLE[[i]][[j]][,'Cc']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+  }
+}
+
+for (i in 1:length(camps)){
+  par(mar=c(0,4,0,1))
+  plot(campsLA[[i]][[1]][,'diff_Ci.Cc']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+       xlab = '', ylab = expression(italic(C)[i]-italic(C)[c]~(mu*mol~mol^-1)), ylim=c(5, 395),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsA)){
+    points(campsLA[[i]][[j]][,'diff_Ci.Cc']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+  }
+}
+for (i in 1:length(camps)){
+  par(mar=c(3,4,0,1))
+  plot(campsLE[[i]][[1]][,'diff_Ci.Cc']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+       xlab = '', ylab = expression(italic(C)[i]-italic(C)[c]~(mu*mol~mol^-1)), ylim=c(5, 395),
+       xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
+  for (j in 2:length(chambsE)){
+    points(campsLE[[i]][[j]][,'diff_Ci.Cc']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+  }
+}
