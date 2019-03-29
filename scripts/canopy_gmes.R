@@ -90,6 +90,7 @@ allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$gmes_area > 1
 allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
 allPaired[which(allPaired$Cc < 0), 'Cc'] <- NA
 allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
+allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired[(which(allPaired$diff_Ci.Cc < 0)), 'dif_Ci.Cc'] <- NA
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
