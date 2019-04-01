@@ -22,17 +22,17 @@ plotDELTAobs <- function(x, pal, chamNames){
        xlab='Time (h)', ylab=expression(Delta^13*C[obs]))
   points(subset(x, chamber==chamNames[1])[,'DELTAobsPhCont']~
            subset(x, chamber==chamNames[1])[,'Time'], pch=17, col=pal[1])
-  points(subset(x, chamber==chamNames[1])[,'DELTAobsAvgLeafCont']~
-           subset(x, chamber==chamNames[1])[,'Time'], pch=19, col=pal[1])
+  lines(subset(x, chamber==chamNames[1])[,'DELTAobsPhMD']~
+          subset(x, chamber==chamNames[1])[,'Time'], pch=19, col=pal[1])
   legend('bottomleft', legend=chamNames, pch=19, col=pal, bty='n')
   for (i in 2:length(chamNames)){
     points(subset(x, chamber==chamNames[i])[,'DELTAobs']*1000~
              subset(x, chamber==chamNames[i])[,'Time'], pch=3, col=pal[i])
     points(subset(x, chamber==chamNames[i])[,'DELTAobsPhCont']~
                     subset(x, chamber==chamNames[i])[,'Time'], pch=17, col=pal[i])
-    points(subset(x, chamber==chamNames[i])[,'DELTAobsAvgLeafCont']~
-             subset(x, chamber==chamNames[i])[,'Time'], pch=19, col=pal[i])
-  }
+    lines(subset(x, chamber==chamNames[i])[,'DELTAobsPhMD']~
+             subset(x, chamber==chamNames[i])[,'Time'], col=pal[i])
+    }
 }
 windows(15,8)
 par(mfrow=c(2,6))
@@ -74,7 +74,7 @@ plotDELTAobs <- function(x, pal, chamNames){
        xlab='Time (h)', ylab='iWUE')
   points(k$iWUEph_corr2~k$Time, pch=17, col=pal[1])
   lines(subset(x, chamber==chamNames[1])[,'iWUEph_corr']~
-          subset(x, chamber==chamNames[1])[,'Time'], lwd=2.3, col=pal[1])
+         subset(x, chamber==chamNames[1])[,'Time'], lwd=2.3, col=pal[1])
   lines(subset(x, chamber==chamNames[1])[,'iWUEph_uncorr']~
           subset(x, chamber==chamNames[1])[,'Time'], lwd=0.7, lty=3, col=pal[1])
   legend('topright', legend=chamNames, pch=19, col=pal, bty='n')
@@ -84,7 +84,7 @@ plotDELTAobs <- function(x, pal, chamNames){
     points(subset(x, chamber==chamNames[i])[,'iWUEph_corr2']~
              subset(x, chamber==chamNames[i])[,'Time'], pch=17, col=pal[i])
     lines(subset(x, chamber==chamNames[i])[,'iWUEph_corr']~
-            subset(x, chamber==chamNames[i])[,'Time'], lwd=2.3, col=pal[i])
+           subset(x, chamber==chamNames[i])[,'Time'], lwd=2.3, col=pal[i])
     lines(subset(x, chamber==chamNames[i])[,'iWUEph_uncorr']~
             subset(x, chamber==chamNames[i])[,'Time'], lwd=0.7, lty=3, col=pal[i])
   }

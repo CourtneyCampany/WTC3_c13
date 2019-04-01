@@ -19,7 +19,12 @@ calcDELTAobsMat <- function(del13Camb, del13Cmat){
 del13CcampAvg <- doBy::summaryBy(Corrdel13C_Avg + CO2sampleWTC + Cc + diff_Ci.Cc ~ month + chamber,
                                   FUN=mean.na, data=subset(allPaired, PAR > 3 & condAlert=='no'
                                                                       & A_area > 0 & E_area > 0))
-phl <- merge(phl[,c('chamber','month','d13Cph','temp')], del13CcampAvg, by=c('month','chamber'), all=T)
+del13CcampAvgMD <- doBy::summaryBy(Corrdel13C_Avg + CO2sampleWTC + diff_Ci.Cc ~ month + chamber, FUN=mean.na,
+                                   data=subset(allPaired, midday=='yes' & condAlert=='no' & A_area > 0 & E_area > 0))
+names(del13CcampAvgMD)[3:5] <- c('Corrdel13C_Avg.mean.naMD','CO2sampleWTC.mean.naMD','dif_Ci.Cc.mean.naMD')
+phl <- merge(phl[,c('chamber','month','d13Cph','temp')],
+             merge(del13CcampAvg, del13CcampAvgMD, by=c('month', 'chamber'), all=T),
+             by=c('month','chamber'), all=T)
 phl2 <- merge(phl, leafChem2, by=c('month','chamber'), all=T)
 phl <- merge(phl, leafChem, by=c('month','chamber'), all=T)
 
@@ -50,6 +55,7 @@ legend('topleft', pch=c(NA, NA, 19, 19), col=c(NA, NA, 'darkolivegreen'),
                 paste0('R2 = ', round(summary(modelAvg)$r.squared, 2)),'Avg'), bty='n')
 
 phl$DELTAobsPhAvg <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13Cph)
+phl$DELTAobsPhMD <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.naMD, del13Cmat = phl$d13Cph)
 phl$DELTAobsSunLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CsunLeaf)
 phl$DELTAobsShLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CshLeaf)
 phl$DELTAobsAvgLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CleafAvg)
@@ -80,7 +86,7 @@ allPaired$iWUEleafAvg_corr2 <- allPaired$iWUEleafAvg_uncorr - allPaired$diff_Ci.
 allPaired[which(allPaired$condAlert == 'yes' | allPaired$A_area <= 0 | allPaired$PAR <= 3 | allPaired$E_area <= 0),
           c('iWUEph_corr2','iWUEsunLeaf_corr2','iWUEshLeaf_corr2','iWUEleafAvg_corr2')] <- NA
 
-iWUEsumm <- doBy::summaryBy(iWUE + iWUEge_corr ~ month + chamber, FUN=c(mean, s.err, max, min, length),
+iWUEsumm <- doBy::summaryBy(iWUE + iWUEge_corr ~ month + chamber, FUN=c(mean, s.err, length),
                             data=allPaired[which(!is.na(allPaired$gmes_area)),])
 iWUEsummMD <- doBy::summaryBy(iWUE + iWUEge_corr ~ month + chamber, FUN=c(mean, s.err, length),
                               data=subset(allPaired[which(!is.na(allPaired$gmes_area)),], midday=='yes'))

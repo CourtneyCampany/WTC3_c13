@@ -15,14 +15,14 @@ getCifromE <- function(E, VPD, ChamberCO2, Photo){
 
 # DELTAi is photosynthetic discrimination against 13C excluding boundary layer, 
 # internal transfer, respiration and photorespirataion
-calcDELTAi <- function(a, b, Ci.Ca){
+calcDELTAiOLD <- function(a, b, Ci.Ca){
   DELTAi <- a+(b-a)*(Ci.Ca)
   return(DELTAi)
 }
 # a is 13C diffusion fractionation in permil
 a <- 4.4
 # b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
-b <- 30
+b <- 29
 
 # Greek leter xi, ratio of the CO2 entering the well mixed leaf cuvette to the CO2 draw down
 # in the gas stream by the leaf
@@ -71,27 +71,28 @@ allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
-allPaired[which(allPaired$Ci < 0), 'Ci'] <- NA
+allPaired[which(allPaired$E_area <= 0 | allPaired$Ci < 0),'Ci'] <- NA
 allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
 allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
-allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
+allPaired$DELTAiOLD <- calcDELTAiOLD(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
 allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
 allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
 allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
                                    deltaRef=allPaired$del13C_theor_ref)
 # source('scripts/plotDELTAobsVSdiffConc.R')
 allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
-allPaired$gmes_area <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAi,
+allPaired$gmes_areaOLD <- gmesW(Photo = allPaired$A_area, b, ai, allPaired$DELTAiOLD,
                         allPaired$DELTAobs, refCO2 = deltaPaired$CO2sampleWTC)
-allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','WUE')] <- NA
-allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs', 'gsc_area', 'iWUE','WUE')] <- NA
-allPaired$gmes_area <- ifelse(allPaired$gmes_area < 0  | allPaired$gmes_area > 1.1 |
-                                allPaired$diffDel < 0 , NA, allPaired$gmes_area)
-allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
-allPaired[which(allPaired$Cc < 0), 'Cc'] <- NA
-allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
-allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
-allPaired[(which(allPaired$diff_Ci.Cc < 0)), 'dif_Ci.Cc'] <- NA
+allPaired[which(allPaired$A_area <= 0), c('gmes_areaOLD', 'DELTAiOLD', 'DELTAobs', 'xi','iWUE','WUE')] <- NA
+allPaired[which(allPaired$E_area <= 0), c('gmes_areaOLD','Ci', 'DELTAiOLD', 'DELTAobs',
+                                          'gsc_areaOLD', 'iWUE','WUE')] <- NA
+allPaired$gmes_areaOLD <- ifelse(allPaired$gmes_areaOLD < 0  | allPaired$gmes_areaOLD > 1.1 |
+                                allPaired$diffDel < 0 , NA, allPaired$gmes_areaOLD)
+allPaired$CcOLD <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_areaOLD)
+allPaired[which(allPaired$CcOLD < 0), 'CcOLD'] <- NA
+allPaired$diff_Ci.CcOLD <- allPaired$Ci - allPaired$CcOLD
+allPaired[(which(allPaired$diff_Ci.CcOLD < 0)), 'diff_Ci.CcOLD'] <- NA
+allPaired$iWUEge_corrOLD <- allPaired$iWUE + allPaired$diff_Ci.CcOLD
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60
@@ -101,6 +102,7 @@ allPaired$lgGmes <- log(allPaired$gmes_area*1000)
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
 for (i in 1:length(levels(as.factor(allPaired$chamber)))){
-  gmesL[[i]] <- subset(allPaired, chamber==chambs[i] & gmes_area < 0.3)
+  gmesL[[i]] <- subset(allPaired, chamber==chambs[i] & gmes_areaOLD < 0.3)
 }
-lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'), row.names = F))
+lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], 'OLD.csv'),
+                                    row.names = F))
