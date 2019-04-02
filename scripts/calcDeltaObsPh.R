@@ -1,4 +1,4 @@
-source('scripts/canopy_gmes.R')
+source('scripts/canopy_gmes_more.R')
 source('master_scripts/phloem_plotting.R')
 source('scripts/basicFunTEG.R')
 source('scripts/leafChem.R')
@@ -57,19 +57,30 @@ legend('topleft', pch=c(NA, NA, 19, 19), col=c(NA, NA, 'darkolivegreen'),
 phl$DELTAobsPhAvg <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13Cph)
 phl$DELTAobsPhMD <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.naMD, del13Cmat = phl$d13Cph)
 phl$DELTAobsSunLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CsunLeaf)
+phl$DELTAobsSunLeafMD <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.naMD, del13Cmat = phl$d13CsunLeaf)
 phl$DELTAobsShLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CshLeaf)
+phl$DELTAobsShLeafMD <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.naMD, del13Cmat = phl$d13CshLeaf)
 phl$DELTAobsAvgLeaf <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.na, del13Cmat = phl$d13CleafAvg)
+phl$DELTAobsAvgLeafMD <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.mean.naMD, del13Cmat = phl$d13CleafAvg)
 #phl$DELTAobsAvg2 <- calcDELTAobsMat(del13Camb = phl$del13C_theor_ref.mean.na, del13Cmat = phl$d13Cph)
 #phl$DELTAobsMin <- calcDELTAobsMat(del13Camb = phl$Corrdel13C_Avg.min.na, del13Cmat = phl$d13Cph)
 #phl$DELTAobsMin2 <- calcDELTAobsMat(del13Camb = phl$del13C_theor_ref.min.na, del13Cmat = phl$d13Cph)
 phl$iWUEph_uncorr <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13Cph-a)/(b-a)))
 phl$iWUEph_corr <- phl$iWUEph_uncorr - phl$diff_Ci.Cc.mean.na
+phl$iWUEph_uncorrMD <- phl$CO2sampleWTC.mean.naMD*(1-((phl$Corrdel13C_Avg.mean.naMD-phl$d13Cph-a)/(b-a)))
+phl$iWUEph_corrMD <- phl$iWUEph_uncorrMD - phl$dif_Ci.Cc.mean.naMD
 phl$iWUEsunLeaf_uncorr <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13CsunLeaf-a)/(b-a)))
 phl$iWUEsunLeaf_corr <- phl$iWUEsunLeaf_uncorr - phl$diff_Ci.Cc.mean.na
+phl$iWUEsunLeaf_uncorrMD <- phl$CO2sampleWTC.mean.naMD*(1-((phl$Corrdel13C_Avg.mean.naMD-phl$d13CsunLeaf-a)/(b-a)))
+phl$iWUEsunLeaf_corrMD <- phl$iWUEsunLeaf_uncorrMD - phl$dif_Ci.Cc.mean.naMD
 phl$iWUEshLeaf_uncorr <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13CshLeaf-a)/(b-a)))
 phl$iWUEshLeaf_corr <- phl$iWUEshLeaf_uncorr - phl$diff_Ci.Cc.mean.na
+phl$iWUEshLeaf_uncorrMD <- phl$CO2sampleWTC.mean.naMD*(1-((phl$Corrdel13C_Avg.mean.naMD-phl$d13CshLeaf-a)/(b-a)))
+phl$iWUEshLeaf_corrMD <- phl$iWUEshLeaf_uncorrMD - phl$dif_Ci.Cc.mean.naMD
 phl$iWUEleafAvg_uncorr <- phl$CO2sampleWTC.mean.na*(1-((phl$Corrdel13C_Avg.mean.na-phl$d13CleafAvg-a)/(b-a)))
 phl$iWUEleafAvg_corr <- phl$iWUEleafAvg_uncorr - phl$diff_Ci.Cc.mean.na
+phl$iWUEleafAvg_uncorrMD <- phl$CO2sampleWTC.mean.naMD*(1-((phl$Corrdel13C_Avg.mean.naMD-phl$d13CleafAvg-a)/(b-a)))
+phl$iWUEleafAvg_corrMD <- phl$iWUEleafAvg_uncorrMD - phl$dif_Ci.Cc.mean.naMD
 
 allPaired <- merge(allPaired, phl, by=c('month','chamber'), all=T)
 allPaired$DELTAobsPhCont <- calcDELTAobsMat(del13Camb=allPaired$Corrdel13C_Avg, del13Cmat=allPaired$d13Cph)
@@ -86,10 +97,12 @@ allPaired$iWUEleafAvg_corr2 <- allPaired$iWUEleafAvg_uncorr - allPaired$diff_Ci.
 allPaired[which(allPaired$condAlert == 'yes' | allPaired$A_area <= 0 | allPaired$PAR <= 3 | allPaired$E_area <= 0),
           c('iWUEph_corr2','iWUEsunLeaf_corr2','iWUEshLeaf_corr2','iWUEleafAvg_corr2')] <- NA
 
-iWUEsumm <- doBy::summaryBy(iWUE + iWUEge_corr ~ month + chamber, FUN=c(mean, s.err, length),
+iWUEsumm <- doBy::summaryBy(iWUE + iWUEge_corr + iWUEph_corr2 + iWUEsunLeaf_corr2 + iWUEshLeaf_corr2 + iWUEleafAvg_corr2
+                            ~ month + chamber, FUN=c(mean, s.err, length),
                             data=allPaired[which(!is.na(allPaired$gmes_area)),])
-iWUEsummMD <- doBy::summaryBy(iWUE + iWUEge_corr ~ month + chamber, FUN=c(mean, s.err, length),
+iWUEsummMD <- doBy::summaryBy(iWUE + iWUEge_corr + iWUEph_corr2 + iWUEsunLeaf_corr2 + iWUEshLeaf_corr2 + iWUEleafAvg_corr2
+                              ~ month + chamber, FUN=c(mean, s.err, length),
                               data=subset(allPaired[which(!is.na(allPaired$gmes_area)),], midday=='yes'))
-names(iWUEsummMD)[3:8] <- paste0(names(iWUEsummMD)[3:8], 'MD')
+names(iWUEsummMD)[3:ncol(iWUEsummMD)] <- paste0(names(iWUEsummMD)[3:ncol(iWUEsummMD)], 'MD')
 iWUEsumm <- merge(merge(iWUEsumm, iWUEsummMD, by=c('month', 'chamber'), all=T), phl, by=c('chamber','month'), all=T)
 summary(lm(iWUE.mean~iWUEph_corr, data=iWUEsumm))

@@ -14,34 +14,32 @@ setToken()
 #WTCraw <- downloadCSV(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
 #alternatively use a file from a local directory
 WTCraw <- read.csv('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv')
-WTCraw$datetime <- ymd_hms(as.character(WTCraw$DateTime))
-#select the dates for the TDL measurements
-source('scripts/selectDatesRawWTCflux.R')
-# assuming the flow addition by the injection is negligible
-# in the WTC: flow in x Cin_actual = Injection + (flow in x Cin_amb)
-WTCrawShort$Cin <- (WTCrawShort$CO2in + WTCrawShort$CO2Injection)*1000/(WTCrawShort$Air_in/22.4)
-WTCrawShort$datetimeFM <- HIEv::nearestTimeStep(WTCrawShort$datetime, nminutes = 15, align = 'ceiling')
-WTCrawShort$chamber <- as.character(WTCrawShort$chamber)
-# filter data suspicious for condensation
-WTCrawShort$waterP_kPa_air_inside <- calcWaterP(RH=WTCrawShort$RH_al, temp=WTCrawShort$Tair_al)
-# Alternatively using eq. 14-20 in the LI-COR 6400 manual
-# WTCrawShort$waterP_kPa <- WTCrawShort$H2Oout*22.4*WTCrawShort$Patm/WTCrawShort$Air_out
-WTCrawShort$dewPointInsideChamb <- calcDewPoint(WTCrawShort$waterP_kPa_air_inside)
-# calculate difference in water concentration between air flow in and out
-WTCrawShort$H2OmyFlux <- ((WTCrawShort$H2Oout/WTCrawShort$Air_out)-(WTCrawShort$H2Oin/WTCrawShort$Air_in))*22.4
-WTCrawShort$condAlert <- ifelse(WTCrawShort$dewPointInsideChamb >= (WTCrawShort$Taref_al-1.5) |
-                                   WTCrawShort$H2OmyFlux <= 0, 'yes', 'no')
-# optional
-# source('scripts/visualizeCondensation.R')
+WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
+WTCraw$chamber <- as.character(WTCraw$chamber)
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
-deltaPaired <- merge(deltaPaired, WTCrawShort[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2','Tair_al',
-                                                 'RH_al','RHref_al','Patm',
-                                                 'Taref_al','condAlert','T_treatment','Water_treatment',
-                                                 'PAR','CO2Injection','H2Oin','H2Oout','Cin',
-                                                 'CO2in','CO2out','Air_in','Air_out','VPDair')],
-                     by=c('chamber','datetimeFM'), all.x=T, all.y=F)
+deltaPaired <- as.data.frame(dplyr::left_join(deltaPaired, WTCraw[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2',
+                                                          'Tair_al', 'RH_al','RHref_al','Patm',
+                                                          'Taref_al','T_treatment','Water_treatment',
+                                                          'PAR','CO2Injection','H2Oin','H2Oout',
+                                                          'CO2in','CO2out','Air_in','Air_out','VPDair')],
+                                     by=c('chamber','datetimeFM')))
+deltaPaired <- deltaPaired[which(!is.na(deltaPaired$T_treatment)),]
+# assuming the flow addition by the injection is negligible
+# in the WTC: flow in x Cin_actual = Injection + (flow in x Cin_amb)
+deltaPaired$Cin <- (deltaPaired$CO2in + deltaPaired$CO2Injection)*1000/(deltaPaired$Air_in/22.4)
+# filter data suspicious for condensation
+deltaPaired$waterP_kPa_air_inside <- calcWaterP(RH=deltaPaired$RH_al, temp=deltaPaired$Tair_al)
+# Alternatively using eq. 14-20 in the LI-COR 6400 manual
+# deltaPaired$waterP_kPa <- deltaPaired$H2Oout*22.4*deltaPaired$Patm/deltaPaired$Air_out
+deltaPaired$dewPointInsideChamb <- calcDewPoint(deltaPaired$waterP_kPa_air_inside)
+# calculate difference in water concentration between air flow in and out
+deltaPaired$H2OmyFlux <- ((deltaPaired$H2Oout/deltaPaired$Air_out)-(deltaPaired$H2Oin/deltaPaired$Air_in))*22.4
+deltaPaired$condAlert <- ifelse(deltaPaired$dewPointInsideChamb >= (deltaPaired$Taref_al-1.5) |
+                                   deltaPaired$H2OmyFlux <= 0, 'yes', 'no')
+# optional
+# source('scripts/visualizeCondensation.R')
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
 deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out
 deltaPaired[which(deltaPaired$totalCO2_ref>=500 & deltaPaired$CO2refWTC<=400),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
@@ -65,4 +63,4 @@ deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Cor
                                    deltaPaired$CO2Injection*(-31.9))/
   (deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
 rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
-   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, WTCrawShort, corrCO2amb)
+   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb)

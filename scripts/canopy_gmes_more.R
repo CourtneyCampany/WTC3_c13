@@ -51,7 +51,7 @@ calcDELTAobs <- function(xi, deltaSample, deltaRef){
 }
 
 # eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
-# equation S6 in supplementary info from Stangl et al. 2019
+# equation S6 in supplementary info from Stangl et al. unpublished
 calCeResp <- function(delta13Camb, DELTAobs, Cin, Cout, delta13Cref){
   delta13Cphoto <- (delta13Cref*Cin-delta13Camb*Cout)/(Cin-Cout)
   eResp <- -2 + (delta13Camb - DELTAobs - delta13Cphoto)
@@ -81,9 +81,9 @@ calcGammaStar <- function(gamma25, temp){
 
 # Calculate gmes taking into account ternary effects, respiration and photorespiration fractionation
 # equation 11 in Sup. Info in Campany et al. 2016
-gmesComplete <- function(t, eResp, Rd, Photo, b, ai, DELTAi, DELTAobs, refCO2, DELTAe, DELTAf){
-  gmesW <- (((1+t)/(1-t))*(b-ai-(eResp*Rd/(Photo+Rd)))*(Photo/refCO2))/(DELTAi-DELTAobs-DELTAe-DELTAf)
-  return(gmesW)
+gmesComplete <- function(t, b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELTAe, DELTAf){
+  gmes <- (((1+t)/(1-t))*(b-ai-(eResp*Rd/(Photo+Rd)))*(Photo/refCO2))/(DELTAi-DELTAobs-DELTAe-DELTAf)
+  return(gmes)
 }
 
 source('scripts/calculateCin.R')
@@ -92,9 +92,9 @@ allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60
 allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
-allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm #101.3 kPa is the standard atmospheric pressure
+allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$Date <- as.Date(allPaired$datetimeFM)
-# get leaf area for each chamber from the final harvest
+# get leaf area for each chamber and date
 source('scripts/leafArea.R')
 allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
@@ -130,9 +130,9 @@ allPaired$eResp <- calCeResp(delta13Camb=allPaired$Corrdel13C_Avg, DELTAobs=allP
 allPaired$DELTAe <- calcDELTAe(t=allPaired$t, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT, Photo=allPaired$A_area,
                                CO2sample=allPaired$CO2sampleWTC, Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)
 allPaired$DELTAf <- calcDELTAf(t=allPaired$t, f, gammaStar=allPaired$gammaStar, CO2cuv=allPaired$CO2sampleWTC)
-allPaired$gmes_area <- gmesComplete(t=allPaired$t, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
-                                    Photo=allPaired$A_area, b, ai, DELTAi=allPaired$DELTAi,
-                                    DELTAobs=allPaired$DELTAobs, refCO2=allPaired$CO2sampleWTC,
+allPaired$gmes_area <- gmesComplete(t=allPaired$t, b, ai, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
+                                    Photo=allPaired$A_area, refCO2=allPaired$CO2sampleWTC, 
+                                    DELTAi=allPaired$DELTAi, DELTAobs=allPaired$DELTAobs, 
                                     DELTAe=allPaired$DELTAe, DELTAf=allPaired$DELTAf)
 allPaired[which(allPaired$A_area <= 0), c('gmes_area', 'DELTAi', 'DELTAobs', 'xi','iWUE','WUE')] <- NA
 allPaired[which(allPaired$E_area <= 0), c('gmes_area','Ci', 'DELTAi', 'DELTAobs',
@@ -143,6 +143,7 @@ allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
 allPaired[which(allPaired$Cc <= 0),'Cc'] <- NA
 allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
 allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
+allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
 gmesL <- list()
@@ -154,15 +155,7 @@ lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/
                                     row.names = F))
 model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment, random = ~1 | fchamber,
                    data = allPaired, na.action = na.omit)
-allPaired$id <- paste0(allPaired$month, '-', allPaired$T_treatment)
+anova(model)
 
-windows(10,8)
-par(mfrow=c(1,1), mar=c(4,6,1,1))
-boxplot( ~ id, data = leafChem2, col=c('blue','cornflowerblue','red','coral2'), axes=F,
-        ylab=expression(Leaf~{delta}^13*C~~('\211')), cex.lab=1.5)
-axis(2, at=c(seq(-33, -26, 1)), labels=c(at=c(seq(-33, -26, 1))))
-axis(1, at=c(3, 7, 11, 15, 19, 23), labels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
-box()
-legend("bottomleft", c("Amb-Su",'Amb-Sh',"Warm-Su",'Warm-Sh'), pch=22, pt.bg=c('blue','cornflowerblue','red','coral2'),
-       bty='n', pt.cex=1.5)
+
 

@@ -28,4 +28,29 @@ lines(subset(cue.day.trt, T_treatment=='ambient')[,'GPP_la.mean']*1/12~
 points(cue.day.trt$dum~cue.day.trt$Date, pch=8, cex=2.5)
 legend('topright', legend=c('Redrawn from Drake et al. (2016)','TDL & Phloem Campaign'), pch=c(NA, 8), bty='n')
 
+allPaired$id <- as.factor(paste0(allPaired$month, '-', substr(allPaired$T_treatment, 1, 3)))
+allPaired$id <- factor(allPaired$id, levels=c('Oct-amb','Oct-war','Dec-amb','Dec-war',
+                                              'Jan-amb','Jan-war','Feb-amb','Feb-war',
+                                              'Mar-amb','Mar-war','Apr-amb','Apr-war'))
 
+# boxplot of gmes per campaign and temperature treatment
+windows(10,8)
+par(mfrow=c(1,1), mar=c(4,6,1,1))
+boxplot(gmes_area ~ id, data = subset(allPaired, midday=='yes'), col=c('blue','red'), axes=F,
+        ylab=expression(italic(g)[mes]~(mol~m^-2~s^-1)), cex.lab=1.5)
+axis(2, at=c(seq(-0.1, 1, 0.2)), labels=c(at=c(seq(-0.1, 1, 0.2))))
+axis(1, at=c(1.5, 3.5, 5.5, 7.5, 9.5, 11.5), labels=c('Oct','Dec','Jan','Feb','Mar','Apr'), cex.axis=1.6)
+box()
+legend("topleft", c("Amb","Warm"), pch=22, pt.bg=c('blue','red'),
+       bty='n', pt.cex=1.5)
+
+# boxplot of log-transformed midday gmes per campaign and temperature treatment
+windows(10,8)
+par(mfrow=c(1,1), mar=c(4,6,1,1))
+boxplot(log(gmes_area*1000) ~ id, data = subset(allPaired, midday=='yes'), col=c('blue','red'), axes=F,
+        ylab=expression(Log~(italic(g)[mes]~mmol~m^-2~s^-1)), cex.lab=1.5)
+axis(2, at=c(seq(-1.5, 7, 2)), labels=c(at=c(seq(-1.5, 7, 2))))
+axis(1, at=c(1.5, 3.5, 5.5, 7.5, 9.5, 11.5), labels=c('Oct','Dec','Jan','Feb','Mar','Apr'), cex.axis=1.6)
+box()
+legend("bottomleft", c("Amb","Warm"), pch=22, pt.bg=c('blue','red'),
+       bty='n', pt.cex=1.5)
