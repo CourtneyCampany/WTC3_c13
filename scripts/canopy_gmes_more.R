@@ -107,9 +107,11 @@ source('scripts/calcRd25.R')
 allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)
 # calculate respiration in the light at a given temp from Rd at 25 C
 allPaired$Rd_corrT <- allPaired$Rd25*exp(0.0864*(allPaired$Tair_al-25)-0.00013*(allPaired$Tair_al^2-25^2))
-allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE','gammaStar','Rd_corrT',
-                                               'Corrdel13C_Avg', 'Corrdel13C_Avg_ref', "del13C_theor_ref")] <- NA
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE','gammaStar',
+                                               'Rd_corrT', 'Corrdel13C_Avg', 'Corrdel13C_Avg_ref',
+                                               "del13C_theor_ref")] <- NA
 allPaired$t <- calcTern(a, gsc=allPaired$gsc_area, E=allPaired$E*0.001)
+allPaired[which(allPaired$E <= 0), 't'] <- NA
 allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
@@ -118,6 +120,8 @@ allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
 allPaired[which(allPaired$E_area <= 0 | allPaired$Ci < 0),'Ci'] <- NA
 allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
 allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
+allPaired$diff_Ca.Ci <- allPaired$CO2sampleWTC - allPaired$Ci
+allPaired[which(allPaired$diff_Ca.Ci <= 0), 'diff_Ca.Ci'] <- NA
 allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca, t=allPaired$t)
 allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
 allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
@@ -125,11 +129,13 @@ allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13
                                    deltaRef=allPaired$del13C_theor_ref)
 # source('scripts/plotDELTAobsVSdiffConc.R')
 allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
-allPaired$eResp <- calCeResp(delta13Camb=allPaired$Corrdel13C_Avg, DELTAobs=allPaired$DELTAobs,
-                             Cin=allPaired$Cin, Cout=allPaired$CO2sampleWTC, delta13Cref=allPaired$del13C_theor_ref)
-allPaired$DELTAe <- calcDELTAe(t=allPaired$t, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT, Photo=allPaired$A_area,
-                               CO2sample=allPaired$CO2sampleWTC, Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)
-allPaired$DELTAf <- calcDELTAf(t=allPaired$t, f, gammaStar=allPaired$gammaStar, CO2cuv=allPaired$CO2sampleWTC)
+allPaired$eResp <- calCeResp(delta13Camb=allPaired$Corrdel13C_Avg, DELTAobs=allPaired$DELTAobs,Cin=allPaired$Cin,
+                              Cout=allPaired$CO2sampleWTC, delta13Cref=allPaired$del13C_theor_ref)
+allPaired$DELTAe <- calcDELTAe(t=allPaired$t, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
+                               Photo=allPaired$A_area, CO2sample=allPaired$CO2sampleWTC,
+                               Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)
+allPaired$DELTAf <- calcDELTAf(t=allPaired$t, f, gammaStar=allPaired$gammaStar,
+                               CO2cuv=allPaired$CO2sampleWTC)
 allPaired$gmes_area <- gmesComplete(t=allPaired$t, b, ai, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
                                     Photo=allPaired$A_area, refCO2=allPaired$CO2sampleWTC, 
                                     DELTAi=allPaired$DELTAi, DELTAobs=allPaired$DELTAobs, 

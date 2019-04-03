@@ -54,3 +54,13 @@ axis(1, at=c(1.5, 3.5, 5.5, 7.5, 9.5, 11.5), labels=c('Oct','Dec','Jan','Feb','M
 box()
 legend("bottomleft", c("Amb","Warm"), pch=22, pt.bg=c('blue','red'),
        bty='n', pt.cex=1.5)
+
+#code for making bar chart in SigmaPlot
+k <- doBy::summaryBy(gmes_area ~ month + chamber, data=allPaired, FUN=mean.na)
+chambs <- data.frame(row.names = 1:12)
+chambs$chamber <- c(paste0('C0', 1:9), paste0('C', 10:12))
+chambs$T_treatment <- c(rep(c('ambient','warmed'), 6))
+k <- merge(k, chambs, by='chamber', all=T)
+kk <- doBy::summaryBy(gmes_area.mean.na ~ month + T_treatment, data=k,
+                      FUN=c(mean.na, s.err.na, lengthWithoutNA))
+write.csv(kk, file='kk.csv', row.names = F)
