@@ -8,6 +8,11 @@ max.na <- function(x){
   return(mm)
 }
 
+median.na <- function(x){
+  mm <- median(x, na.rm = T)
+  return(mm)
+}
+
 min.na <- function(x){
   mm <- min(x, na.rm=T)
   return(mm)

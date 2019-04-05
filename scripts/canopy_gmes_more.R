@@ -117,7 +117,7 @@ allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
-allPaired[which(allPaired$E_area <= 0 | allPaired$Ci < 0),'Ci'] <- NA
+allPaired[which(allPaired$E_area <= 0 | allPaired$A_area <= 0 | allPaired$Ci < 0),'Ci'] <- NA
 allPaired$Ci.Ca <- allPaired$Ci/allPaired$CO2sampleWTC
 allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
 allPaired$diff_Ca.Ci <- allPaired$CO2sampleWTC - allPaired$Ci
@@ -149,6 +149,8 @@ allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
 allPaired[which(allPaired$Cc <= 0),'Cc'] <- NA
 allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
 allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
+allPaired$diff_Ca.Cc <- allPaired$CO2sampleWTC - allPaired$Cc
+allPaired[which(allPaired$diff_Ca.Cc <= 0),'diff_Ca.Cc'] <- NA
 allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
