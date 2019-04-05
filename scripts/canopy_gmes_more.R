@@ -149,8 +149,6 @@ allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
 allPaired[which(allPaired$Cc <= 0),'Cc'] <- NA
 allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
 allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
-allPaired$diff_Ca.Cc <- allPaired$CO2sampleWTC - allPaired$Cc
-allPaired[which(allPaired$diff_Ca.Cc <= 0),'diff_Ca.Cc'] <- NA
 allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 

@@ -8,11 +8,11 @@ phl$chamber <- ifelse((nchar(phl$chamber2) == 1), paste0('C0', phl$chamber2), pa
 phl$month <- str_sub(phl$month, 1, 3)
 names(phl)[2] <- 'd13Cph'
 
-del13CcampAvg <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC + diff_Ci.Cc +
+del13CcampAvg <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC + 
                                  diff_Ca.Cc + Cc + Ci ~ month + chamber, FUN=mean.na,
                                  data=subset(allPaired, A_area > 0 & E_area > 0 &  PAR > 0 & iWUE < 500))
 del13CcampAvgMD <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC + diff_Ci.Cc +
-                                 diff_Ca.Cc + Cc + Ci ~ month + chamber, FUN=mean.na,
+                                 Cc + Ci ~ month + chamber, FUN=mean.na,
                                  data=subset(allPaired, A_area > 0 & E_area > 0 &  PAR > 0 & iWUE < 500 & midday=='yes'))
 names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)] <- paste0(names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)], 'MD')
 phl <- merge(merge(del13CcampAvgMD, del13CcampAvg, by=c('month','chamber'), all=T),
@@ -50,11 +50,13 @@ summary(lm(iWUE.mean.naMD ~ iWUEleafAvg_corrMD, data=phl))
 summary(lm(iWUEge_corr.mean.naMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUEge_corr.mean.naMD ~ iWUEleafAvg_uncorrMD, data=phl))
 
-iWUEsumm <- doBy::summaryBy(iWUE.mean.naMD + iWUE.mean.na + iWUEge_corr.mean.naMD + iWUEph_corrMD +
-                              iWUEph_uncorrMD + iWUEleafAvg_corrMD ~ month + T_treatment, data=phl,
+iWUEsumm <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_corrMD + iWUEph_uncorrMD
+                               + iWUEleafAvg_corrMD + iWUEleafAvg_uncorrMD ~ month + T_treatment, data=phl,
                             FUN=c(mean.na, s.err.na))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_corrMD.mean.na, data=iWUEsumm))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_uncorrMD.mean.na, data=iWUEsumm))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEleafAvg_corrMD.mean.na, data=iWUEsumm))
+
 summary(lm(iWUEge_corr.mean.naMD.mean.na ~ iWUEph_uncorrMD.mean.na, data=iWUEsumm))
+summary(lm(iWUEge_corr.mean.naMD.mean.na ~ iWUEleafAvg_uncorrMD.mean.na, data=iWUEsumm))
 write.csv(iWUEsumm, file='output/iWUEsumm.csv', row.names = F)
