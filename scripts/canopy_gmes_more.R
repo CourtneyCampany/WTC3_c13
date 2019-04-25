@@ -160,7 +160,7 @@ for (i in 1:length(levels(as.factor(allPaired$chamber)))){
 lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'),
                                     row.names = F))
 model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment, random = ~1 | fchamber,
-                   data = allPaired, na.action = na.omit)
+                   data = subset(allPaired, midday == 'yes'), na.action = na.omit)
 anova(model)
 
 
