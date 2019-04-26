@@ -7,6 +7,8 @@ phl$chamber2 <- as.character(phl$chamber)
 phl$chamber <- ifelse((nchar(phl$chamber2) == 1), paste0('C0', phl$chamber2), paste0('C', phl$chamber2))
 phl$month <- str_sub(phl$month, 1, 3)
 names(phl)[2] <- 'd13Cph'
+# assuming a post-photosynthetic fractionation processes of Eucs render 2.5 permil
+# more enriched over night (Gessler et al. 2007 Funct. Plant Biol)
 phl$d13Cph_corr <- phl$d13Cph + 2.5
 
 del13CcampAvg <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC + 
@@ -26,15 +28,12 @@ chambs$T_treatment <- rep(c('ambient','warmed'), 6)
 
 phl <- merge(phl, chambs, by='chamber', all=T)
 
-phl$meanDiff_Ca.Ci <- phl$CO2sampleWTC.mean.na - phl$Ci.mean.na
-phl$meanDiff_Ca.CiMD <- phl$CO2sampleWTC.mean.naMD - phl$Ci.mean.naMD
-phl$meanDiff_Ca.Cc <- phl$CO2sampleWTC.mean.na - phl$Cc.mean.na
-phl$meanDiff_Ca.CcMD <- phl$CO2sampleWTC.mean.naMD - phl$Cc.mean.naMD
-phl$meanDiff_Ci.Cc <- phl$Ci.mean.na - phl$Cc.mean.na
-phl$meanDiff_Ci.CcMD <- phl$Ci.mean.naMD - phl$Cc.mean.naMD
 phl$iWUEph_uncorr <- phl$CO2sampleWTC.mean.na*
   (1-((1/(b-a))*(-a + (phl$Corrdel13C_Avg.mean.na-phl$d13Cph_corr)*1000/(1000+phl$d13Cph_corr))))
 phl$iWUEph_corr <- phl$iWUEph_uncorr - phl$diff_Ci.Cc.mean.na
+phl$iWUEph_uncorrMD2 <- phl$CO2sampleWTC.mean.naMD*
+  (1-((1/(b-a))*(-a + (phl$Corrdel13C_Avg.mean.naMD-phl$d13Cph)*1000/(1000+phl$d13Cph))))
+phl$iWUEph_corrMD2 <- phl$iWUEph_uncorrMD2 - phl$diff_Ci.Cc.mean.naMD
 phl$iWUEph_uncorrMD <- phl$CO2sampleWTC.mean.naMD*
   (1-((1/(b-a))*(-a + (phl$Corrdel13C_Avg.mean.naMD-phl$d13Cph_corr)*1000/(1000+phl$d13Cph_corr))))
 phl$iWUEph_corrMD <- phl$iWUEph_uncorrMD - phl$diff_Ci.Cc.mean.naMD
@@ -50,17 +49,19 @@ phl$iWUEleafAvg_corrMD <- phl$iWUEleafAvg_uncorrMD - phl$diff_Ci.Cc.mean.naMD
 
 summary(lm(iWUE.mean.naMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUE.mean.naMD ~ iWUEph_corrMD, data=phl))
+summary(lm(iWUE.mean.naMD ~ iWUEph_corrMD2, data=phl))
 summary(lm(iWUE.mean.naMD ~ iWUEsunLeaf_corrMD, data=phl))
 summary(lm(iWUE.mean.naMD ~ iWUEshLeaf_corrMD, data=phl))
 summary(lm(iWUE.mean.naMD ~ iWUEleafAvg_corrMD, data=phl))
 summary(lm(iWUEge_corr.mean.naMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUEge_corr.mean.naMD ~ iWUEleafAvg_uncorrMD, data=phl))
 
-iWUEsumm <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_corrMD + iWUEph_uncorrMD
-                            + iWUEleafAvg_corrMD + iWUEleafAvg_uncorrMD + iWUEsunLeaf_corrMD + iWUEsunLeaf_uncorrMD
-                            ~ month + T_treatment, data=phl,
+iWUEsumm <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_uncorrMD2 + iWUEph_corrMD2
+                            + iWUEph_corrMD + iWUEleafAvg_corrMD + iWUEleafAvg_uncorrMD + iWUEsunLeaf_corrMD 
+                            + iWUEsunLeaf_uncorrMD ~ month + T_treatment, data=phl,
                             FUN=c(mean.na, s.err.na))
-summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_uncorrMD.mean.na, data=iWUEsumm))
+summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_uncorrMD2.mean.na, data=iWUEsumm))
+summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_corrMD2.mean.na, data=iWUEsumm))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEph_corrMD.mean.na, data=iWUEsumm))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEsunLeaf_corrMD.mean.na, data=iWUEsumm))
 summary(lm(iWUE.mean.naMD.mean.na ~ iWUEleafAvg_corrMD.mean.na, data=iWUEsumm))
