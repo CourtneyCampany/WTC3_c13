@@ -62,5 +62,9 @@ deltaPaired$totalCO2_ref_flow <- deltaPaired$totalCO2_ref * deltaPaired$Air_in/(
 deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Corrdel13C_Avg_ref +
                                    deltaPaired$CO2Injection*(-31.9))/
   (deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
+# calculate raw isotopic discrimination (no filter)
+deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
+                        deltaPaired$Corrdel13C_Avg * deltaPaired$CO2sampleWTC)/
+  (deltaPaired$Cin - deltaPaired$CO2sampleWTC)
 rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
    delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb)
