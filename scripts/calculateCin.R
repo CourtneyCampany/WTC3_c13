@@ -7,6 +7,14 @@ calcDewPoint <- function(waterP){240.97 * log(waterP/0.611)/(17.502-log(waterP/0
 # library(devtools)
 # install_bitbucket("remkoduursma/HIEv")
 library(HIEv)
+# function to assing unique night identifier
+giveNightID <- function(x){
+  x$nightID <- ifelse(x$dayNight=='night',1,0)
+  x.r <- raster::raster(xmn=0, xmx=1, ymn=0,ymx=nrow(x),nrow=nrow(x),ncol=1)
+  raster::values(x.r) <- x[,'nightID']
+  nights <- raster::clump(x.r,gaps=FALSE)
+  x$nightID <- raster::values(nights)
+}
 
 setToken()
 # download the file with the raw flow data
@@ -15,6 +23,16 @@ setToken()
 #alternatively use a file from a local directory
 WTCraw <- read.csv('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv')
 WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
+WTCraw$Date <- as.Date(WTCraw$datetimeFM)
+WTCraw$Time <- lubridate::hour(WTCraw$datetimeFM) + lubridate::minute(WTCraw$datetimeFM)/60
+WTCraw$dayNight <- ifelse(WTCraw$PAR <= 1, 'night', 'day')
+WTCraw$nightID <- giveNightID(WTCraw)
+WTCraw$sunset <- ifelse((WTCraw$PAR - dplyr::lag(WTCraw$PAR)) < 0 & WTCraw$dayNight == 'night', WTCraw$Time, NA)
+
+
+allPaired$dayNight <- ifelse(allPaired$PAR <= 1, 'night', 'day')
+
+
 WTCraw$chamber <- as.character(WTCraw$chamber)
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
@@ -63,10 +81,10 @@ deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Cor
                                    deltaPaired$CO2Injection*(-31.9))/
   (deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
 # calculate raw isotopic discrimination (no filter) eq. S4 in Stangl et al. (unpublished)
-deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
+deltaPaired$deltaSubstrate <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
                         deltaPaired$Corrdel13C_Avg * deltaPaired$CO2sampleWTC)/
   (deltaPaired$Cin - deltaPaired$CO2sampleWTC)
-deltaPaired$DELTA2 <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/(1 + deltaPaired$Corrdel13C_Avg)
+deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/(1 + deltaPaired$Corrdel13C_Avg)
 
 rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
    delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb)

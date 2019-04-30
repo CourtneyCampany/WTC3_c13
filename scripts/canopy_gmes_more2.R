@@ -38,8 +38,8 @@ getXi <- function(chamberCO2, refCO2){
 # Observed photosynthetic discrimination (DELTAobs)
 # Equation (2) in supplementary methods Campany et al. 2016 PCE
 calcDELTAobs <- function(xi, deltaSample, deltaRef){
-  DELTAobs <- xi*(deltaSample-deltaRef)/(1+deltaSample-xi*(deltaSample-deltaRef))
-  return(DELTAobs)
+  DELTAobs <- xi*(deltaSample-deltaRef)/(1000+deltaSample-xi*(deltaSample-deltaRef))
+  return(DELTAobs*1000)
 }
 
 # eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
@@ -82,7 +82,6 @@ source('scripts/calculateCin.R')
 allPaired <- deltaPaired
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
-allPaired$Time <- lubridate::hour(allPaired$datetimeFM) + lubridate::minute(allPaired$datetimeFM)/60
 allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$Date <- as.Date(allPaired$datetimeFM)

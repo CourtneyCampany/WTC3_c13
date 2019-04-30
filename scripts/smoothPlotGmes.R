@@ -35,7 +35,7 @@ for (i in 1:length(myMon)){
 smoothplot(Tair_al, log(gmes_area*1000), T_treatment, data=allPaired,
            pointcols=c(NA, NA),
            linecols=c("blue",'red'),polycolor=c(alpha("blue",0.2),alpha('red',0.2)),
-           kgam=5, R='chamber',  add=T)
+           kgam=8, R='chamber',  add=T)
 
 legend('topleft', legend=c('Amb','Warm'), col=c('blue','red'), bty='n', pch=19)
 legend('topright', legend=myMon, pch=myChar, bty='n')
