@@ -16,24 +16,36 @@ giveNightID <- function(x){
   x$nightID <- raster::values(nights)
 }
 
-setToken()
+# setToken()
 # download the file with the raw flow data
 # there is something wrong with my HIEv account
 #WTCraw <- downloadCSV(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
 #alternatively use a file from a local directory
 WTCraw <- read.csv('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv')
+WTCraw$DateTime <- ymd_hms(as.character(WTCraw$DateTime))
 WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
 WTCraw$Date <- as.Date(WTCraw$datetimeFM)
 WTCraw$Time <- lubridate::hour(WTCraw$datetimeFM) + lubridate::minute(WTCraw$datetimeFM)/60
-WTCraw$dayNight <- ifelse(WTCraw$PAR <= 1, 'night', 'day')
+WTCraw$dayNight <- ifelse(WTCraw$PAR <= 5, 'night', 'day')
 WTCraw$nightID <- giveNightID(WTCraw)
-WTCraw$sunset <- ifelse((WTCraw$PAR - dplyr::lag(WTCraw$PAR)) < 0 & WTCraw$dayNight == 'night', WTCraw$Time, NA)
-
-
-allPaired$dayNight <- ifelse(allPaired$PAR <= 1, 'night', 'day')
-
-
+sunset <- WTCraw[,c('DateTime','PAR','dayNight','Time','nightID')] 
+sunset <- doBy::orderBy(~DateTime, data=sunset)
+sunset$sunset <- ifelse((sunset$PAR - dplyr::lag(sunset$PAR)) < 0 & sunset$dayNight == 'night'
+                        & sunset$Time >= 17 & sunset$Time <= 20.30, sunset$Time, NA) 
+sunset <- sunset[which(!is.na(sunset$sunset)), c('nightID','sunset')]
+sunsetSpl <- spline(sunset$nightID, sunset$sunset, xout=c(min(WTCraw$nightID, na.rm=T):max(WTCraw$nightID, na.rm=T)))
+sunsetP <- data.frame(row.names = 1:length(sunsetSpl$x))
+sunsetP$nightID <- sunsetSpl$x
+sunsetP$sunsetP <- sunsetSpl$y
+sunset <- merge(sunset, sunsetP, by='nightID', all=T)
+sunset$sunset <- ifelse(is.na(sunset$sunset), sunset$sunsetP, sunset$sunset)
+sunset <- sunset[,c('nightID','sunset')]
+WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset), by='nightID')
+WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time >= 17, (WTCraw$Time - WTCraw$sunset), NA)
+WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time <= 9, (24 - WTCraw$sunset + WTCraw$Time),
+                                 WTCraw$timeSinceSunset)
 WTCraw$chamber <- as.character(WTCraw$chamber)
+
 # get cleaned data from the TDL with 15-min averages
 # this script has additional lines with respect to the one Court Campany wrote
 source('scripts/chamber13C_calc.R')
@@ -41,7 +53,8 @@ deltaPaired <- as.data.frame(dplyr::left_join(deltaPaired, WTCraw[,c('datetimeFM
                                                           'Tair_al', 'RH_al','RHref_al','Patm',
                                                           'Taref_al','T_treatment','Water_treatment',
                                                           'PAR','CO2Injection','H2Oin','H2Oout',
-                                                          'CO2in','CO2out','Air_in','Air_out','VPDair')],
+                                                          'CO2in','CO2out','Air_in','Air_out','VPDair',
+                                                          'Time','nightID','timeSinceSunset')],
                                      by=c('chamber','datetimeFM')))
 deltaPaired <- deltaPaired[which(!is.na(deltaPaired$T_treatment)),]
 # assuming the flow addition by the injection is negligible
@@ -84,7 +97,8 @@ deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Cor
 deltaPaired$deltaSubstrate <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
                         deltaPaired$Corrdel13C_Avg * deltaPaired$CO2sampleWTC)/
   (deltaPaired$Cin - deltaPaired$CO2sampleWTC)
+deltaPaired[which(deltaPaired$deltaSubstrate >= 100 | deltaPaired$deltaSubstrate <= -100), 'deltaSubstrate'] <- NA
 deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/(1 + deltaPaired$Corrdel13C_Avg)
 
 rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
-   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb)
+   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb, sunset, sunsetSpl, sunsetP)
