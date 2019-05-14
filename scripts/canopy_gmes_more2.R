@@ -17,8 +17,6 @@ a <- 4.4
 b <- 29
 # f is fractionation factor in permil of photorespiration according to Evans & VonCaemmerer 2013
 f <- 16.2
-# ai (or am) is 13C fractionation during internal (mesophyll) transfer in permil (including transfer into water)
-ai <- 1.8
 
 # DELTAi is photosynthetic discrimination against 13C excluding boundary layer, 
 # internal transfer, respiration and photorespirataion (NO TERNARY)
@@ -151,6 +149,4 @@ lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/
 model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment, random = ~1 | fchamber,
                    data = subset(allPaired, midday == 'yes'), na.action = na.omit)
 anova(model)
-
-
-
+rm(model, gmesL, march, Rdark, treeLeaf, deltaPaired)

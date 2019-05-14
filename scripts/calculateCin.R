@@ -21,25 +21,26 @@ giveNightID <- function(x){
 # there is something wrong with my HIEv account
 #WTCraw <- downloadCSV(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
 #alternatively use a file from a local directory
-WTCraw <- read.csv('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv')
+WTCraw <- as.data.frame(fread('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv'))
 WTCraw$DateTime <- ymd_hms(as.character(WTCraw$DateTime))
 WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
 WTCraw$Date <- as.Date(WTCraw$datetimeFM)
 WTCraw$Time <- lubridate::hour(WTCraw$datetimeFM) + lubridate::minute(WTCraw$datetimeFM)/60
 WTCraw$dayNight <- ifelse(WTCraw$PAR <= 5, 'night', 'day')
 WTCraw$nightID <- giveNightID(WTCraw)
-sunset <- WTCraw[,c('DateTime','PAR','dayNight','Time','nightID')] 
+sunset <- WTCraw[,c('DateTime','PAR','dayNight','Time','nightID','Date')] 
 sunset <- doBy::orderBy(~DateTime, data=sunset)
-sunset$sunset <- ifelse((sunset$PAR - dplyr::lag(sunset$PAR)) < 0 & sunset$dayNight == 'night'
+sunset$sunset <- ifelse((sunset$PAR - data.table::shift(sunset$PAR, type='lag')) < 0 & sunset$dayNight == 'night'
                         & sunset$Time >= 17 & sunset$Time <= 20.30, sunset$Time, NA) 
-sunset <- sunset[which(!is.na(sunset$sunset)), c('nightID','sunset')]
+sunset <- sunset[which(!is.na(sunset$sunset)), c('nightID','sunset','Date')]
 sunsetSpl <- spline(sunset$nightID, sunset$sunset, xout=c(min(WTCraw$nightID, na.rm=T):max(WTCraw$nightID, na.rm=T)))
 sunsetP <- data.frame(row.names = 1:length(sunsetSpl$x))
 sunsetP$nightID <- sunsetSpl$x
 sunsetP$sunsetP <- sunsetSpl$y
 sunset <- merge(sunset, sunsetP, by='nightID', all=T)
 sunset$sunset <- ifelse(is.na(sunset$sunset), sunset$sunsetP, sunset$sunset)
-sunset <- sunset[,c('nightID','sunset')]
+sunset <- sunset[,c('nightID','sunset','Date')]
+names(sunset)[ncol(sunset)] <- 'DateSunset'
 WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset), by='nightID')
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time >= 17, (WTCraw$Time - WTCraw$sunset), NA)
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time <= 9, (24 - WTCraw$sunset + WTCraw$Time),
@@ -54,7 +55,7 @@ deltaPaired <- as.data.frame(dplyr::left_join(deltaPaired, WTCraw[,c('datetimeFM
                                                           'Taref_al','T_treatment','Water_treatment',
                                                           'PAR','CO2Injection','H2Oin','H2Oout',
                                                           'CO2in','CO2out','Air_in','Air_out','VPDair',
-                                                          'Time','nightID','timeSinceSunset')],
+                                                          'Time','nightID','timeSinceSunset','DateSunset')],
                                      by=c('chamber','datetimeFM')))
 deltaPaired <- deltaPaired[which(!is.na(deltaPaired$T_treatment)),]
 # assuming the flow addition by the injection is negligible
