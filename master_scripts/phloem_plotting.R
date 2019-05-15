@@ -39,3 +39,8 @@ boxplot(d13C ~ id, data = phloem3, col=palette(), outline=FALSE,at=c(1,2, 7,8, 1
 legend("bottomleft", c("Ambient", "Elevated"), pch=22, pt.bg=palette(),  bty='n', pt.cex=1.5)
 dev.copy2pdf(file="output/deltaphloem.pdf")
 dev.off()
+phl <- phloem3
+phl$chamber2 <- as.character(phl$chamber)
+phl$chamber <- ifelse((nchar(phl$chamber2) == 1), paste0('C0', phl$chamber2), paste0('C', phl$chamber2))
+phl$month <- str_sub(phl$month, 1, 3)
+names(phl)[2] <- 'd13Cph'
