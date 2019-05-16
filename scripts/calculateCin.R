@@ -41,7 +41,7 @@ sunset <- merge(sunset, sunsetP, by='nightID', all=T)
 sunset$sunset <- ifelse(is.na(sunset$sunset), sunset$sunsetP, sunset$sunset)
 sunset <- sunset[,c('nightID','sunset','Date')]
 names(sunset)[ncol(sunset)] <- 'DateSunset'
-WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset), by='nightID')
+WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset, by='nightID'))
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time >= 17, (WTCraw$Time - WTCraw$sunset), NA)
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time <= 9, (24 - WTCraw$sunset + WTCraw$Time),
                                  WTCraw$timeSinceSunset)

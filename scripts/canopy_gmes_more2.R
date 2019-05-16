@@ -11,12 +11,14 @@ getCifromE <- function(E, VPD, ChamberCO2, Photo){
   return(Ci)
 }
 
-# a is 13C diffusion fractionation in permil
+# a is 13C diffusion fractionation through the stomata in permil
 a <- 4.4
 # b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
 b <- 29
 # f is fractionation factor in permil of photorespiration according to Evans & VonCaemmerer 2013
 f <- 16.2
+# ai is diffusion through water in permil
+ai <-  1.8
 
 # DELTAi is photosynthetic discrimination against 13C excluding boundary layer, 
 # internal transfer, respiration and photorespirataion (NO TERNARY)
@@ -41,12 +43,8 @@ calcDELTAobs <- function(xi, deltaSample, deltaRef){
 }
 
 # eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
-# equation S6 in supplementary info from Stangl et al. unpublished
-calCeResp <- function(delta13Camb, DELTAobs, Cin, Cout, delta13Cref){
-  delta13Cphoto <- (delta13Cref*Cin-delta13Camb*Cout)/(Cin-Cout)
-  eResp <- -2 + (delta13Camb - DELTAobs - delta13Cphoto)
-  return(eResp)
-}
+source('scripts/calculate_eResp.R')
+eResp <- mean(eResp$eRespPh, na.rm = T)
 
 # DELTAe is discrimination due to respiration (NO TERNARY)
 calcDELTAe <- function(eResp, Rd, Photo, CO2sample, Ci, gammaStar){
@@ -76,17 +74,7 @@ gmesComplete <- function(b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELT
   return(gmes)
 }
 
-source('scripts/calculateCin.R')
-allPaired <- deltaPaired
-allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
-allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
-allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
-allPaired$Date <- as.Date(allPaired$datetimeFM)
-# get leaf area for each chamber and date
-source('scripts/leafArea.R')
-allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
-allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area)
@@ -116,14 +104,12 @@ allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13
                                    deltaRef=allPaired$del13C_theor_ref)
 # source('scripts/plotDELTAobsVSdiffConc.R')
 allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
-allPaired$eResp <- calCeResp(delta13Camb=allPaired$Corrdel13C_Avg, DELTAobs=allPaired$DELTAobs,Cin=allPaired$Cin,
-                             Cout=allPaired$CO2sampleWTC, delta13Cref=allPaired$del13C_theor_ref)
-allPaired$DELTAe <- calcDELTAe(eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
+allPaired$DELTAe <- calcDELTAe(eResp=eResp, Rd=allPaired$Rd_corrT,
                                Photo=allPaired$A_area, CO2sample=allPaired$CO2sampleWTC,
                                Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)
 allPaired$DELTAf <- calcDELTAf(f, gammaStar=allPaired$gammaStar,
                                CO2cuv=allPaired$CO2sampleWTC)
-allPaired$gmes_area <- gmesComplete(b, ai, eResp=allPaired$eResp, Rd=allPaired$Rd_corrT,
+allPaired$gmes_area <- gmesComplete(b, ai, eResp=eResp, Rd=allPaired$Rd_corrT,
                                     Photo=allPaired$A_area, refCO2=allPaired$CO2sampleWTC, 
                                     DELTAi=allPaired$DELTAi, DELTAobs=allPaired$DELTAobs, 
                                     DELTAe=allPaired$DELTAe, DELTAf=allPaired$DELTAf)
@@ -139,6 +125,20 @@ allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
 allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
+gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes')),
+                                                month, chamber), gmesCh = mean.na(gmes_area),
+                                gmesChSE=s.err.na(gmes_area), gmesChN=lengthWithoutNA(gmes_area))
+chambs <- data.frame(row.names = 1:12)
+chambs$chamber <- c(paste0('C0',1:9), paste0('C', 10:12))
+chambs$temp <- rep(c('ambient','warmed'), 6)
+gmesMDsumm1 <- dplyr::left_join(gmesMDsumm1, chambs, by='chamber')
+gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, month, temp),
+                                gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
+gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, temp),
+                                gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
+write.csv(gmsMDsumm2, file='dataFigure1a.csv', row.names = F)
+write.csv(gmsMDsumm3, file='dataFigure1b.csv', row.names = F)
+
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
 for (i in 1:length(levels(as.factor(allPaired$chamber)))){
@@ -146,7 +146,7 @@ for (i in 1:length(levels(as.factor(allPaired$chamber)))){
 }
 lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'),
                                     row.names = F))
-model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment, random = ~1 | fchamber,
+model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
                    data = subset(allPaired, midday == 'yes'), na.action = na.omit)
 anova(model)
 rm(model, gmesL, march, Rdark, treeLeaf, deltaPaired)
