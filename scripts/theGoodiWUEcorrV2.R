@@ -96,7 +96,9 @@ iWUEsumm <- dplyr::summarise(dplyr::group_by(phl, T_treatment, month),
                              iWUEshLeafCorrMean=mean.na(iWUEshLeaf_corrMD),
                              iWUEshLeafCorrSE=s.err.na(iWUEshLeaf_corrMD),
                              iWUEleafAvgCorrMean=mean.na(iWUEleafAvg_corrMD),
-                             iWUEleafAvgCorrSE=s.err.na(iWUEleafAvg_corrMD))
+                             iWUEleafAvgCorrSE=s.err.na(iWUEleafAvg_corrMD),
+                             d13CphMean=mean.na(d13Cph), d13CphSE=s.err.na(d13Cph),
+                             d13CAnetMean=mean.na(d13CAnet), d13CAnetSE=s.err.na(d13CAnet))
 
 summary(lm(iWUEgeMean ~ iWUEphUncorrMean, data=iWUEsumm))
 summary(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEsumm))
@@ -106,5 +108,8 @@ summary(lm(iWUEgeMean ~ iWUEshLeafCorrMean, data=iWUEsumm))
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrMean, data=iWUEsumm))
 summary(lm(iWUEgeCorrMean ~ iWUEphUncorrMean, data=iWUEsumm))
 summary(lm(iWUEgeCorrMean ~ iWUEphUncorr2Mean, data=iWUEsumm))
+summary(lm(iWUEphCorrMean ~ iWUEsunLeafCorrMean, data=iWUEsumm))
+summary(lm(iWUEphCorrMean ~ iWUEshLeafCorrMean, data=iWUEsumm))
+summary(lm(iWUEphCorrMean ~ iWUEleafAvgCorrMean, data=iWUEsumm))
 
 write.csv(iWUEsumm, file='output/iWUEsumm.csv', row.names = F)
