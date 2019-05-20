@@ -125,7 +125,7 @@ allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
 allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
-gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes')),
+gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800)),
                                                 month, chamber), gmesCh = mean.na(gmes_area),
                                 gmesChSE=s.err.na(gmes_area), gmesChN=lengthWithoutNA(gmes_area))
 chambs <- data.frame(row.names = 1:12)
@@ -136,8 +136,8 @@ gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, month, temp),
                                 gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
 gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, temp),
                                 gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
-write.csv(gmsMDsumm2, file='dataFigure1a.csv', row.names = F)
-write.csv(gmsMDsumm3, file='dataFigure1b.csv', row.names = F)
+write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
+write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
@@ -147,6 +147,6 @@ for (i in 1:length(levels(as.factor(allPaired$chamber)))){
 lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'),
                                     row.names = F))
 model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes'), na.action = na.omit)
+                   data = subset(allPaired, midday == 'yes' & PAR >= 800), na.action = na.omit)
 anova(model)
 rm(model, gmesL, march, Rdark, treeLeaf, deltaPaired)
