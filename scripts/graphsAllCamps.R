@@ -2,6 +2,7 @@ source('scripts/basicFunTEG.R')
 source('scrips/canopy_gmes.R')
 library(dplyr)
 
+allPaired <- as.data.frame(allPaired)
 myPalEle <- c('red', 'darkorange1', 'deeppink', 'yellow', 'chocolate4', 'darkgoldenrod1')
 myPalAmb <- c('blue', 'cornflowerblue', 'navyblue', 'cyan', 'darkturquoise', 'deepskyblue')
 chambsA <- c(paste0('C0', seq(1, 9, 2)), 'C11')
@@ -274,20 +275,20 @@ windows(16,8)
 par(mfrow=c(4,6))
 for (i in 1:length(camps)){
   par(mar=c(0,4,2,1))
-  plot(campsLA[[i]][[1]][,'DELTAobs']*1000~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
+  plot(campsLA[[i]][[1]][,'DELTAobs']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
        xlab = '', ylab = expression(Delta[obs]), main = campsLA[[i]][[1]][1,'month'], ylim=c(0, 37),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
-    points(campsLA[[i]][[j]][,'DELTAobs']*1000~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
+    points(campsLA[[i]][[j]][,'DELTAobs']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
   }
 }
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
-  plot(campsLE[[i]][[1]][,'DELTAobs']*1000~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
+  plot(campsLE[[i]][[1]][,'DELTAobs']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
        xlab = '', ylab = expression(Delta[obs]), ylim=c(0, 37),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
-    points(campsLE[[i]][[j]][,'DELTAobs']*1000~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
+    points(campsLE[[i]][[j]][,'DELTAobs']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])
   }
 }
 

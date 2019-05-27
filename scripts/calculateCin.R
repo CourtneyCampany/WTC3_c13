@@ -25,7 +25,7 @@ WTCraw <- as.data.frame(fread('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.
 WTCraw$DateTime <- ymd_hms(as.character(WTCraw$DateTime))
 WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
 WTCraw$Date <- as.Date(WTCraw$datetimeFM)
-WTCraw$Time <- lubridate::hour(WTCraw$datetimeFM) + lubridate::minute(WTCraw$datetimeFM)/60
+WTCraw$Time <- lubridate::hour(WTCraw$DateTime) + lubridate::minute(WTCraw$DateTime)/60
 WTCraw$dayNight <- ifelse(WTCraw$PAR <= 5, 'night', 'day')
 WTCraw$nightID <- giveNightID(WTCraw)
 sunset <- WTCraw[,c('DateTime','PAR','dayNight','Time','nightID','Date')] 
@@ -39,7 +39,7 @@ sunsetP$nightID <- sunsetSpl$x
 sunsetP$sunsetP <- sunsetSpl$y
 sunset <- merge(sunset, sunsetP, by='nightID', all=T)
 sunset$sunset <- ifelse(is.na(sunset$sunset), sunset$sunsetP, sunset$sunset)
-sunset <- sunset[,c('nightID','sunset','Date')]
+sunset <- sunset[which(!is.na(sunset$Date)),c('nightID','sunset','Date')]
 names(sunset)[ncol(sunset)] <- 'DateSunset'
 WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset, by='nightID'))
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time >= 17, (WTCraw$Time - WTCraw$sunset), NA)
@@ -48,16 +48,31 @@ WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time <= 9, (24 - W
 WTCraw$chamber <- as.character(WTCraw$chamber)
 
 # get cleaned data from the TDL with 15-min averages
-# this script has additional lines with respect to the one Court Campany wrote
-source('scripts/chamber13C_calc.R')
-deltaPaired <- as.data.frame(dplyr::left_join(deltaPaired, WTCraw[,c('datetimeFM', 'chamber','FluxH2O','FluxCO2',
-                                                          'Tair_al', 'RH_al','RHref_al','Patm',
-                                                          'Taref_al','T_treatment','Water_treatment',
-                                                          'PAR','CO2Injection','H2Oin','H2Oout',
-                                                          'CO2in','CO2out','Air_in','Air_out','VPDair',
-                                                          'Time','nightID','timeSinceSunset','DateSunset')],
-                                     by=c('chamber','datetimeFM')))
-deltaPaired <- deltaPaired[which(!is.na(deltaPaired$T_treatment)),]
+# this script has has been modified with respect to the one Court Campany wrote
+source('scripts/updateChamber13C_calc.R')
+WTCraw$start <- WTCraw$datetimeFM
+WTCraw$end <- WTCraw$datetimeFM + 15*60
+
+chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
+WTCrawL <- list()
+deltaPairedL <- list()
+for(i in 1:length(chambs)){
+  WTCrawL[[i]] <- subset(WTCraw, chamber == chambs[i])
+  deltaPairedL[[i]] <- subset(deltaPairedPre, chamberTDL == chambs[i])
+}
+mergeL <- list()
+for (i in 1:length(chambs)){
+  mergeL[[i]] <- foverlaps(setDT(deltaPairedL[[i]]), setkey(setDT(WTCrawL[[i]]), start, end),
+                      type='any', nomatch = 0)
+}
+deltaPaired <- dplyr::bind_rows(mergeL)[,c('datetimeFM', 'DateTime','chamber','FluxH2O','FluxCO2',
+                                        'Tair_al', 'RH_al','RHref_al','Patm',
+                                        'Taref_al','T_treatment','Water_treatment',
+                                        'PAR','CO2Injection','H2Oin','H2Oout',
+                                        'CO2in','CO2out','Air_in','Air_out','VPDair',
+                                        'Time','nightID','timeSinceSunset','DateSunset',
+                                        'i.start','i.end','totalCO2','totalCO2_ref',
+                                        'Corrdel13C_Avg','Corrdel13C_Avg_ref')]
 # assuming the flow addition by the injection is negligible
 # in the WTC: flow in x Cin_actual = Injection + (flow in x Cin_amb)
 deltaPaired$Cin <- (deltaPaired$CO2in + deltaPaired$CO2Injection)*1000/(deltaPaired$Air_in/22.4)
@@ -98,8 +113,9 @@ deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Cor
 deltaPaired$deltaSubstrate <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
                         deltaPaired$Corrdel13C_Avg * deltaPaired$CO2sampleWTC)/
   (deltaPaired$Cin - deltaPaired$CO2sampleWTC)
-deltaPaired[which(deltaPaired$deltaSubstrate >= 100 | deltaPaired$deltaSubstrate <= -100), 'deltaSubstrate'] <- NA
-deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/(1 + deltaPaired$Corrdel13C_Avg)
+deltaPaired[which(deltaPaired$deltaSubstrate >= 100 | deltaPaired$deltaSubstrate <= -100),
+            'deltaSubstrate'] <- NA
+deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/
+  (1 + deltaPaired$Corrdel13C_Avg)
 
-rm(flux_files, flux_names, cham13format_func, delta_files, delta_FM, delta_FM_all,
-   delta_FM_all2, dfRef, dfSample, flux_months, TDL, WTCraw, corrCO2amb, sunset, sunsetSpl, sunsetP)
+rm(WTCraw, corrCO2amb, sunset, sunsetSpl, sunsetP, chambs, WTCrawL, deltaPairedPre, deltaPairedL, mergeL)
