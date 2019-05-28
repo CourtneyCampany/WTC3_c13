@@ -37,9 +37,9 @@ del13CcampAvgMD <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, A_ar
                                     iWUEge=mean.na(iWUE), d13ch=mean.na(Corrdel13C_Avg),
                                     CO2ch=mean.na(CO2sampleWTC), Ci.Cc=mean.na(diff_Ci.Cc))
 
-del13CcampAvgMDSAFE <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC +diff_Ci.Cc ~ month + chamber,
-                                   FUN=mean.na, data=subset(allPaired, A_area > 0 & E_area > 0 &  PAR > 0 & iWUE < 500
-                                                            & midday=='yes'))
+# del13CcampAvgMDSAFE <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC +diff_Ci.Cc ~ month + chamber,
+#                                    FUN=mean.na, data=subset(allPaired, A_area > 0 & E_area > 0 &  PAR > 0 & iWUE < 500
+#                                                             & midday=='yes'))
 names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)] <- paste0(names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)], 'MD')
 phl <- merge(merge(del13CcampAvgMD, phl, by=c('month','chamber'), all=T),
              leafChem, by=c('month','chamber'), all=T)
@@ -77,11 +77,11 @@ summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMDmyAv, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEleafAvg_uncorrMD, data=phl))
 
-iWUEsummSAFE <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_uncorrMD2 + iWUEph_corrMD2
-                            + iWUEph_corrMDmyAv + iWUEph_uncorrMDmyAv
-                            + iWUEleafAvg_corrMD + iWUEleafAvg_uncorrMD + iWUEsunLeaf_corrMD 
-                            + iWUEsunLeaf_uncorrMD ~ month + T_treatment, data=phl,
-                            FUN=c(mean.na, s.err.na))
+# iWUEsummSAFE <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_uncorrMD2 + iWUEph_corrMD2
+#                             + iWUEph_corrMDmyAv + iWUEph_uncorrMDmyAv
+#                             + iWUEleafAvg_corrMD + iWUEleafAvg_uncorrMD + iWUEsunLeaf_corrMD 
+#                             + iWUEsunLeaf_uncorrMD ~ month + T_treatment, data=phl,
+#                             FUN=c(mean.na, s.err.na))
 
 iWUEsumm <- dplyr::summarise(dplyr::group_by(phl, T_treatment, month),
                              iWUEgeMean=mean.na(iWUEgeMD), iWUEgeSE=s.err.na(iWUEgeMD),

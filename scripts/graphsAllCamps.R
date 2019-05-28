@@ -295,7 +295,7 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(0,4,0,1))
   plot(campsLA[[i]][[1]][,'gmes_area']~campsLA[[i]][[1]][,'datetimeFM'], pch=19, col=myPalAmb[1],
-       xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+       xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 3),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsA)){
     points(campsLA[[i]][[j]][,'gmes_area']~campsLA[[i]][[j]][,'datetimeFM'], pch=19, col=myPalAmb[j])
@@ -304,7 +304,7 @@ for (i in 1:length(camps)){
 for (i in 1:length(camps)){
   par(mar=c(3,4,0,1))
   plot(campsLE[[i]][[1]][,'gmes_area']~campsLE[[i]][[1]][,'datetimeFM'], pch=19, col=myPalEle[1],
-       xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 1),
+       xlab = '', ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), ylim=c(0, 3),
        xlim=c(min(do.call(rbind, campsLA[[i]])[,'datetimeFM']),max(do.call(rbind, campsLA[[i]])[,'datetimeFM'])))
   for (j in 2:length(chambsE)){
     points(campsLE[[i]][[j]][,'gmes_area']~campsLE[[i]][[j]][,'datetimeFM'], pch=19, col=myPalEle[j])

@@ -11,16 +11,14 @@ allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired[which(allPaired$condAlert=='yes'), c('A_area')] <- NA
 # calculate d13CAnet
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0
-                                                           & deltaSubstrate >= -40)),
-                                                            chamber, Date), d13CAnet=mean(deltaSubstrate, na.rm=T),
-                                            d13CAnetSE=s.err(deltaSubstrate))
-photoSumm[which(photoSumm$d13CAnetSE >= 1 | is.na(photoSumm$d13CAnetSE)), 'd13CAnet'] <- NA
+                                                           & deltaSubstrate >= -40 & deltaSubstrate <= -10)),
+                                                            chamber, Date), d13CAnet=mean.na(deltaSubstrate),
+                                            d13CAnetSE=s.err.na(deltaSubstrate))
+photoSumm[which(photoSumm$d13CAnetSE >= 0.7), 'd13CAnet'] <- NA
 respSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, nightID >= 1 & timeSinceSunset >= 4 &
                                                                         timeSinceSunset <= 8 & deltaSubstrate >= -60
-                                                                        & deltaSubstrate <= -10)), chamber, DateSunset),
-                             d13CRdark=mean(deltaSubstrate, na.rm=T), d13CRdarkSE=s.err(deltaSubstrate), ene=lengthWithoutNA(deltaSubstrate),
-                             DELTARdark=mean(DELTA, na.rm=T), d13Cchamb=mean(Corrdel13C_Avg, na.rm=T),
-                             d13Camb=mean(Corrdel13C_Avg_ref, na.rm=T))
+                                                                        & deltaSubstrate <= -10)),
+                                             chamber, DateSunset), d13CRdark=mean(deltaSubstrate, na.rm=T))
 names(respSumm)[2] <- 'Date'
 eResp <- dplyr::left_join(photoSumm, respSumm, by=c('chamber','Date'))
 eResp$month <- as.factor(lubridate::month(eResp$Date, label=T))
@@ -33,8 +31,8 @@ eResp$month <- factor(eResp$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr')
 # alternatively d13Csubstrate is d13CAnet
 eResp$eResp <- (eResp$d13CAnet - eResp$d13CRdark)
 eResp$eRespPh <- (eResp$d13Cph - eResp$d13CRdark)
- eResp$fchamber <- as.factor(eResp$chamber)
 rm(photoSumm, respSumm)
+# eResp$fchamber <- as.factor(eResp$chamber)
 #  model <- nlme::lme(eResp ~ month + temp, random = ~1 | fchamber,
 #                     data = eResp, na.action = na.omit)
 #  anova(model)
