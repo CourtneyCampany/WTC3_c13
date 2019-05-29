@@ -9,4 +9,7 @@ ROSdate <- dplyr::summarise(dplyr::group_by(ROS, Date), Tmean=mean(AirTC_Avg),
                              PARtotal=sum(PPFD_Avg*5*60/1e06))
 tableS1 <- dplyr::left_join(myDates, ROSdate, by='Date')
 write.csv(tableS1, file='output/tableS1.csv', row.names = F)
+source('scripts/updateChamber13C_calc.R')
+deltaPairedPre$Date <- as.Date(deltaPairedPre$start)
+summChams <- dplyr::summarise(dplyr::group_by(deltaPairedPre, Date, chamberTDL), length(start))
 rm(myDates, ROS, ROSnames, ROSdate, tableS1)
