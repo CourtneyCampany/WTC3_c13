@@ -83,7 +83,8 @@ allPaired$gammaStar <- calcGammaStar(gamma25, temp=allPaired$Tair_al)
 source('scripts/calcRd25.R')
 allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)
 # calculate respiration in the light at a given temp from Rd at 25 C
-allPaired$Rd_corrT <- allPaired$Rd25*exp(0.0864*(allPaired$Tair_al-25)-0.00013*(allPaired$Tair_al^2-25^2))
+# these parameters are those for BlEvTemp in Table S3 of Heskel et al. 2016 PNAS
+allPaired$Rd_corrT <- allPaired$Rd25*exp(0.0518*(allPaired$Tair_al-25)+0.00047*(allPaired$Tair_al^2-25^2))
 allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE','gammaStar',
                                                'Rd_corrT', 'Corrdel13C_Avg', 'Corrdel13C_Avg_ref',
                                                "del13C_theor_ref")] <- NA

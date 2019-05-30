@@ -90,13 +90,13 @@ deltaPaired$condAlert <- ifelse(deltaPaired$dewPointInsideChamb >= (deltaPaired$
 deltaPaired$CO2refWTC <- deltaPaired$CO2in*1000*22.4/deltaPaired$Air_in
 deltaPaired$CO2sampleWTC <- deltaPaired$CO2out*1000*22.4/deltaPaired$Air_out
 deltaPaired[which(deltaPaired$totalCO2_ref>=500 & deltaPaired$CO2refWTC<=400),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
-plot(deltaPaired$CO2refWTC~deltaPaired$totalCO2_ref, pch=19, ylim=c(375,575), xlim=c(375,575),
-     ylab='WTC Amb CO2 (ppm)', xlab='TDL Amb CO2 (ppm)')
-abline(1,1)
-corrCO2amb <- lm(deltaPaired$CO2refWTC~totalCO2_ref, data=deltaPaired)
-legend('bottomright', legend=c(expression(R^2~0.86), 
-                               paste0('Intercept:', round(corrCO2amb$coefficients[1], digits = 0), ' ppm'),
-                               paste0('slope: ', round(corrCO2amb$coefficients[2], digits = 2))), bty='n')
+# plot(deltaPaired$CO2refWTC~deltaPaired$totalCO2_ref, pch=19, ylim=c(375,575), xlim=c(375,575),
+#      ylab='WTC Amb CO2 (ppm)', xlab='TDL Amb CO2 (ppm)')
+# abline(1,1)
+# corrCO2amb <- lm(deltaPaired$CO2refWTC~totalCO2_ref, data=deltaPaired)
+# legend('bottomright', legend=c(expression(R^2~0.86), 
+#                                paste0('Intercept:', round(corrCO2amb$coefficients[1], digits = 0), ' ppm'),
+#                                paste0('slope: ', round(corrCO2amb$coefficients[2], digits = 2))), bty='n')
 
 # the reference ambient line for the TDL and the WTC system are very nicely correlated
 # the TDL seems to be underestimating by 19% with respect to the WTC measurement
