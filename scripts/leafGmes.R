@@ -1,3 +1,4 @@
+source('scripts/basicFunTEG.R')
 leafGX <- read.csv('data/WTC_TEMP_CM_TDLSUNSHADE-GX_20131026-20140421.csv')
 leafGmes <- doBy::summaryBy(gm_bar~id, data=leafGX, FUN=c(mean.na, s.err.na))
 names(leafGmes)[2:3] <- c('leaf_gmes','leaf_gmesSE')

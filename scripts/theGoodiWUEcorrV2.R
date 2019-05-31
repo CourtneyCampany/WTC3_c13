@@ -22,12 +22,12 @@ anova(model)
 # use the mean of all values
 mean(phl$phlOffset, na.rm=T)
 s.err.na(phl$phlOffset)
-windows(16,8)
-par(mfrow=c(1,3), mar=c(3,6,1,0.5))
-boxplot(phl$d13CAnet~phl$month, ylab=expression(delta^13*C[Anet]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
-boxplot(phl$d13Cph~phl$month, ylab=expression(delta^13*C[phloem]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
-boxplot(phl$phlOffset~phl$month, ylab=expression(Phloem~Offset~('\211')), xlab=' ', cex.lab=1.6)
-abline(mean(phl$phlOffset, na.rm=T), 0, col='red', lwd=2)
+# windows(16,8)
+# par(mfrow=c(1,3), mar=c(3,6,1,0.5))
+# boxplot(phl$d13CAnet~phl$month, ylab=expression(delta^13*C[Anet]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
+# boxplot(phl$d13Cph~phl$month, ylab=expression(delta^13*C[phloem]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
+# boxplot(phl$phlOffset~phl$month, ylab=expression(Phloem~Offset~('\211')), xlab=' ', cex.lab=1.6)
+# abline(mean(phl$phlOffset, na.rm=T), 0, col='red', lwd=2)
 # use the mean of all values
 phl$d13Cph_corr <- phl$d13Cph + mean.na(phl$phlOffset)
 
