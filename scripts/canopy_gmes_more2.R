@@ -126,17 +126,26 @@ allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
 allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
-gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800)),
+gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800 & A_area > 0)),
                                                 month, chamber), gmesCh = mean.na(gmes_area),
-                                gmesChSE=s.err.na(gmes_area), gmesChN=lengthWithoutNA(gmes_area))
+                                gmesChSE=s.err.na(gmes_area), gmesChN=lengthWithoutNA(gmes_area),
+                                gscCh = mean.na(gsc_area), gscChSE=s.err.na(gsc_area),
+                                ACh = mean.na(A_area), AChSE=s.err.na(A_area),
+                                iWUEch = mean.na(iWUE), iWUEse=s.err.na(iWUE))
 chambs <- data.frame(row.names = 1:12)
 chambs$chamber <- c(paste0('C0',1:9), paste0('C', 10:12))
 chambs$temp <- rep(c('ambient','warmed'), 6)
 gmesMDsumm1 <- dplyr::left_join(gmesMDsumm1, chambs, by='chamber')
-gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, month, temp),
-                                gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
-gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm1, temp),
-                                gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh))
+gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(subset(gmesMDsumm1, gmesChN >= 3), month, temp),
+                                gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh),
+                                gscT=mean.na(gscCh), gscTse=s.err.na(gscCh),
+                                AT=mean.na(ACh), ATse=s.err.na(ACh),
+                                iWUEt=mean.na(iWUEch), iWUEtSE=s.err.na(iWUEch))
+gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm2, temp),
+                                gmesTem=mean.na(gmesT), gmesTemSe=s.err.na(gmesT),
+                                gscTem=mean.na(gscT), gscTemSE=s.err.na(gscT),
+                                Atem=mean.na(AT), AtemSE=s.err.na(AT),
+                                iWUEtem=mean.na(iWUEt), iWUEtemSE=s.err.na(iWUEt))
 write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
 write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
 
@@ -148,6 +157,31 @@ for (i in 1:length(levels(as.factor(allPaired$chamber)))){
 lapply(gmesL, function(x) write.csv(x, file=paste0('calculated_data/indv_chambs/', x[1,'chamber'], '.csv'),
                                     row.names = F))
 model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
+                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0), na.action = na.omit)
+anova(model)
+
+model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment + (1|fchamber),
+              data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0))
+emmeans::emmeans(model, pairwise ~ T_treatment | month)
+
+model <- nlme::lme(gsc_area ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
                    data = subset(allPaired, midday == 'yes' & PAR >= 800), na.action = na.omit)
 anova(model)
+
+model <- lme4::lmer(gsc_area ~ month * T_treatment + (1|fchamber),
+                    data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0))
+emmeans::emmeans(model, pairwise ~ T_treatment | month)
+
+model <- nlme::lme(A_area ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
+                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0), na.action = na.omit)
+anova(model)
+
+model <- lme4::lmer(A_area ~ month * T_treatment + (1|fchamber),
+                    data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0))
+emmeans::emmeans(model, pairwise ~ T_treatment | month)
+
+model <- nlme::lme(iWUE ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
+                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 & iWUE <= 500), na.action = na.omit)
+anova(model)
+
 rm(model, gmesL, march, Rdark, treeLeaf, deltaPaired)
