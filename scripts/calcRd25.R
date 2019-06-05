@@ -12,3 +12,4 @@ Rdark <- rbind(Rdark, march)
 # calculate Rlight at 25 C based on the empirical relationship of Crous et al. 2012
 # Table 3 for E. globulus
 Rdark$Rd25 <- -0.36 + 0.67*Rdark$Rdark
+rm(march)

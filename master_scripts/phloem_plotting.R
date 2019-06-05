@@ -44,3 +44,4 @@ phl$chamber2 <- as.character(phl$chamber)
 phl$chamber <- ifelse((nchar(phl$chamber2) == 1), paste0('C0', phl$chamber2), paste0('C', phl$chamber2))
 phl$month <- str_sub(phl$month, 1, 3)
 names(phl)[2] <- 'd13Cph'
+rm(phloem, phloem2, phloem3, trtkey)

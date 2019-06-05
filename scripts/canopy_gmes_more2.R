@@ -77,8 +77,8 @@ gmesComplete <- function(b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELT
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
-allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area)
-allPaired$WUE <- allPaired$A_area/allPaired$E_area
+allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area) # in mumol/mol
+allPaired$WUE <- allPaired$A_area/allPaired$E_area # in mumol/mmol
 allPaired$gammaStar <- calcGammaStar(gamma25, temp=allPaired$Tair_al)
 source('scripts/calcRd25.R')
 allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)
@@ -184,4 +184,4 @@ model <- nlme::lme(iWUE ~ month + T_treatment + month:T_treatment, random = ~1 |
                    data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 & iWUE <= 500), na.action = na.omit)
 anova(model)
 
-rm(model, gmesL, march, Rdark, treeLeaf, deltaPaired)
+rm(model, gmesL, Rdark, treeLeaf, deltaPaired)

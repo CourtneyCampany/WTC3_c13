@@ -33,3 +33,5 @@ legend("bottomleft", c("Amb-Su",'Amb-Sh',"Warm-Su",'Warm-Sh'), pch=22, pt.bg=c('
        bty='n', pt.cex=1.5)
 
 summary(aov(d13Cleaf~month*leaf*temp, data=leafChem2))
+rm(leafChem2, leafChemShade, leafChemSun)
+

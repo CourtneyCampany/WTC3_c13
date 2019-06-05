@@ -50,4 +50,4 @@ deltaPairedPre[which(deltaPairedPre$totalCO2_ref<=0),c('totalCO2_ref','Corrdel13
 deltaPairedPre[which(deltaPairedPre$totalCO2_ref>=600),c('totalCO2_ref','Corrdel13C_Avg_ref')] <- NA
 deltaPairedPre <- deltaPairedPre[, c("start","end","totalCO2", "totalCO2_ref",
                                "Corrdel13C_Avg","Corrdel13C_Avg_ref","chamberTDL")]
-rm(long, longRef, longSmp, delta_files, flux_files, flux_names, cham13format_func)
+rm(long, longRef, longSmp, delta_files, flux_files, flux_names, cham13format_func, flux_months)
