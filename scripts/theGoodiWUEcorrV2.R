@@ -13,25 +13,32 @@ phl$month <- factor(phl$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
-phl <- dplyr::left_join(phl, photoSumm, by=c('chamber','month'))
+phl <- merge(phl, photoSumm, by=c('chamber','month'), all=T)
 # in my case d13Cphloem is more DEPLETED than d13CAnet
 phl$phlOffset <- phl$d13CAnet - phl$d13Cph
 # there are differences in d13Cph and d13CAnet among campaings, but not between temperature treatments
-model <- nlme::lme(phlOffset ~ month + temp, random = ~1 | fchamber,
-                   data = phl, na.action = na.omit)
-anova(model)
+# model <- nlme::lme(phlOffset ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
+# model <- nlme::lme(d13Cph ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
+# model <- nlme::lme(d13CAnet ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
 # differences in d13Cph and d13CAnet are not coordinated so differences in phl offset do not make sense
 # use the mean of all values
-mean(phl$phlOffset, na.rm=T)
-s.err.na(phl$phlOffset)
+round(mean(doBy::summaryBy(phlOffset ~ month, data=phl, FUN=mean.na)$phlOffset.mean.na, na.rm=T), 1)
+round(s.err.na(doBy::summaryBy(phlOffset ~ month, data=phl, FUN=mean.na)$phlOffset.mean.na), 1)
 # windows(16,8)
 # par(mfrow=c(1,3), mar=c(3,6,1,0.5))
-# boxplot(phl$d13CAnet~phl$month, ylab=expression(delta^13*C[Anet]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
-# boxplot(phl$d13Cph~phl$month, ylab=expression(delta^13*C[phloem]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
-# boxplot(phl$phlOffset~phl$month, ylab=expression(Phloem~Offset~('\211')), xlab=' ', cex.lab=1.6)
+# boxplot(phl$d13CAnet~phl$month*phl$temp, ylab=expression(delta^13*C[Anet]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
+# boxplot(phl$d13Cph~phl$month*phl$temp, ylab=expression(delta^13*C[phloem]~('\211')), xlab=' ', cex.lab=1.6, ylim=c(-33,-24))
+# boxplot(phl$phlOffset~phl$month*phl$temp, ylab=expression(Phloem~Offset~('\211')), xlab=' ', cex.lab=1.6)
 # abline(mean(phl$phlOffset, na.rm=T), 0, col='red', lwd=2)
 # use the mean of all values
-phl$d13Cph_corr <- phl$d13Cph + mean.na(phl$phlOffset)
+phl$d13Cph_corr <- phl$d13Cph +
+  mean(doBy::summaryBy(phlOffset ~ month, data=phl, FUN=mean.na)$phlOffset.mean.na, na.rm=T)
 
 del13CcampAvgMD <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, A_area > 0 & E_area > 0 &
                                                                    PAR >= 800 & iWUE < 500 & midday=='yes')),
@@ -114,8 +121,10 @@ summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMDmyAv, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEleafAvg_uncorrMD, data=phl))
 summary(lm(d13Cph ~ d13CAnet, data=phl))
-summary(nlme::lme(d13Cph ~ d13CAnet, random = ~1 | fchamber,
+summary(nlme::lme(d13CAnet ~ d13Cph*month, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
+summary(nlme::lme(d13CAnet ~ d13Cph, random = ~1 | fchamber,
+                  data = subset(phl, month!='Jan' & month!='Dec'), na.action = na.omit))
 summary(lm(d13Cph ~ d13CsunLeaf, data=phl))
 summary(lm(d13Cph ~ d13CshLeaf, data=phl))
 summary(lm(d13Cph ~ d13CleafAvg, data=phl))
@@ -212,7 +221,9 @@ corrResults[[5]] <- nlme::lme(iWUEgeMD ~ iWUEleafAvg_corrMD, random = ~1 | fcham
                                       data = phl, na.action = na.omit)
 corrResults[[6]] <- nlme::lme(d13Cph ~ d13CAnet, random = ~1 | fchamber,
                                       data = phl, na.action = na.omit)
-corrResults[[7]] <- nlme::lme(d13Cph ~ d13CleafAvg, random = ~1 | fchamber,
+corrResults[[7]] <- nlme::lme(d13Cph ~ d13CAnet, random = ~1 | fchamber,
+                              data = subset(phl, month!='Jan' & month!='Dec'), na.action = na.omit)
+corrResults[[8]] <- nlme::lme(d13Cph ~ d13CleafAvg, random = ~1 | fchamber,
                                       data = phl, na.action = na.omit)
 
 table1 <- data.frame(row.names = 1:length(corrResults))
