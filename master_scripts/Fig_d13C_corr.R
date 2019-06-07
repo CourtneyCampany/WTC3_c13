@@ -27,12 +27,12 @@ for(i in 1:length(myMon)){
 iWUEdf <- as.data.frame(iWUEsumm)
 for(i in 1:length(myMon)){
   Hmisc::errbar(x=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CAnetMean'],
-           y=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean'],
-           yplus=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean']+
-             subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphSE'],
-           yminus=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean']-
-             subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphSE'],
-         pch=myChar[i], col='black', bg='blue', errbar.col = 'black', add=T, cex=2)
+                y=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean'],
+                yplus=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean']+
+                  subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphSE'],
+                yminus=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean']-
+                  subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphSE'],
+                pch=myChar[i], col='black', bg='blue', errbar.col = 'black', add=T, cex=2)
   arrows(x0 = subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CAnetMean'],
          y0 = subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CphMean'],
          x1 = subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'d13CAnetMean']+
