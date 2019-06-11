@@ -65,5 +65,3 @@ for(i in 1:length(myMon)){
 }
 legend('topleft', legend=c('Amb', 'Warm', myMon), pch=c(19, 19, myChar), cex=1.2,
        col=c('blue', 'red', rep('black', 5)), bg=c('blue', 'red', rep('black', 5)), bty='n')
-
-

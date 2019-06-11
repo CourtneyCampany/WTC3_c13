@@ -44,7 +44,7 @@ calcDELTAobs <- function(xi, deltaSample, deltaRef){
 
 # eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
 source('scripts/calculate_eResp.R')
-eResp <- mean(eResp$eRespPh, na.rm = T)
+eResp <- mean(dplyr::summarise(dplyr::group_by(eResp, month), eMean=mean.na(eRespPh))$eMean, na.rm = T)
 
 # DELTAe is discrimination due to respiration (NO TERNARY)
 calcDELTAe <- function(eResp, Rd, Photo, CO2sample, Ci, gammaStar){
@@ -74,10 +74,36 @@ gmesComplete <- function(b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELT
   return(gmes)
 }
 
+allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
+allPaired$diffDelPre <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
+allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
+allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
+allPaired$DELTAobsPre <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
+                                   deltaRef=allPaired$del13C_theor_ref)
+# source('scripts/plotDELTAobsVSdiffConc.R')
+allPaired$DELTAobsPre <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobsPre)
+DELTAobs <- dplyr::summarise(dplyr::group_by(setDT(allPaired), datetimeFM, chamber), diffDel=mean.na(diffDelPre),
+                             DELTAobs = mean.na(DELTAobsPre), DELTAoSD = sd(DELTAobsPre, na.rm = T),
+                             del13Cch=mean.na(Corrdel13C_Avg), del13Csd=sd(Corrdel13C_Avg))
+DELTAobs$DELTAobs <- ifelse(DELTAobs$DELTAoSD >= 3, NA, DELTAobs$DELTAobs)
+DELTAobs$del13Cmean <- ifelse(DELTAobs$del13Csd >= 5, NA, DELTAobs$del13Cch)
+allPaired <- dplyr::left_join(DELTAobs[, c('datetimeFM','chamber','DELTAobs','diffDel','del13Cch')],
+                              deltaPaired[,-c('totalCO2', 'totalCO2_ref',  'del13C_theor_ref',
+                                                        'Corrdel13C_Avg', 'Corrdel13C_Avg_ref')],
+                              by=c('datetimeFM', 'chamber'))
+
+allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
+allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
+allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
+allPaired$Date <- as.Date(allPaired$datetimeFM)
+# get leaf area for each chamber and date
+source('scripts/leafArea.R')
+allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
+allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
-allPaired$iWUE <- allPaired$A_area/(allPaired$gsc_area) # in mumol/mol
+allPaired$iWUE <- allPaired$A_area/allPaired$gsc_area # in mumol/mol
 allPaired$WUE <- allPaired$A_area/allPaired$E_area # in mumol/mmol
 allPaired$gammaStar <- calcGammaStar(gamma25, temp=allPaired$Tair_al)
 source('scripts/calcRd25.R')
@@ -86,10 +112,7 @@ allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)
 # these parameters are those for BlEvTemp in Table S3 of Heskel et al. 2016 PNAS
 allPaired$Rd_corrT <- allPaired$Rd25*exp(0.0518*(allPaired$Tair_al-25)+0.00047*(allPaired$Tair_al^2-25^2))
 allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE','gammaStar',
-                                               'Rd_corrT', 'Corrdel13C_Avg', 'Corrdel13C_Avg_ref',
-                                               "del13C_theor_ref")] <- NA
-allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
-allPaired$diffDel <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
+                                               'Rd_corrT')] <- NA
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
@@ -99,12 +122,6 @@ allPaired[which(allPaired$Ci.Ca > 1), 'Ci.Ca'] <- NA
 allPaired$diff_Ca.Ci <- allPaired$CO2sampleWTC - allPaired$Ci
 allPaired[which(allPaired$diff_Ca.Ci <= 0), 'diff_Ca.Ci'] <- NA
 allPaired$DELTAi <- calcDELTAi(a=a, b=b, Ci.Ca=allPaired$Ci.Ca)
-allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
-allPaired$xi <- ifelse(allPaired$xi <= 0 | allPaired$condAlert == 'yes', NA, allPaired$xi)
-allPaired$DELTAobs <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrdel13C_Avg,
-                                   deltaRef=allPaired$del13C_theor_ref)
-# source('scripts/plotDELTAobsVSdiffConc.R')
-allPaired$DELTAobs <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobs)
 allPaired$DELTAe <- calcDELTAe(eResp=eResp, Rd=allPaired$Rd_corrT,
                                Photo=allPaired$A_area, CO2sample=allPaired$CO2sampleWTC,
                                Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)

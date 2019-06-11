@@ -17,15 +17,15 @@ phl <- merge(phl, photoSumm, by=c('chamber','month'), all=T)
 # in my case d13Cphloem is more DEPLETED than d13CAnet
 phl$phlOffset <- phl$d13CAnet - phl$d13Cph
 # there are differences in d13Cph and d13CAnet among campaings, but not between temperature treatments
-model <- nlme::lme(phlOffset ~ month + temp, random = ~1 | fchamber,
-                   data = phl, na.action = na.omit)
-anova(model)
-model <- nlme::lme(d13Cph ~ month + temp, random = ~1 | fchamber,
-                   data = phl, na.action = na.omit)
-anova(model)
-model <- nlme::lme(d13CAnet ~ month + temp, random = ~1 | fchamber,
-                   data = phl, na.action = na.omit)
-anova(model)
+# model <- nlme::lme(phlOffset ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
+# model <- nlme::lme(d13Cph ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
+# model <- nlme::lme(d13CAnet ~ month + temp, random = ~1 | fchamber,
+#                    data = phl, na.action = na.omit)
+# anova(model)
 # differences in d13Cph and d13CAnet are not coordinated so differences in phl offset do not make sense
 # use the mean of all values
 round(mean(doBy::summaryBy(phlOffset ~ month, data=phl, FUN=mean.na)$phlOffset.mean.na, na.rm=T), 1)
@@ -43,7 +43,7 @@ phl$d13Cph_corr <- phl$d13Cph +
 del13CcampAvgMD <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, A_area > 0 & E_area > 0 &
                                                                    PAR >= 800 & iWUE < 500 & midday=='yes')),
                                                     month, chamber), iWUEgeCorr=mean.na(iWUEge_corr),
-                                    iWUEge=mean.na(iWUE), d13ch=mean.na(Corrdel13C_Avg),
+                                    iWUEge=mean.na(iWUE), d13ch=mean.na(del13Cch),
                                     CO2ch=mean.na(CO2sampleWTC), Ci.Cc=mean.na(diff_Ci.Cc))
 
 # del13CcampAvgMDSAFE <- doBy::summaryBy(iWUEge_corr + iWUE + Corrdel13C_Avg + CO2sampleWTC +diff_Ci.Cc ~ month + chamber,
