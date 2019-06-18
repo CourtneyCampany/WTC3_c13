@@ -13,7 +13,11 @@ plot(x=subset(iWUEdf, month==myMon[1] & T_treatment=='ambient')[,'iWUEphCorrMean
      xlab=expression(iWUE[Delta~ph]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
      ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), cex.lab=1.5,
      xlim=c(75, 210), ylim=c(75, 210))
-
+abline(0, 1, lty=2)
+plotrix::ablineclip(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEdf), x1 = min(iWUEdf$iWUEphCorrMean, na.rm = T),
+                    x2 = max(iWUEdf$iWUEphCorrMean, na.rm = T), col='darkgrey', lwd=2)
+plotrix::ablineclip(lm(iWUEgeMean ~ iWUEphCorr2Mean, data=iWUEdf), x1 = min(iWUEdf$iWUEphCorr2Mean, na.rm = T),
+                    x2 = max(iWUEdf$iWUEphCorr2Mean, na.rm = T), lwd=2)
 for(i in 2:length(myMon)){
   points(x=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEphCorrMean'],
         y=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEgeMean'],
@@ -34,9 +38,6 @@ for(i in 1:length(myMon)){
          y=subset(iWUEdf, month==myMon[i] & T_treatment=='warmed')[,'iWUEgeMean'],
          pch=myChar[i], col='black', bg='red', cex=2)
 }
-abline(0, 1, lty=2)
-abline(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEdf), col='darkgrey', lwd=2)
-abline(lm(iWUEgeMean ~ iWUEphCorr2Mean, data=iWUEdf), lwd=2)
 legend('topleft', legend=c('Amb', 'Warm', myMon), pch=c(19, 19, myChar),
        col=c('blue', 'red', rep('black', length(myMon))), bty='n', cex=1.5)
 legend('bottomright', legend=c(expression(iWUE[Delta~ph-corr]), expression(iWUE[Delta~ph])),

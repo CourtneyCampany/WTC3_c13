@@ -28,5 +28,7 @@ for (i in 1:length(corrResults)){
   table1$slope[i] <- round(summary(corrResults[[i]])$tTable[2], 2)
   table1$slopeSE[i] <- round(summary(corrResults[[i]])$tTable[4], 2)
   table1$slopeP[i] <- round(summary(corrResults[[i]])$tTable[10], 3)
+  table1$R2m[i] <- round(MuMIn::r.squaredGLMM(corrResults[[i]])[1], 2)
+  table1$R2c[i] <- round(MuMIn::r.squaredGLMM(corrResults[[i]])[2], 2)
 }
-write.csv(table1, file='output/table1.csv', row.names=F)
+write.csv(table1, file='results_tables_figs/table1.csv', row.names=F)

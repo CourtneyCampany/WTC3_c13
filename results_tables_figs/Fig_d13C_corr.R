@@ -12,17 +12,29 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'d13Cph']~
      xlab=expression(delta^13*C[Anet]~('\211')), xlim=c(-33, -25),
      ylab=expression(delta^13*C[ph]~('\211')), ylim=c(-33, -25), cex.lab=1.3)
 abline(0,1, lty=2)
-abline(lm(d13Cph ~ d13CAnet, data=phl), col='darkgrey', lwd=2)
-abline(lm(d13Cph ~ d13CAnet, data=subset(phl, month!='Jan' & month!='Dec')), lwd=2)
+plotrix::ablineclip(lm(d13Cph ~ d13CAnet, data=phl), x1 = min(phl$d13CAnet, na.rm = T),
+                    x2 = -25, col='darkgrey', lwd=2)
+plotrix::ablineclip(lm(d13Cph ~ d13CAnet, data=subset(phl, month!='Jan' & month!='Dec')), x1 = min(phl$d13CAnet, na.rm = T),
+                    x2 = -25, lwd=2)
 for(i in 2:length(myMon)){
-  points(subset(phl, month==myMon[i] & T_treatment=='ambient')[,'d13Cph']~
-           subset(phl, month==myMon[i] & T_treatment=='ambient')[,'d13CAnet'],
+  points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'control')[,'d13Cph']~
+           subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'control')[,'d13CAnet'],
          pch=myChar[i], col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
 }
 for(i in 1:length(myMon)){
-  points(subset(phl, month==myMon[i] & T_treatment=='warmed')[,'d13Cph']~
-           subset(phl, month==myMon[i] & T_treatment=='warmed')[,'d13CAnet'],
+  points(subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'d13Cph']~
+           subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'d13CAnet'],
          pch=myChar[i], col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
+}
+for(i in 4:length(myMon)){
+  points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'drydown')[,'d13Cph']~
+           subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'drydown')[,'d13CAnet'],
+         pch=myChar[i], col=scales::alpha('blue', 0.3), bg=scales::alpha('white',0.3))
+}
+for(i in 4:length(myMon)){
+  points(subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'drydown')[,'d13Cph']~
+           subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'drydown')[,'d13CAnet'],
+         pch=myChar[i], col=scales::alpha('red', 0.3), bg=scales::alpha('white',0.3))
 }
 iWUEdf <- as.data.frame(iWUEsumm)
 for(i in 1:length(myMon)){
@@ -65,3 +77,4 @@ for(i in 1:length(myMon)){
 }
 legend('topleft', legend=c('Amb', 'Warm', myMon), pch=c(19, 19, myChar), cex=1.2,
        col=c('blue', 'red', rep('black', 5)), bg=c('blue', 'red', rep('black', 5)), bty='n')
+legend('bottomright', legend=c('Control', 'Drought'), pch=c(19, 21), cex=1.2, col=c('darkgrey', 'black'), bty='n')

@@ -1,7 +1,7 @@
 source('scripts/canopy_gmes_more2.R')
 source('master_scripts/phloem_plotting.R')
-trtkey <- read.csv('data/trtkey2.csv')
-phl <- as.data.frame(dplyr::left_join(phl, trtkey, by=c('chamber', 'month')))
+chambs <- read.csv('data/trtkey2.csv')
+phl <- as.data.frame(dplyr::left_join(phl, chambs, by=c('chamber', 'month')))
 allPaired$iWUE <- ifelse(allPaired$iWUE > 500, NA, allPaired$iWUE)
 gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800 & A_area > 0)),
                                                 month, chamber), gmesCh = mean.na(gmes_area),
@@ -9,7 +9,6 @@ gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday==
                                 gscCh = mean.na(gsc_area), gscChSE=s.err.na(gsc_area),
                                 ACh = mean.na(A_area), AChSE=s.err.na(A_area),
                                 iWUEch = mean.na(iWUE), iWUEse=s.err.na(iWUE))
-chambs <- read.csv('data/trtkey2.csv')
 gmesMDsumm1 <- dplyr::left_join(gmesMDsumm1, chambs, by=c('chamber','month'))
 gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(subset(gmesMDsumm1, gmesChN >= 3),
                                                 month, T_treatment, W_treatment),
@@ -22,8 +21,11 @@ gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm2, T_treatment, W_trea
                                 gscTem=mean.na(gscT), gscTemSE=s.err.na(gscT),
                                 Atem=mean.na(AT), AtemSE=s.err.na(AT),
                                 iWUEtem=mean.na(iWUEt), iWUEtemSE=s.err.na(iWUEt))
+phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
+                             d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
 write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
 write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
+write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
@@ -174,76 +176,33 @@ for (i in 1:length(basicStats1)){
 
 write.csv(rbind(tableBasicStats1, tableBasicStats2), file='results_tables_figs/basicStats.csv', row.names = F)
 
+# post-hoc tests
 model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment + (1|fchamber),
-                    data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & Water_treatment == 'control'))
+                    data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & datetimeFM <= as.Date('2004-02-01')))
 emmeans::emmeans(model, pairwise ~ T_treatment | month)
-
-model <- nlme::lme(log(gmes_area*1000) ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
-                                   datetimeFM <= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
-model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment + (1|fchamber),
-                    data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0
-                                  & datetimeFM <= as.Date('2014-02-01')))
-emmeans::emmeans(model, pairwise ~ T_treatment | month)
-
-model <- nlme::lme(gsc_area ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
-                                   datetimeFM <= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
 
 model <- lme4::lmer(gsc_area ~ month * T_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0
                                   & datetimeFM <= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
-model <- nlme::lme(A_area ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
-                                   datetimeFM <= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
 model <- lme4::lmer(A_area ~ month * T_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0
                                   & datetimeFM <= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
-model <- nlme::lme(iWUE ~ month + T_treatment + month:T_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
-                                   datetimeFM <= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
-model <- nlme::lme(log(gmes_area*1000) ~ month * T_treatment * Water_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
-                                   Date >= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
 model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & Date >= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
-
-model <- nlme::lme(gsc_area ~ month * T_treatment * Water_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & Date >= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
 
 model <- lme4::lmer(gsc_area ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800 & Date >= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
 
-model <- nlme::lme(A_area ~ month * T_treatment * Water_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & Date >= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
 model <- lme4::lmer(A_area ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 & Date >= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
 
-model <- nlme::lme(iWUE ~ month * T_treatment * Water_treatment, random = ~1 | fchamber,
-                   data = subset(allPaired, midday == 'yes' & PAR >= 800 & Date >= as.Date('2014-02-01')), na.action = na.omit)
-anova(model)
-
 model <- lme4::lmer(iWUE ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 & Date >= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
-
-

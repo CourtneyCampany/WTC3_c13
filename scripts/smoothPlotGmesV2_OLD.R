@@ -1,3 +1,4 @@
+source('scripts/canopy_gmes_more2.R')
 library(mgcv)
 source('scripts/derivSimulCI.R')
 source('scripts/plotCIdate.R')
@@ -69,71 +70,71 @@ axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
 box()
 legend('bottomleft', legend=myMon[6], bty='n', text.font = 2, cex=1.5)
 
-# same thing but not log transformed
-windows(12,8)
-par(mfrow=c(2,3), mar=c(0,5.5,5.5,0), las=1, cex=1.1)
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[1]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=expression(italic(g)[mes]~(mol~m^-2~s^-1)),
-           xlab=' ', axes=F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=NA)
-box()
-legend('topright', legend=c('Amb','Warm'), col=c('blue','red'), bty='n', pch=19, cex=1.3)
-legend('topleft', legend=myMon[1], bty='n', text.font = 2, cex=1.4)
-par(mar=c(0,2.25,5.5,2.25))
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[2]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=' ',
-           xlab=' ', axes=F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=NA)
-box()
-legend('topleft', legend=myMon[2], bty='n', text.font = 2, cex=1.5)
-par(mar=c(0,0,5.5,5.5))
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[3]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=' ',
-           xlab=' ', axes = F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=NA)
-box()
-legend('topleft', legend=myMon[3], bty='n', text.font = 2, cex=1.5)
-par(mar=c(5.5,5.5,0,0))
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[4]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=expression(italic(g)[mes]~(mol~m^-2~s^-1)),
-           xlab=' ', axes = F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
-box()
-legend('topleft', legend=myMon[4], bty='n', text.font = 2, cex=1.5)
-par(mar=c(5.5,2.25,0,2.25))
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[5]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=' ',
-           xlab=expression(italic(T)[air]~(degree*C)), axes = F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
-box()
-legend('topleft', legend=myMon[5], bty='n', text.font = 2, cex=1.5)
-par(mar=c(5.5,0,0,5.5))
-smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[6]),
-           kgam=4, R='chamber', cex.lab=1.25,
-           ylab=' ',
-           xlab=' ', axes = F,
-           ylim=c(0, 1.1), xlim=c(18, 40))
-axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
-axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
-box()
-legend('topleft', legend=myMon[6], bty='n', text.font = 2, cex=1.5)
-
-allPairedMD <- as.data.frame(subset(allPaired, midday=='yes' & PAR >= 800 & Water_treatment == 'control'))
+# # same thing but not log transformed
+# windows(12,8)
+# par(mfrow=c(2,3), mar=c(0,5.5,5.5,0), las=1, cex=1.1)
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[1]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=expression(italic(g)[mes]~(mol~m^-2~s^-1)),
+#            xlab=' ', axes=F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=NA)
+# box()
+# legend('topright', legend=c('Amb','Warm'), col=c('blue','red'), bty='n', pch=19, cex=1.3)
+# legend('topleft', legend=myMon[1], bty='n', text.font = 2, cex=1.4)
+# par(mar=c(0,2.25,5.5,2.25))
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[2]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=' ',
+#            xlab=' ', axes=F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=NA)
+# box()
+# legend('topleft', legend=myMon[2], bty='n', text.font = 2, cex=1.5)
+# par(mar=c(0,0,5.5,5.5))
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[3]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=' ',
+#            xlab=' ', axes = F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=NA)
+# box()
+# legend('topleft', legend=myMon[3], bty='n', text.font = 2, cex=1.5)
+# par(mar=c(5.5,5.5,0,0))
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[4]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=expression(italic(g)[mes]~(mol~m^-2~s^-1)),
+#            xlab=' ', axes = F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
+# box()
+# legend('topleft', legend=myMon[4], bty='n', text.font = 2, cex=1.5)
+# par(mar=c(5.5,2.25,0,2.25))
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[5]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=' ',
+#            xlab=expression(italic(T)[air]~(degree*C)), axes = F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
+# box()
+# legend('topleft', legend=myMon[5], bty='n', text.font = 2, cex=1.5)
+# par(mar=c(5.5,0,0,5.5))
+# smoothplot(Tair_al, gmes_area, T_treatment, data=subset(allPairedMD, month==myMon[6]),
+#            kgam=4, R='chamber', cex.lab=1.25,
+#            ylab=' ',
+#            xlab=' ', axes = F,
+#            ylim=c(0, 1.1), xlim=c(18, 40))
+# axis(2, at=seq(0, 1.1, 0.2), labels=seq(0, 1.1, 0.2))
+# axis(1, at=seq(20, 40, 5), labels=seq(20, 40, 5))
+# box()
+# legend('topleft', legend=myMon[6], bty='n', text.font = 2, cex=1.5)
+# 
+# allPairedMD <- as.data.frame(subset(allPaired, midday=='yes' & PAR >= 800 & Water_treatment == 'control'))
 
 # all in one plot
 myMon <- c('Oct','Dec','Jan','Feb','Mar','Apr')

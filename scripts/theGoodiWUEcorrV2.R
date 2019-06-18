@@ -53,11 +53,9 @@ names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)] <- paste0(names(del13CcampAvgMD)
 phl <- merge(merge(del13CcampAvgMD, phl, by=c('month','chamber'), all=T),
              leafChem, by=c('month','chamber'), all=T)
 
-chambs <- data.frame(row.names=1:12)
-chambs$chamber <- c(paste0('C0', 1:9), paste0('C', 10:12))
-chambs$T_treatment <- rep(c('ambient','warmed'), 6)
+chambs <- read.csv('data/trtkey2.csv')
 
-phl <- merge(phl, chambs, by='chamber', all=T)
+phl <- merge(phl, chambs, by=c('chamber', 'month'), all=T)
 
 phl$iWUEph_uncorrMD <- phl$CO2chMD*
   (1-((1/(b-a))*(-a + (phl$d13chMD-phl$d13Cph)*1000/(1000+phl$d13Cph))))
@@ -94,6 +92,10 @@ summary(nlme::lme(iWUEgeMD ~ iWUEph_uncorrMD, random = ~1 | fchamber,
 summary(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
                    data = phl, na.action = na.omit))
+summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD*T_treatment, random = ~1 | fchamber,
+                  data = subset(phl, month!='Feb' & month!='Mar'), na.action = na.omit))
+summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD*T_treatment*W_treatment, random = ~1 | fchamber,
+                  data = subset(phl, month=='Feb' | month=='Mar'), na.action = na.omit))
 summary(lm(iWUEgeMD ~ iWUEph_corrMDmyAv, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMDmyAv, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
@@ -112,6 +114,8 @@ summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_uncorrMD, random = ~1 | fchamber,
 summary(lm(iWUEgeMD ~ iWUEleafAvg_corrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_corrMD, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
+summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_corrMD*month*T_treatment, random = ~1 | fchamber,
+                  data = subset(phl, month!='Feb' & month!='Mar'), na.action = na.omit))
 summary(lm(iWUEgeMD ~ iWUEleafAvg_corrSunGm, data=phl))
 summary(lm(iWUEgeMD ~ iWUEleafAvg_corrAvg1, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_corrAvg1, random = ~1 | fchamber,
