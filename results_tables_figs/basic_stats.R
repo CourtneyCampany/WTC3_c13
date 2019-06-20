@@ -206,3 +206,10 @@ emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
 model <- lme4::lmer(iWUE ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 & Date >= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ Water_treatment | T_treatment | month)
+
+anova(nlme::lme(d13Cph ~ month * T_treatment * W_treatment, random = ~1 | as.factor(chamber),
+          data = subset(phl,  month == 'Feb' | month == 'Mar'), na.action = na.omit))
+anova(nlme::lme(iWUEph_uncorrMD ~ month * T_treatment * W_treatment, random = ~1 | as.factor(chamber),
+                data = subset(phl,  month == 'Feb' | month == 'Mar'), na.action = na.omit))
+anova(nlme::lme(iWUEph_corrMD ~ month * T_treatment * W_treatment, random = ~1 | as.factor(chamber),
+                data = subset(phl,  month == 'Feb' | month == 'Mar'), na.action = na.omit))
