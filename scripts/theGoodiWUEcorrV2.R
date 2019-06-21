@@ -92,6 +92,8 @@ summary(nlme::lme(iWUEgeMD ~ iWUEph_uncorrMD, random = ~1 | fchamber,
 summary(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
                    data = phl, na.action = na.omit))
+summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
+                  data = subset(phl, W_treatment == 'control'), na.action = na.omit))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD*T_treatment, random = ~1 | fchamber,
                   data = subset(phl, month!='Feb' & month!='Mar'), na.action = na.omit))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD*T_treatment*W_treatment, random = ~1 | fchamber,
