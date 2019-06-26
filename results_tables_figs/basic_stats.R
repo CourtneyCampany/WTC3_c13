@@ -1,7 +1,13 @@
 source('scripts/canopy_gmes_more2.R')
 source('master_scripts/phloem_plotting.R')
+photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
+                                                           & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
+                                              chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
+phl <- merge(phl, photoSumm, by=c('month', 'chamber'), all = T)
 chambs <- read.csv('data/trtkey2.csv')
 phl <- as.data.frame(dplyr::left_join(phl, chambs, by=c('chamber', 'month')))
+
+
 allPaired$iWUE <- ifelse(allPaired$iWUE > 500, NA, allPaired$iWUE)
 gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800 & A_area > 0)),
                                                 month, chamber), gmesCh = mean.na(gmes_area),
@@ -49,7 +55,9 @@ basicStats1[[4]] <- nlme::lme(iWUE ~ month + T_treatment + month:T_treatment, ra
                               data = subset(allPaired, midday == 'yes' & PAR >= 800 & A_area > 0 &
                                               datetimeFM <= as.Date('2014-02-01')), na.action = na.omit)
 basicStats1[[5]] <- nlme::lme(d13Cph ~ month + T_treatment + month:T_treatment, random = ~1 | as.factor(chamber),
-                              data = subset(phl,  month != 'Feb' & month != 'Mar'), na.action = na.omit)
+                              data = subset(phl,  month != 'Feb' & month != 'Mar' & month != 'Apr'), na.action = na.omit)
+basicStats1[[6]] <- nlme::lme(d13CAnet ~ month + T_treatment + month:T_treatment, random = ~1 | as.factor(chamber),
+                              data = subset(phl,  month != 'Feb' & month != 'Mar' & month != 'Apr'), na.action = na.omit)
 tableBasicStats1 <- data.frame(row.names = 1:(length(basicStats1)*3))
 for (i in 1:length(basicStats1)){
   tableBasicStats1$variable[i*3-2] <- stringi::stri_split_fixed(as.character(summary(basicStats1[[i]])
@@ -107,6 +115,10 @@ basicStats1[[5]] <- nlme::lme(d13Cph ~ month + T_treatment + W_treatment
                               + month:T_treatment + month:W_treatment + T_treatment:W_treatment
                               + month:T_treatment:W_treatment , random = ~1 | as.factor(chamber),
                               data = subset(phl,  month == 'Feb' | month == 'Mar'), na.action = na.omit)
+basicStats1[[6]] <- nlme::lme(d13CAnet ~ month + T_treatment + W_treatment
+                              + month:T_treatment + month:W_treatment + T_treatment:W_treatment
+                              + month:T_treatment:W_treatment , random = ~1 | as.factor(chamber),
+                              data = subset(phl,  month == 'Feb' | month == 'Mar' | month == 'Apr'), na.action = na.omit)
 tableBasicStats2 <- data.frame(row.names = 1:(length(basicStats1)*7))
 for (i in 1:length(basicStats1)){
   tableBasicStats2$variable[i*7-6] <- stringi::stri_split_fixed(as.character(summary(basicStats1[[i]])
