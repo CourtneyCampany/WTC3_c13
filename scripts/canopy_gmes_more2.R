@@ -84,10 +84,12 @@ allPaired$DELTAobsPre <- calcDELTAobs(allPaired$xi, deltaSample=allPaired$Corrde
 allPaired$DELTAobsPre <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobsPre)
 DELTAobs <- dplyr::summarise(dplyr::group_by(setDT(allPaired), datetimeFM, chamber), diffDel=mean.na(diffDelPre),
                              DELTAobs = mean.na(DELTAobsPre), DELTAoSD = sd(DELTAobsPre, na.rm = T),
-                             del13Cch=mean.na(Corrdel13C_Avg), del13Csd=sd(Corrdel13C_Avg))
+                             del13Cch=mean.na(Corrdel13C_Avg), del13Csd=sd(Corrdel13C_Avg),
+                             del13Camb=mean.na(Corrdel13C_Avg_ref), del13CambSD=sd(Corrdel13C_Avg_ref))
 DELTAobs$DELTAobs <- ifelse(DELTAobs$DELTAoSD >= 3, NA, DELTAobs$DELTAobs)
 DELTAobs$del13Cmean <- ifelse(DELTAobs$del13Csd >= 5, NA, DELTAobs$del13Cch)
-allPaired <- dplyr::left_join(DELTAobs[, c('datetimeFM','chamber','DELTAobs','diffDel','del13Cch')],
+DELTAobs$del13Camb <- ifelse(DELTAobs$del13CambSD >= 5, NA, DELTAobs$del13Camb)
+allPaired <- dplyr::left_join(DELTAobs[, c('datetimeFM','chamber','DELTAobs','diffDel','del13Cch', 'del13Camb')],
                               deltaPaired[,-c('totalCO2', 'totalCO2_ref',  'del13C_theor_ref',
                                                         'Corrdel13C_Avg', 'Corrdel13C_Avg_ref')],
                               by=c('datetimeFM', 'chamber'))

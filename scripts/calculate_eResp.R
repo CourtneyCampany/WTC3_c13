@@ -1,14 +1,5 @@
-source('scripts/calculateCin.R')
-allPaired <- deltaPaired
-allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
-allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
-allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
-allPaired$Date <- as.Date(allPaired$datetimeFM)
-# get leaf area for each chamber and date
-source('scripts/leafArea.R')
-allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
-allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
-allPaired[which(allPaired$condAlert=='yes'), c('A_area')] <- NA
+# this script does not work on its own, only within "canopy_gmes_more2.R"
+
 # calculate d13CRdarl
 respSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, nightID >= 1 & timeSinceSunset >= 4 &
                                                                         timeSinceSunset <= 8 & deltaSubstrate >= -60
