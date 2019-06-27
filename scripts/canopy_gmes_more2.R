@@ -1,3 +1,4 @@
+source('scripts/basicFunTEG.R')
 #calculate CO2 conc. in the substomtal cavity for the canopy (Ci)
 getCifromE <- function(E, VPD, ChamberCO2, Photo){
   #calculate stomtal conductance to water (gsw) from transpiration for a well-coupled canopy:
@@ -42,10 +43,6 @@ calcDELTAobs <- function(xi, deltaSample, deltaRef){
   return(DELTAobs*1000)
 }
 
-# eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
-source('scripts/calculate_eResp.R')
-eResp <- mean(dplyr::summarise(dplyr::group_by(eResp, month), eMean=mean.na(eRespPh))$eMean, na.rm = T)
-
 # DELTAe is discrimination due to respiration (NO TERNARY)
 calcDELTAe <- function(eResp, Rd, Photo, CO2sample, Ci, gammaStar){
   DELTAe <- (eResp*Rd/((Photo+Rd)*CO2sample))*(Ci-gammaStar)
@@ -74,6 +71,8 @@ gmesComplete <- function(b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELT
   return(gmes)
 }
 
+source('scripts/calculateCin.R')
+allPaired <- deltaPaired
 allPaired$diffConc <- allPaired$Cin - allPaired$CO2sampleWTC
 allPaired$diffDelPre <- allPaired$Corrdel13C_Avg - allPaired$del13C_theor_ref
 allPaired$xi <- getXi(chamberCO2=allPaired$CO2sampleWTC, refCO2=allPaired$Cin)
@@ -102,6 +101,11 @@ allPaired$Date <- as.Date(allPaired$datetimeFM)
 source('scripts/leafArea.R')
 allPaired <- merge(allPaired, treeLeaf, by=c('chamber','Date'), all.x=T, all.y=F)
 allPaired$A_area <- allPaired$FluxCO2*1000/allPaired$leafArea
+# eResp is respiration fractionation assuming delta13Csubstrate = delta13CAnet
+source('scripts/calculate_eResp.R')
+eResp <- mean(dplyr::summarise(dplyr::group_by(eResp, month), eMean=mean.na(eRespPh))$eMean, na.rm = T)
+
+
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
