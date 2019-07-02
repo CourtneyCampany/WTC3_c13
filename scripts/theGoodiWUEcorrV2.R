@@ -13,7 +13,10 @@ phl$month <- factor(phl$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
+gmesSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday == 'yes' & A_area > 0 & PAR >= 800)),
+                                             chamber, month), gm = mean(gmes_area, na.rm = T), DEL = mean(DELTA, na.rm = T))
 phl <- merge(phl, photoSumm, by=c('chamber','month'), all=T)
+phl <- merge(phl, gmesSumm, by=c('chamber', 'month'), all = T)
 # in my case d13Cphloem is more DEPLETED than d13CAnet
 phl$phlOffset <- phl$d13CAnet - phl$d13Cph
 # there are differences in d13Cph and d13CAnet among campaings, but not between temperature treatments
@@ -56,6 +59,7 @@ phl <- merge(merge(del13CcampAvgMD, phl, by=c('month','chamber'), all=T),
 chambs <- read.csv('data/trtkey2.csv')
 
 phl <- merge(phl, chambs, by=c('chamber', 'month'), all=T)
+phl$DELTA <- (phl$d13chMD - phl$d13Cph) * 1000/(1000 + phl$d13Cph)
 
 phl$iWUEph_uncorrMD <- phl$CO2chMD*
   (1-((1/(b-a))*(-a + (phl$d13chMD-phl$d13Cph)*1000/(1000+phl$d13Cph))))
@@ -137,6 +141,9 @@ summary(lm(d13Cph ~ d13CleafAvg, data=phl))
 summary(nlme::lme(d13Cph ~ d13CleafAvg, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
 summary(lm(iWUEph_uncorrMD ~ iWUEleafAvg_uncorrMD, data=phl))
+
+summary(nlme::lme(phlOffset ~ gm * month, random = ~1 | fchamber,
+                  data = subset(phl, W_treatment == 'control'), na.action = na.omit))
 
 
 # iWUEsummSAFE <- doBy::summaryBy(iWUE.mean.naMD + iWUEge_corr.mean.naMD + iWUEph_uncorrMD2 + iWUEph_corrMD2
