@@ -12,7 +12,7 @@ windows(16,8)
 par(mfrow=c(1,1), mar=c(6,6,1,1), cex=1.6, las=1)
 plot(log(subset(allPairedMD, month == myMon[1] & T_treatment == 'ambient')[,'gmes_area']*1000)~
        subset(allPairedMD, month == myMon[1] & T_treatment == 'ambient')[,'Tair_al'], pch = myChar[1],
-     col = 'white', bg = 'white', ylab = expression(Lg~(italic(g)[mes]~mmol~m^-2~s^-1)),
+     col = 'white', bg = 'white', ylab = expression(Ln~(italic(g)[mes]~mmol~m^-2~s^-1)),
      xlab = expression(italic(T)[air]~(degree*C)),
      ylim = c(1.5,7.2), xlim = c(18, 40), cex.lab = 1.5)
 for (i in 1:length(myMon)){
