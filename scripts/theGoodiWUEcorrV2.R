@@ -131,6 +131,8 @@ summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMD, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEph_uncorrMDmyAv, data=phl))
 summary(lm(iWUEgeCorrMD ~ iWUEleafAvg_uncorrMD, data=phl))
 summary(lm(d13Cph ~ d13CAnet, data=phl))
+summary(lm(d13Cph ~ d13CAnet, data=subset(phl, month != 'Jan' & month != 'Dec')))
+summary(lm(d13Cph ~ d13CAnet, data=subset(phl, month == 'Jan' | month == 'Dec')))
 summary(nlme::lme(d13CAnet ~ d13Cph*month, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
 summary(nlme::lme(d13CAnet ~ d13Cph, random = ~1 | fchamber,
