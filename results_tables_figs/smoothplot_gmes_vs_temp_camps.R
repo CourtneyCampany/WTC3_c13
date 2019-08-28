@@ -1,4 +1,4 @@
-source('scripts/canopy_gmes_more2.R')
+source('scripts/canopy_gmes_more3.R')
 library(mgcv)
 source('scripts/derivSimulCI.R')
 source('scripts/plotCIdate.R')
@@ -11,7 +11,7 @@ windows(10,7)
 par(mfrow=c(2,3), mar=c(0,5.5,5.5,0), las=1, cex=0.999)
 smoothplot(Tair_al, log(gmes_area*1000), T_treatment, data=subset(allPairedMD, month==myMon[1]),
            kgam=4, R='chamber', cex.lab=1.25,
-           ylab=expression(Ln~(italic(g)[mes]~mmol~m^-2~s^-1)),
+           ylab=expression(Ln~(italic(g)[m]~mmol~m^-2~s^-1)),
            xlab=' ', axes=F,
            ylim=c(1.5, 7.2), xlim=c(18, 40))
 axis(2, at=seq(2, 7, 1), labels=seq(2, 7, 1))
@@ -42,7 +42,7 @@ legend('bottomleft', legend=myMon[3], bty='n', text.font = 2, cex=1.5)
 par(mar=c(5.5,5.5,0,0))
 smoothplot(Tair_al, log(gmes_area*1000), T_treatment, data=subset(allPairedMD, month==myMon[4]),
            kgam=4,  cex.lab=1.25,
-           ylab=expression(Ln~(italic(g)[mes]~mmol~m^-2~s^-1)),
+           ylab=' ',
            xlab=' ', axes = F,
            ylim=c(1.5, 7.2), xlim=c(18, 40))
 axis(2, at=seq(2, 7, 1), labels=seq(2, 7, 1))

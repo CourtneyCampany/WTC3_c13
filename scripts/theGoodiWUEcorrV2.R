@@ -1,4 +1,4 @@
-source('scripts/canopy_gmes_more2.R')
+source('scripts/canopy_gmes_more3.R')
 source('master_scripts/phloem_plotting.R')
 source('scripts/basicFunTEG.R')
 source('scripts/leafChem.R')

@@ -1,9 +1,9 @@
-"one","two","intercept","interceptSE","interceptP","slope","slopeSE","slopeP","R2m","R2c"
-"iWUEgeMD "," iWUEph_uncorrMD",109.2,43.8,0.017,0.25,0.26,0.343,0.02,0.02
-"iWUEgeMD "," iWUEph_corrMD",59.9,20,0.005,0.76,0.17,0,0.3,0.3
-"iWUEgeMD "," iWUEph_corrMDmyAv",28.6,26.8,0.294,0.76,0.17,0,0.3,0.3
-"iWUEgeMD "," iWUEleafAvg_uncorrMD",129.3,60,0.038,0.12,0.33,0.72,0,0
-"iWUEgeMD "," iWUEleafAvg_corrMD",51.2,25.7,0.054,0.73,0.19,0,0.24,0.24
-"d13Cph "," d13CAnet",-23.3,3,0,0.25,0.11,0.027,0.09,0.14
-"d13Cph "," d13CAnet",-4,2.9,0.178,0.91,0.1,0,0.7,0.73
-"d13Cph "," d13CleafAvg",-8.9,6,0.144,0.73,0.21,0.001,0.18,0.28
+one,two,intercept,interceptSE,interceptP,slope,slopeSE,slopeP,R2m,R2c
+iWUEgeMD , iWUEph_uncorrMD,109.2,43.8,0.017,0.25,0.26,0.343,0.02,0.02
+iWUEgeMD , iWUEph_corrMD,53.9,21.5,0.017,0.78,0.17,0,0.3,0.3
+iWUEgeMD , iWUEph_corrMDmyAv,21.8,28.5,0.449,0.78,0.17,0,0.3,0.3
+iWUEgeMD , iWUEleafAvg_uncorrMD,129.3,60,0.038,0.12,0.33,0.72,0,0
+iWUEgeMD , iWUEleafAvg_corrMD,44.9,27.5,0.111,0.75,0.2,0.001,0.23,0.23
+d13Cph , d13CAnet,-23.3,3,0,0.25,0.11,0.027,0.09,0.14
+d13Cph , d13CAnet,-4,2.9,0.178,0.91,0.1,0,0.7,0.73
+d13Cph , d13CleafAvg,-8.9,6,0.144,0.73,0.21,0.001,0.18,0.28

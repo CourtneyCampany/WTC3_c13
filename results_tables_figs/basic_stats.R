@@ -1,4 +1,4 @@
-source('scripts/canopy_gmes_more2.R')
+source('scripts/canopy_gmes_more3.R')
 source('master_scripts/phloem_plotting.R')
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
@@ -27,11 +27,11 @@ gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm2, T_treatment, W_trea
                                 gscTem=mean.na(gscT), gscTemSE=s.err.na(gscT),
                                 Atem=mean.na(AT), AtemSE=s.err.na(AT),
                                 iWUEtem=mean.na(iWUEt), iWUEtemSE=s.err.na(iWUEt))
-phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
-                             d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
+# phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
+#                              d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
 write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
 write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
-write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
+# write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
@@ -190,7 +190,7 @@ write.csv(rbind(tableBasicStats1, tableBasicStats2), file='results_tables_figs/b
 
 # post-hoc tests
 model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment + (1|fchamber),
-                    data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & datetimeFM <= as.Date('2004-02-01')))
+                    data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & datetimeFM <= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
 model <- lme4::lmer(gsc_area ~ month * T_treatment + (1|fchamber),
