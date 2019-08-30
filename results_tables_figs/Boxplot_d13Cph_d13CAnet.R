@@ -1,4 +1,4 @@
-source('scripts/canopy_gmes_more2.R')
+source('scripts/canopy_gmes_more3.R')
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
