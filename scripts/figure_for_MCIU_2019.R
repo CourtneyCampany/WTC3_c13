@@ -79,7 +79,7 @@ plotrix::ablineclip(lm(iWUEgeMD ~ iWUEleafAvg_corrMD, data=phl), x1 = min(phl$iW
 
 legend('topleft', legend=myMon, pch=myChar, cex=1.3, bty='n')
 legend('topright', legend=c(expression(Leaf~delta^13*C)), text.font = 2, cex = 1.3, bty = 'n', pch=NA)
-legend('bottomright', legend=expression(italic(R)^2~'='~0.2), bty = 'n')
+legend('bottomright', legend=expression(italic(R)^2~'='~0.36), bty = 'n')
 
 par(las=1, cex=1.25, mar=c(5, 0, 0.5, 5))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
@@ -154,4 +154,4 @@ plotrix::ablineclip(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl),
 legend('topright', legend=c(expression(Phloem~delta^13*C)), text.font = 2, cex = 1.3, bty = 'n')
 legend('topleft', legend = c('Amb', 'Warm','Control','Drought'), pch = c(rep(19, 3), 1),
        col = c('blue', 'red', 'darkgrey','black'), bty = 'n', cex = 1.3)
-legend('bottomright', legend=expression(italic(R)^2~'='~0.3), bty = 'n')
+legend('bottomright', legend=expression(italic(R)^2~'='~0.76), bty = 'n')
