@@ -11,7 +11,7 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
      col='white', bg='white', axes = F,
      xlab=expression(iWUE[Delta~leaf]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
      ylab=expression(iWUE[ge]~(mu*mol~mol^-1)),
-     xlim=c(45, 230), ylim=c(85, 251), cex.lab=1.3)
+     xlim=c(75, 220), ylim=c(75, 220), cex.lab=1.3)
 axis(1, at=seq(50, 200, 50), labels = seq(50, 200, 50), las=1)
 axis(2, at=seq(100, 250, 50), labels = seq(100, 250, 50), las=1)
 box()
@@ -87,7 +87,7 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_corrMD'], pch=myChar[1],
      col='white', bg='white', axes = F,
      xlab=expression(iWUE[Delta~ph]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
-     xlim=c(45, 230), ylim=c(85, 251), cex.lab=1.3)
+     xlim=c(75, 220), ylim=c(75, 220), cex.lab=1.3)
 axis(1, at=seq(50, 200, 50), labels = seq(50, 200, 50), las=1)
 axis(4, at=seq(100, 250, 50), labels = seq(100, 250, 50), las=1)
 box()
@@ -153,6 +153,6 @@ for(i in 1:length(myMon)){
 plotrix::ablineclip(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEdf),
                     x1=min(iWUEdf$iWUEphCorrMean, na.rm=T), x2=max(iWUEdf$iWUEphCorrMean, na.rm=T), lwd=2)
 legend('topright', legend=c(expression(Phloem~delta^13*C)), text.font = 2, cex = 1.3, bty = 'n')
-legend('topleft', legend = c('Amb', 'Warm','Control','Drought'), pch = c(rep(19, 3), 1),
-       col = c('blue', 'red', 'darkgrey','black'), bty = 'n', cex = 1.3)
+legend('topleft', legend = c('Amb', 'Warm'), pch = c(19, 19),
+       col = c('blue', 'red'), bty = 'n', cex = 1.3)
 legend('bottomright', legend=expression(italic(R)^2~'='~0.76), bty = 'n')
