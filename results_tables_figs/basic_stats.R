@@ -29,8 +29,8 @@ gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm2, T_treatment, W_trea
                                 iWUEtem=mean.na(iWUEt), iWUEtemSE=s.err.na(iWUEt))
 # phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
 #                              d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
-write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
-write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
+# write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
+# write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
 # write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
 
 gmesL <- list()
