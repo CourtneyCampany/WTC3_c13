@@ -1,7 +1,7 @@
 source('scripts/theGoodiWUEcorrV2.R')
 
 myMon <- c('Oct','Dec','Jan','Feb','Mar', 'Apr')
-myChar <- c(11, 21:25)
+myChar <- c(21:25, 11)
 palette(c('blue', 'red'))
 
 windows(12,6)
@@ -11,16 +11,28 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
      ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(60, 230),
      xlab=expression(iWUE[Delta~leaf]~(mu*mol~mol^-1)), ylim=c(85, 251), cex.lab=1.3)
-for(i in 2:length(myMon)){
+for(i in 2:(length(myMon)-1)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
          pch=myChar[i], col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
 }
-for(i in 1:length(myMon)){
+points(subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
+       pch=24, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
+points(subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
+       pch=25, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
+for(i in 1:(length(myMon)-1)){
   points(subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
          pch=myChar[i], col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
 }
+points(subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
+       pch=24, col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
+points(subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEleafAvg_uncorrMD'],
+       pch=25, col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
 for(i in 4:length(myMon)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'drydown')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'drydown')[,'iWUEleafAvg_uncorrMD'],
@@ -32,6 +44,19 @@ for(i in 4:length(myMon)){
          pch=myChar[i], col='red', bg='white')
 }
 iWUEdf <- as.data.frame(iWUEsumm)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEleafAvgUncorrMean'],
+         subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEgeMean'],
+       pch=24, col='blue', bg='blue', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEleafAvgUncorrMean'],
+         subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEgeMean'],
+       pch=25, col='blue', bg='blue', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEleafAvgUncorrMean'],
+         subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEgeMean'],
+       pch=24, col='red', bg='red', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEleafAvgUncorrMean'],
+         subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEgeMean'],
+       pch=25, col='red', bg='red', cex=2)
+myChar <- c(21:25, 3)
 for(i in 1:length(myMon)){
   Hmisc::errbar(x=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEleafAvgUncorrMean'],
                 y=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEgeMean'],
@@ -70,6 +95,7 @@ for(i in 1:length(myMon)){
            subset(iWUEdf, month==myMon[i] & T_treatment=='warmed')[,'iWUEleafAvgUncorrSE'],
          length = 0.03, angle = 90, code = 2)
 }
+myChar <- c(21:25, 11)
 legend('bottomleft', legend=c('Amb', 'Warm', myMon), pch=c(19, 19, myChar),
        col=c('blue', 'red', rep('black', length(myMon))), bty='n', cex = 1.2)
 legend(x=40, y=260, legend=c('(a) Uncorrected'), text.font = 2, cex = 1.3, bty = 'n', pch=NA)
@@ -83,16 +109,28 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
 axis(1, at=seq(50, 200, 50), labels = seq(50, 200, 50), las=1)
 axis(4, at=seq(100, 250, 50), labels = seq(100, 250, 50), las=1)
 box()
-for(i in 2:length(myMon)){
+for(i in 2:(length(myMon)-1)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient'& W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
          pch=myChar[i], col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
 }
-for(i in 1:length(myMon)){
+points(subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='ambient'& W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
+       pch=24, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
+points(subset(phl, month=='Apr' & T_treatment=='ambient' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='ambient'& W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
+       pch=25, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3))
+for(i in 1:(length(myMon)-1)){
   points(subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
          pch=myChar[i], col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
 }
+points(subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='warmed'& W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
+       pch=24, col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
+points(subset(phl, month=='Apr' & T_treatment=='warmed' & W_treatment == 'control')[,'iWUEgeMD']~
+         subset(phl, month=='Apr' & T_treatment=='warmed'& W_treatment == 'control')[,'iWUEleafAvg_corrMD'],
+       pch=25, col=scales::alpha('red', 0.3), bg=scales::alpha('red',0.3))
 for(i in 4:length(myMon)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment == 'drydown')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient'& W_treatment == 'drydown')[,'iWUEleafAvg_corrMD'],
@@ -104,6 +142,19 @@ for(i in 4:length(myMon)){
          pch=myChar[i], col='red', bg='white')
 }
 iWUEdf <- as.data.frame(iWUEsumm)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='ambient' )[,'iWUEleafAvgCorrMean'],
+         subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEgeMean'],
+       pch=24, col='blue', bg='blue', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='ambient' )[,'iWUEleafAvgCorrMean'],
+       subset(iWUEdf, month=='Apr' & T_treatment=='ambient')[,'iWUEgeMean'],
+       pch=25, col='blue', bg='blue', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='warmed' )[,'iWUEleafAvgCorrMean'],
+       subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEgeMean'],
+       pch=24, col='red', bg='red', cex=2)
+points(subset(iWUEdf, month=='Apr' & T_treatment=='warmed' )[,'iWUEleafAvgCorrMean'],
+       subset(iWUEdf, month=='Apr' & T_treatment=='warmed')[,'iWUEgeMean'],
+       pch=25, col='red', bg='red', cex=2)
+myChar <- c(21:25, 3)
 for(i in 1:length(myMon)){
   Hmisc::errbar(x=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEleafAvgCorrMean'],
                 y=subset(iWUEdf, month==myMon[i] & T_treatment=='ambient')[,'iWUEgeMean'],

@@ -109,7 +109,7 @@ allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
 allPaired$iWUE <- allPaired$A_area/allPaired$gsc_area # in mumol/mol
-allPaired$WUE <- allPaired$A_area/allPaired$E_area # in mumol/mmol
+allPaired$WUE <- allPaired$A_area/allPaired$E_area # in umol/mmol
 allPaired$gammaStar <- calcGammaStar(gamma25, temp=allPaired$Tair_al)
 source('scripts/calcRd25_Way2019.R')
 allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)

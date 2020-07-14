@@ -21,8 +21,8 @@ giveNightID <- function(x){
 # there is something wrong with my HIEv account
 #WTCraw <- downloadCSV(filename="WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv")
 #alternatively use a file from a local directory
-WTCraw <- as.data.frame(fread('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv'))
-WTCraw$DateTime <- ymd_hms(as.character(WTCraw$DateTime))
+WTCraw <- as.data.frame(data.table::fread('data/WTC_TEMP_CM_WTCFLUX_20130910-20140530_L1_v1.csv'))
+WTCraw$DateTime <- lubridate::ymd_hms(as.character(WTCraw$DateTime))
 WTCraw$datetimeFM <- HIEv::nearestTimeStep(ymd_hms(as.character(WTCraw$DateTime)), nminutes = 15, align = 'ceiling')
 WTCraw$Date <- as.Date(WTCraw$datetimeFM)
 WTCraw$Time <- lubridate::hour(WTCraw$DateTime) + lubridate::minute(WTCraw$DateTime)/60
