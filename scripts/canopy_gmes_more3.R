@@ -64,7 +64,7 @@ calcGammaStar <- function(gamma25, temp){
   return(gammaStar)
 }
 
-# Calculate gmes taking into account ternary effects, respiration and photorespiration fractionation
+# Calculate gmes taking into account respiration and photorespiration fractionation
 # equation 11 in Sup. Info in Campany et al. 2016
 gmesComplete <- function(b, ai, eResp, Rd, Photo, refCO2, DELTAi, DELTAobs, DELTAe, DELTAf){
   gmes <- (b-ai-(eResp*Rd/(Photo+Rd)))*(Photo/refCO2)/(DELTAi-DELTAobs-DELTAe-DELTAf)
