@@ -4,21 +4,27 @@ leafGX$Cc <- leafGX$Ci - leafGX$Photo/leafGX$gm_bar
 leafGX[which(leafGX$Cc < 0), 'Cc'] <- NA
 leafGX$Ci.Cc <- leafGX$Ci - leafGX$Cc
 leafGX[which(leafGX$Ci.Cc < 0), 'Ci.Cc'] <- NA
-leafGmes <- doBy::summaryBy(Ci.Cc~id, data=leafGX, FUN=mean.na)
-names(leafGmes)[2] <- 'Ci.Cc'
+leafGX$iWUE <- leafGX$Photo/leafGX$Cond
+leafGmes <- doBy::summaryBy(Photo + Cond + iWUE + Ci.Cc + gm_bar~id, data=leafGX, FUN=mean.na)
+names(leafGmes)[2:6] <- c('Photo', 'Cond', 'iWUE', 'Ci.Cc', 'gm')
 leafGmes <- merge(leafGmes, rmDup(leafGX[,c('chamber','Month','leaf','light','leaflight','id')], 'id'), by='id')
-names(leafGmes)[4] <- 'month'
+names(leafGmes)[8] <- 'month'
 leafGmes$chamber <- paste0('C', substr(as.character(leafGmes$chamber), 3, 4))
-leafGmesAvg1 <- doBy::summaryBy(Ci.Cc ~ chamber + month, FUN=mean, data=subset(leafGmes, leaflight!='shade-high'))
-names(leafGmesAvg1)[3] <- 'Ci.Cc_Avg1'
-leafGmesAvg2 <- doBy::summaryBy(Ci.Cc ~ chamber + month, FUN=mean, data=leafGmes)
-names(leafGmesAvg2)[3] <- 'Ci.Cc_Avg2'
-sun <- subset(leafGmes, leaflight=='sun-high')[,c('Ci.Cc','chamber','month')]
-names(sun)[1] <- paste0(names(sun[1]), '_sun')
-shadeL <- subset(leafGmes, leaflight=='shade-low')[,c('Ci.Cc','chamber','month')]
-names(shadeL)[1] <- paste0(names(shadeL[1]), '_shL')
-shadeH <- subset(leafGmes, leaflight=='shade-high')[,c('Ci.Cc','chamber','month')]
-names(shadeH)[1] <- paste0(names(shadeH[1]), '_shH')
+leafGmesAvg1 <- dplyr::summarise(dplyr::group_by(subset(leafGmes, leaflight!='shade-high'),
+                                                 chamber, month),
+                                 Photo_Avg1=mean(Photo), Cond_Avg1=mean(Cond),
+                                 iWUE_Avg1=mean(iWUE), Ci.Cc_Avg1=mean(Ci.Cc),
+                                 gm_Avg1=mean(gm, na.rm = T))
+leafGmesAvg2 <- dplyr::summarise(dplyr::group_by(leafGmes, chamber, month),
+                                 Photo_Avg2=mean(Photo), Cond_Avg2=mean(Cond),
+                                 iWUE_Avg2=mean(iWUE), Ci.Cc_Avg2=mean(Ci.Cc),
+                                 gm_Avg2=mean(gm))
+sun <- subset(leafGmes, leaflight=='sun-high')[,c('Photo', 'Cond', 'iWUE', 'Ci.Cc', 'gm','chamber','month')]
+names(sun)[1:5] <- paste0(names(sun[1:5]), '_sun')
+shadeL <- subset(leafGmes, leaflight=='shade-low')[,c('Photo', 'Cond', 'iWUE', 'Ci.Cc','gm', 'chamber','month')]
+names(shadeL)[1:5] <- paste0(names(shadeL[1:5]), '_shL')
+shadeH <- subset(leafGmes, leaflight=='shade-high')[,c('Photo', 'Cond', 'iWUE', 'Ci.Cc', 'gm','chamber','month')]
+names(shadeH)[1:5] <- paste0(names(shadeH[1:5]), '_shH')
 leafGmes <- merge(merge(merge(merge(leafGmesAvg1, leafGmesAvg2, by=c('chamber','month'), all=T),
                   sun, by=c('chamber','month'), all=T), shadeH, by=c('chamber','month'), all=T), 
                   shadeL, by=c('chamber','month'), all=T)

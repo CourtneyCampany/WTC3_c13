@@ -223,4 +223,13 @@ write.csv(iWUEsumm, file='output/iWUEsumm.csv', row.names = F)
 
 # Correlations that go into table 1
 
+# some correlations with leaf values from Campany et al. 2016 for answering reviewer comments
+gm_summ <- dplyr::summarise(dplyr::group_by(phl, T_treatment, W_treatment, month),
+                            gm_tree=mean(gm, na.rm = T), Ci.CcMD_tree=mean(Ci.CcMD, na.rm = T),
+                            gmL_avg1=mean(gm_Avg1, na.rm = T), Ci.CcL_avg1=mean(Ci.Cc_Avg1, na.rm = T),
+                            gmL_avg2=mean(gm_Avg2, na.rm = T), Ci.CcL_avg2=mean(Ci.Cc_Avg2, na.rm = T),
+                            gmL_sun=mean(gm_sun, na.rm = T), Ci.CcL_sun=mean(Ci.Cc_sun, na.rm = T),
+                            gmL_shL=mean(gm_shL, na.rm = T), Ci.CcL_shL=mean(Ci.Cc_shL, na.rm = T),
+                            gmL_shH=mean(gm_shH, na.rm = T), Ci.CcL_shH=mean(Ci.Cc_shH, na.rm = T))
+
 
