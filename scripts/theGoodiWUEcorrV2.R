@@ -14,7 +14,8 @@ photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='y
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
 gmesSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday == 'yes' & A_area > 0 & PAR >= 800)),
-                                             chamber, month), gm = mean(gmes_area, na.rm = T), DEL = mean(DELTA, na.rm = T))
+                                             chamber, month), gm = mean(gmes_area, na.rm = T),
+                             DEL = mean(DELTA, na.rm = T), n=lengthWithoutNA(gmes_area))
 phl <- merge(phl, photoSumm, by=c('chamber','month'), all=T)
 phl <- merge(phl, gmesSumm, by=c('chamber', 'month'), all = T)
 # in my case d13Cphloem is more DEPLETED than d13CAnet
