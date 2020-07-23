@@ -118,4 +118,4 @@ deltaPaired[which(deltaPaired$deltaSubstrate >= 100 | deltaPaired$deltaSubstrate
 deltaPaired$DELTA <- (deltaPaired$del13C_theor_ref - deltaPaired$Corrdel13C_Avg)/
   (1 + deltaPaired$Corrdel13C_Avg)
 
-rm(WTCraw, corrCO2amb, sunset, sunsetSpl, sunsetP, chambs, WTCrawL, deltaPairedPre, deltaPairedL, mergeL)
+rm(WTCraw, sunset, sunsetSpl, sunsetP, chambs, WTCrawL, deltaPairedPre, deltaPairedL, mergeL)

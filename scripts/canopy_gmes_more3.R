@@ -84,7 +84,8 @@ allPaired$DELTAobsPre <- ifelse(allPaired$diffConc < 35, NA, allPaired$DELTAobsP
 DELTAobs <- dplyr::summarise(dplyr::group_by(setDT(allPaired), datetimeFM, chamber), diffDel=mean.na(diffDelPre),
                              DELTAobs = mean.na(DELTAobsPre), DELTAoSD = sd(DELTAobsPre, na.rm = T),
                              del13Cch=mean.na(Corrdel13C_Avg), del13Csd=sd(Corrdel13C_Avg),
-                             del13Camb=mean.na(Corrdel13C_Avg_ref), del13CambSD=sd(Corrdel13C_Avg_ref))
+                             del13Camb=mean.na(Corrdel13C_Avg_ref), del13CambSD=sd(Corrdel13C_Avg_ref),
+                             nobs = lengthWithoutNA(DELTAobsPre))
 DELTAobs$DELTAobs <- ifelse(DELTAobs$DELTAoSD >= 3, NA, DELTAobs$DELTAobs)
 DELTAobs$del13Cmean <- ifelse(DELTAobs$del13Csd >= 5, NA, DELTAobs$del13Cch)
 DELTAobs$del13Camb <- ifelse(DELTAobs$del13CambSD >= 5, NA, DELTAobs$del13Camb)
