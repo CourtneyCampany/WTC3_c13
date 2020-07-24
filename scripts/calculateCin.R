@@ -31,7 +31,7 @@ WTCraw$nightID <- giveNightID(WTCraw)
 sunset <- WTCraw[,c('DateTime','PAR','dayNight','Time','nightID','Date')] 
 sunset <- doBy::orderBy(~DateTime, data=sunset)
 sunset$sunset <- ifelse((sunset$PAR - data.table::shift(sunset$PAR, type='lag')) < 0 & sunset$dayNight == 'night'
-                        & sunset$Time >= 17 & sunset$Time <= 20.30, sunset$Time, NA) 
+                        & sunset$Time >= 17 & sunset$Time <= 20.5, sunset$Time, NA) 
 sunset <- sunset[which(!is.na(sunset$sunset)), c('nightID','sunset','Date')]
 sunsetSpl <- spline(sunset$nightID, sunset$sunset, xout=c(min(WTCraw$nightID, na.rm=T):max(WTCraw$nightID, na.rm=T)))
 sunsetP <- data.frame(row.names = 1:length(sunsetSpl$x))

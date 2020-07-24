@@ -11,9 +11,11 @@ phl$month <- factor(phl$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
 # phl$d13Cph_corrGess <- phl$d13Cph + 2.5
 # same thing but calculate my own post-photosynthetic fractionation
 photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
-                                                           & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
+                                                           & deltaSubstrate >= -60 & deltaSubstrate <= 0
+                                                           & condAlert == 'no')),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
-gmesSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday == 'yes' & A_area > 0 & PAR >= 800)),
+gmesSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday == 'yes' & A_area > 0
+                                                          & PAR >= 800 & condAlert == 'no')),
                                              chamber, month), gm = mean(gmes_area, na.rm = T),
                              DEL = mean(DELTA, na.rm = T), n=lengthWithoutNA(gmes_area))
 phl <- merge(phl, photoSumm, by=c('chamber','month'), all=T)

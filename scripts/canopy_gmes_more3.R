@@ -93,10 +93,9 @@ allPaired <- dplyr::left_join(DELTAobs[, c('datetimeFM','chamber','DELTAobs','di
                               deltaPaired[,-c('totalCO2', 'totalCO2_ref',  'del13C_theor_ref',
                                                         'Corrdel13C_Avg', 'Corrdel13C_Avg_ref')],
                               by=c('datetimeFM', 'chamber'))
-
 allPaired$month <- as.factor(lubridate::month(allPaired$datetimeFM, label=T))
 allPaired$month <- factor(allPaired$month, levels=c('Oct','Dec','Jan','Feb','Mar','Apr'))
-allPaired$midday <- ifelse(allPaired$Time >= 10.30 & allPaired$Time <= 13.30, 'yes', 'no')
+allPaired$midday <- ifelse(allPaired$Time >= 10.5 & allPaired$Time <= 13.5, 'yes', 'no')
 allPaired$Date <- as.Date(allPaired$datetimeFM)
 # get leaf area for each chamber and date
 source('scripts/leafArea.R')
