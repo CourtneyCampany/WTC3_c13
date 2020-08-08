@@ -12,7 +12,7 @@ marWarm <- doBy::orderBy(~DateTime, marWarm)
 par(mar=c(1.5, 6, 1.5, 0))
 plot(marAmb$del13Camb ~ marAmb$Time, pch = 1, col = as.factor(marAmb$chamber),
      ylim = c(-14, -8.5), axes = F, xlim = c(7.5, 18),
-     ylab = expression(delta^13*C~'\u2030'), xlab = ' ', cex.lab = 1.5)
+     ylab = expression(delta^13*C~('\u2030')), xlab = ' ', cex.lab = 1.5)
 axis(2, at=seq(-14, -9, 1), label = seq(-14, -9, 1))
 axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
 box()
@@ -33,7 +33,7 @@ palette(c('blue', 'cyan', 'cornflowerblue'))
 par(mar=c(1.5, 6, 1.5, 0))
 plot(marAmb$DELTAi ~ marAmb$Time, ylim = c(4, 29), xlim = c(7.5, 18),
      pch = 1, col = as.factor(marAmb$chamber), cex.lab = 1.5, axes = F,
-     ylab = expression(Delta^13*C~'\u2030'), xlab = '' )
+     ylab = expression(Delta^13*C~('\u2030')), xlab = '' )
 points(marAmb$DELTAobs ~ marAmb$Time, pch = 19, col = as.factor(marAmb$chamber))
 axis(2, at=seq(5, 25, 5), label=seq(5, 25, 5))
 axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
