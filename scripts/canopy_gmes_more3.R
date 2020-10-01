@@ -12,6 +12,7 @@ getCifromE <- function(E, VPD, ChamberCO2, Photo){
   return(Ci)
 }
 
+# in Ubierna & Farquhar 2014 PCE a is as and ai is am
 # a is 13C diffusion fractionation through the stomata in permil
 a <- 4.4
 # b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
@@ -107,8 +108,10 @@ eResp <- mean(dplyr::summarise(dplyr::group_by(eResp, month), eMean=mean.na(eRes
 
 allPaired$VPDmol <- allPaired$VPDair/allPaired$Patm
 allPaired$E_area <- allPaired$FluxH2O*1000/allPaired$leafArea
+allPaired$gs_area <- allPaired$E_area*0.001/allPaired$VPDmol
 allPaired$gsc_area <- allPaired$E_area*0.001/(1.6 * allPaired$VPDmol)
-allPaired$iWUE <- allPaired$A_area/allPaired$gsc_area # in mumol/mol
+allPaired$A.gsc <- allPaired$A_area/allPaired$gsc_area # in mumol/mol
+allPaired$iWUE <- allPaired$A_area/allPaired$gs_area # in mumol/mol
 allPaired$WUE <- allPaired$A_area/allPaired$E_area # in umol/mmol
 allPaired$gammaStar <- calcGammaStar(gamma25, temp=allPaired$Tair_al)
 source('scripts/calcRd25_Way2019.R')
@@ -116,8 +119,8 @@ allPaired <- merge(allPaired, Rdark, by=c('month','T_treatment'), all=T)
 # calculate respiration in the light at a given temp from Rd at 25 C
 # these parameters are those for BlEvTemp in Table S3 of Heskel et al. 2016 PNAS
 allPaired$Rd_corrT <- allPaired$Rd25*exp(0.0518*(allPaired$Tair_al-25)+0.00047*(allPaired$Tair_al^2-25^2))
-allPaired[which(allPaired$condAlert=='yes'), c('gsc_area','E_area','A_area','iWUE','WUE','gammaStar',
-                                               'Rd_corrT')] <- NA
+allPaired[which(allPaired$condAlert=='yes'), c('gsc_area', 'gs_area','E_area','A_area', 'A.gsc','iWUE','WUE',
+                                               'gammaStar','Rd_corrT')] <- NA
 # calculate gms
 allPaired$Ci <- getCifromE(E=allPaired$E_area*0.001, VPD=allPaired$VPDmol,
                            ChamberCO2=allPaired$CO2sampleWTC, Photo=allPaired$A_area)
@@ -145,7 +148,7 @@ allPaired$Cc <- allPaired$Ci - (allPaired$A_area/allPaired$gmes_area)
 allPaired[which(allPaired$Cc <= 0),'Cc'] <- NA
 allPaired$diff_Ci.Cc <- allPaired$Ci - allPaired$Cc
 allPaired[which(allPaired$diff_Ci.Cc <= 0), 'diff_Ci.Cc'] <- NA
-allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
+#allPaired$iWUEge_corr <- allPaired$iWUE + allPaired$diff_Ci.Cc
 allPaired$fchamber <- as.factor(allPaired$chamber)
 
 rm(Rdark, treeLeaf, deltaPaired)
