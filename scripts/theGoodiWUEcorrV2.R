@@ -48,7 +48,7 @@ phl$d13Cph_corr <- phl$d13Cph +
 
 del13CcampAvgMD <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, A_area > 0 & E_area > 0 &
                                                                    PAR >= 800 & iWUE < 500 & midday=='yes')),
-                                                    month, chamber), iWUEgeCorr=mean.na(iWUEge_corr),
+                                                    month, chamber), #iWUEgeCorr=mean.na(iWUEge_corr),
                                     iWUEge=mean.na(iWUE), d13ch=mean.na(del13Cch),
                                     CO2ch=mean.na(CO2sampleWTC), Ci.Cc=mean.na(diff_Ci.Cc))
 

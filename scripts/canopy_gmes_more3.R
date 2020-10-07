@@ -135,6 +135,7 @@ allPaired$DELTAe <- calcDELTAe(eResp=eResp, Rd=allPaired$Rd_corrT,
                                Ci=allPaired$Ci, gammaStar=allPaired$gammaStar)
 allPaired$DELTAf <- calcDELTAf(f, gammaStar=allPaired$gammaStar,
                                CO2cuv=allPaired$CO2sampleWTC)
+allPaired[which(allPaired$condAlert == 'yes'), c('DELTAe', 'DELTAf')] <- NA
 allPaired$gmes_area <- gmesComplete(b, ai, eResp=eResp, Rd=allPaired$Rd_corrT,
                                     Photo=allPaired$A_area, refCO2=allPaired$CO2sampleWTC, 
                                     DELTAi=allPaired$DELTAi, DELTAobs=allPaired$DELTAobs, 
