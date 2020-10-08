@@ -1,4 +1,4 @@
-source('scripts/theGoodiWUEcorrV2.R')
+source('scripts/iWUE_comparison_Ubierna.R')
 
 corrResults <- list()
 corrResults[[1]] <- nlme::lme(iWUEgeMD ~ iWUEph_uncorrMD, random = ~1 | fchamber,

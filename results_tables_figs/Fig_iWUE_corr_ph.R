@@ -1,4 +1,4 @@
-source('scripts/theGoodiWUEcorrV2.R')
+source('scripts/iWUE_comparison_Ubierna.R')
 
 myMon <- c('Oct','Dec','Jan','Feb','Mar')
 myChar <- c(21:25)
@@ -9,8 +9,8 @@ par(mfrow=c(1,2), las=1, cex=1.25, mar=c(5, 5, 0.5, 0))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_uncorrMD'], pch=myChar[1],
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
-     ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(45, 210),
-     xlab=expression(iWUE[Delta~ph]~(mu*mol~mol^-1)), ylim=c(85, 251), cex.lab=1.3)
+     ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(25, 200),
+     xlab=expression(iWUE[Delta~ph]~(mu*mol~mol^-1)), ylim=c(25, 200), cex.lab=1.3)
 for(i in 2:length(myMon)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment=='control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment=='control')[,'iWUEph_uncorrMD'],
@@ -78,7 +78,7 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_corrMD'], pch=myChar[1],
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3), axes = F,
      xlab=expression(iWUE[Delta~ph]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
-     xlim=c(45, 210), ylim=c(85, 251), cex.lab=1.3)
+     xlim=c(25, 200), ylim=c(25, 200), cex.lab=1.3)
 axis(1, at=seq(50, 200, 50), labels = seq(50, 200, 50), las=1)
 axis(4, at=seq(100, 250, 50), labels = seq(100, 250, 50), las=1)
 box()
