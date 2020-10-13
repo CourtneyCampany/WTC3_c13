@@ -49,3 +49,23 @@ phl$IIIb <- -phl$DELTAobs*phl$CO2chMD*(2*phl$A.E-a*0.001*phl$CO2chMD)
 phl$IIIc <- (phl$CO2chMD*(2+a*0.001)+2*phl$A.E)*(phl$A.gm*(ai-b+eResp*phl$Rd.AplusRd)+(eResp*phl$Rd.AplusRd-f)*phl$gammaStar_MD)
 phl$III <- phl$IIIa + phl$IIIb + phl$IIIc
 phl$Ci5 <- (-phl$II + sqrt(phl$II^2 - 4 * phl$I * phl$III))/(2*phl$I)
+
+corrResultsCi <- list()
+corrResultsCi[[1]] <- lm(CiMD ~ Ci1, data = phl)
+corrResultsCi[[2]] <- lm(CiMD ~ Ci1b, data = phl)
+corrResultsCi[[3]] <- lm(CiMD ~ Ci2, data = phl)
+corrResultsCi[[4]] <- lm(CiMD ~ Ci3, data = phl)
+corrResultsCi[[5]] <- lm(CiMD ~ Ci4, data = phl)
+corrResultsCi[[6]] <- lm(CiMD ~ Ci5, data = phl)
+tableS3 <- data.frame(row.names = 1:length(corrResultsCi))
+for (i in 1:length(corrResultsCi)){
+  tableS3$one[i] <- stringi::stri_split_fixed(as.character(summary(corrResultsCi[[i]])$call[2]), "~")[[1]][2]
+  tableS3$intercept[i] <- round(corrResultsCi[[i]]$coefficients[1], 1)
+  tableS3$interceptSE[i] <- round(summary(corrResultsCi[[i]])$coefficients[3], 1)
+  tableS3$interceptP[i] <- round(summary(corrResultsCi[[i]])$coefficients[7], 3)
+  tableS3$slope[i] <- round(corrResultsCi[[i]]$coefficients[2], 2)
+  tableS3$slopeSE[i] <- round(summary(corrResultsCi[[i]])$coefficients[4], 2)
+  tableS3$slopeP[i] <- round(summary(corrResultsCi[[i]])$coefficients[8], 3)
+  tableS3$R2[i] <- round(summary(corrResultsCi[[i]])$r.squared, 2)
+}
+write.csv(tableS3, file='results_tables_figs/tableS3.csv', row.names=F)

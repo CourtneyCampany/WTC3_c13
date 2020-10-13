@@ -24,9 +24,9 @@ phl$d13Cph_corr <- phl$d13Cph +
   mean(doBy::summaryBy(phlOffset ~ month, data=phl, FUN=mean.na)$phlOffset.mean.na, na.rm=T)
 # calculate mean mid-day values of d13Camb and Camb
 del13CcampAvgMD <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, A_area > 0 & E_area > 0 &
-                                                                   PAR >= 800 & iWUE < 410 & midday=='yes')),
+                                                                   PAR >= 800 & iWUE < 400 & midday=='yes')),
                                                     month, chamber), 
-                                    iWUEge=mean.na(iWUE), d13ch=mean.na(del13Cch),
+                                    iWUEge=mean.na(iWUE), d13ch=mean.na(del13Cch), gs = mean.na(gs_area),
                                     CO2ch=mean.na(CO2sampleWTC), A=mean.na(A_area), gm=mean.na(gmes_area))
 names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)] <- paste0(names(del13CcampAvgMD)[3:ncol(del13CcampAvgMD)], 'MD')
 phl <- merge(merge(del13CcampAvgMD, phl, by=c('month','chamber'), all=T),
@@ -40,9 +40,10 @@ phl$DELTAph <- (phl$d13chMD - phl$d13Cph) * 1000/(1000 + phl$d13Cph)
 # incorporate the presumed effect of post-photosynthetic fractionation
 phl$DELTAph_corr <- (phl$d13chMD - phl$d13Cph_corr) * 1000/(1000 + phl$d13Cph_corr)
 
-# calculate photosynthetic discrimination from d13Cph
-phl$iWUEph_corrMD <- (phl$CO2chMD*(b-phl$DELTAph)-(b-ai)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phl$iWUEph_uncorrMD <- phl$CO2chMD*(1-((phl$DELTAph-a)/(b-a)))/1.6
+# calcule iWUE from Delta with b = 27, Eq. 4 in the main text
+phl$iWUEph_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAph)/(27-a))
+# calculate iWUE from Delta incorporating gm and b = 29. Eq. 9 in the main text
+phl$iWUEph_corrMD <- (phl$CO2chMD*(b-phl$DELTAph)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
 
 summary(lm(iWUEgeMD ~ iWUEph_uncorrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_uncorrMD, random = ~1 | fchamber,
@@ -65,13 +66,12 @@ summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD+T_treatment:iWUEph_corrMD+W_treatment
 # when removing from the analyses the temp and warming on the intercept is marginally significant
 
 # calculate iWUE using d13Cph corrected for presumed post-photosynthetic fractionation
-phl$iWUEph_corrMDmyAv <- (phl$CO2chMD*(b-phl$DELTAph_corr)-(b-ai)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phl$iWUEph_uncorrMD <- phl$CO2chMD*(1-((phl$DELTAph_corr-a)/(b-a)))/1.6
+phl$iWUEph_corrMDmyAv <- (phl$CO2chMD*(b-phl$DELTAph_corr)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
 
 summary(lm(iWUEgeMD ~ iWUEph_corrMDmyAv, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMDmyAv, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
-# the intercept becomes non-signficantly different from zero :-)
+# the intercept becomes non-significantly different from zero :-)
 
 # calculate DELTAobs from d13Cleaf different combinations
 phl$DELTAsunLeaf <- (phl$d13chMD - phl$d13CsunLeaf) * 1000/(1000 + phl$d13CsunLeaf)
@@ -79,28 +79,30 @@ phl$DELTAshLeaf <- (phl$d13chMD - phl$d13CshLeaf) * 1000/(1000 + phl$d13CshLeaf)
 phl$DELTAleafAvg <- (phl$d13chMD - phl$d13CleafAvg) * 1000/(1000 + phl$d13CleafAvg)
 
 # calculate iWUE from d13Cleaf differnt combinations
-phl$iWUEsunLeaf_corrMD <- (phl$CO2chMD*(b-phl$DELTAsunLeaf)-(b-ai)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phl$iWUEsunLeaf_uncorrMD <- phl$CO2chMD*(1-((phl$DELTAsunLeaf-a)/(b-a)))/1.6
-phl$iWUEshLeaf_corrMD <- (phl$CO2chMD*(b-phl$DELTAshLeaf)-(b-ai)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phl$iWUEshLeaf_uncorrMD <- phl$CO2chMD*(1-((phl$DELTAshLeaf-a)/(b-a)))/1.6
-phl$iWUEleafAvg_corrMD <- (phl$CO2chMD*(b-phl$DELTAleafAvg)-(b-ai)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phl$iWUEleafAvg_uncorrMD <- phl$CO2chMD*(1-((phl$DELTAleafAvg-a)/(b-a)))/1.6
-
-
-phl$iWUEshLeaf_uncorrMD <- phl$CO2chMD*
-  (1-((1/(b-a))*(-a + (phl$d13chMD-phl$d13CshLeaf)*1000/(1000+phl$d13CshLeaf))))
-phl$iWUEshLeaf_corrMD <- phl$iWUEshLeaf_uncorrMD - phl$Ci.CcMD
-phl$iWUEshLeaf_corrShGmH <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_shH
-phl$iWUEshLeaf_corrShGmL <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_shL
-phl$iWUEshLeaf_corrAvg1 <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_Avg1
-phl$iWUEshLeaf_corrAvg2 <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_Avg2
-
-phl$iWUEleafAvg_uncorrMD <- phl$CO2chMD*
-  (1-((1/(b-a))*(-a + (phl$d13chMD-phl$d13CleafAvg)*1000/(1000+phl$d13CleafAvg))))
-phl$iWUEleafAvg_corrMD <- phl$iWUEleafAvg_uncorrMD - phl$Ci.CcMD
-phl$iWUEleafAvg_corrSunGm <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_sun
-phl$iWUEleafAvg_corrAvg1 <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_Avg1
-phl$iWUEleafAvg_corrAvg2 <- phl$iWUEshLeaf_uncorrMD - phl$Ci.Cc_Avg2
+phl$iWUEsunLeaf_corrMD <- (phl$CO2chMD*(b-phl$DELTAsunLeaf)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
+phl$iWUEsunLeaf_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAsunLeaf)/(27-a))
+summary(lm(iWUEgeMD ~ iWUEsunLeaf_uncorrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEsunLeaf_uncorrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
+summary(lm(iWUEgeMD ~ iWUEsunLeaf_corrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEsunLeaf_corrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
+phl$iWUEshLeaf_corrMD <- (phl$CO2chMD*(b-phl$DELTAshLeaf)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
+phl$iWUEshLeaf_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAshLeaf)/(27-a))
+summary(lm(iWUEgeMD ~ iWUEshLeaf_uncorrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEshLeaf_uncorrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
+summary(lm(iWUEgeMD ~ iWUEshLeaf_corrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEshLeaf_corrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
+phl$iWUEleafAvg_corrMD <- (phl$CO2chMD*(b-phl$DELTAleafAvg)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
+phl$iWUEleafAvg_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAleafAvg)/(27-a))
+summary(lm(iWUEgeMD ~ iWUEleafAvg_uncorrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_uncorrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
+summary(lm(iWUEgeMD ~ iWUEleafAvg_corrMD, data=phl))
+summary(nlme::lme(iWUEgeMD ~ iWUEleafAvg_corrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit))
 
 # correlations between d13Cph and d13CAnet
 summary(lm(d13Cph ~ d13CAnet, data=phl))
@@ -125,35 +127,16 @@ iWUEsumm <- dplyr::summarise(dplyr::group_by(phl, T_treatment, month),
                              iWUEphUncorrMean=mean.na(iWUEph_uncorrMD), iWUEphUncorrSE=s.err.na(iWUEph_uncorrMD),
                              iWUEphCorrMean=mean.na(iWUEph_corrMD), iWUEphCorrSE=s.err.na(iWUEph_corrMD),
                              iWUEphCorr2Mean=mean.na(iWUEph_corrMDmyAv), iWUEphCorr2SE=s.err.na(iWUEph_corrMDmyAv),
-                             iWUEsunLeafCorrMean=mean.na(iWUEsunLeaf_corrMD),
-                             iWUEsunLeafCorrSE=s.err.na(iWUEsunLeaf_corrMD),
-                             iWUEshLeafCorrMean=mean.na(iWUEshLeaf_corrMD),
-                             iWUEshLeafCorrSE=s.err.na(iWUEshLeaf_corrMD),
                              iWUEleafAvgUncorrMean=mean.na(iWUEleafAvg_uncorrMD),
                              iWUEleafAvgUncorrSE=s.err.na(iWUEleafAvg_uncorrMD),
                              iWUEleafAvgCorrMean=mean.na(iWUEleafAvg_corrMD),
                              iWUEleafAvgCorrSE=s.err.na(iWUEleafAvg_corrMD),
                              d13CphMean=mean.na(d13Cph), d13CphSE=s.err.na(d13Cph),
-                             # d13CAnetMean=mean.na(d13CAnet), d13CAnetSE=s.err.na(d13CAnet)#,
-                             # d13CleafAvgMean=mean.na(d13CleafAvg), d13CleafAvgSE=s.err.na(d13CleafAvg),
-                             # d13CsunLeafMean=mean.na(d13CsunLeaf), d13CsunLeafAvgSE=s.err.na(d13CsunLeaf),
-                             # d13CsunLeafMean=mean.na(d13CshLeaf), d13CsunLeafAvgSE=s.err.na(d13CshLeaf),
-                             # iWUEleafSunAvgCorrSunGmMean=mean.na(iWUEsunLeaf_corrSunGm),
-                             # iWUEleafSunAvgCorrAvg1Mean=mean.na(iWUEsunLeaf_corrAvg1),
-                             # iWUEleafSunAvgCorrAvg2Mean=mean.na(iWUEsunLeaf_corrAvg2),
-                             # iWUEleafShAvgCorrShGmHMean=mean.na(iWUEshLeaf_corrShGmH),
-                             # iWUEleafShAvgCorrShGmLMean=mean.na(iWUEshLeaf_corrShGmL),
-                             # iWUEleafShAvgCorrAvg1Mean=mean.na(iWUEshLeaf_corrAvg1),
-                             # iWUEleafShAvgCorrAvg2Mean=mean.na(iWUEshLeaf_corrAvg2),
-                             # iWUEleafAvgCorrSunGmMean=mean.na(iWUEleafAvg_corrSunGm),
-                             # iWUEleafAvgCorrAvg1Mean=mean.na(iWUEleafAvg_corrAvg1),
-                             # iWUEleafAvgCorrAvg1SE=s.err.na(iWUEleafAvg_corrAvg1),
-                             # iWUEleafAvgCorrAvg2Mean=mean.na(iWUEleafAvg_corrAvg2)
-                             )
+                             d13CAnetMean=mean.na(d13CAnet), d13CAnetSE=s.err.na(d13CAnet))
 
-# THIS IS THE ONE FOR FIGURE 3A
+# THIS IS THE ONE FOR FIGURE 4A
 summary(lm(iWUEgeMean ~ iWUEphUncorrMean, data=iWUEsumm)) #bad
-# THIS IS THE ONE FOR FIGURE 3B
+# THIS IS THE ONE FOR FIGURE 4B
 summary(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEsumm)) # good
 summary(lm(iWUEgeMean ~ iWUEphCorr2Mean, data=iWUEsumm)) # better
 summary(lm(iWUEgeMean ~ iWUEsunLeafCorrMean, data=iWUEsumm)) # quite good
@@ -165,12 +148,12 @@ summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrShGmHMean, data=iWUEsumm)) #bad
 summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrShGmLMean, data=iWUEsumm)) #bad
 summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrAvg1Mean, data=iWUEsumm)) #bad
 summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrAvg2Mean, data=iWUEsumm)) #bad
-# THIS IS FOR FIGURE S4A
+# THIS IS FOR FIGURE S5A
 summary(lm(iWUEgeMean ~ iWUEleafAvgUncorrMean, data=iWUEsumm)) # very bad
-# THIS IS FOR FIGURE S4B
+# THIS IS FOR FIGURE S5B
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrMean, data=iWUEsumm)) # good
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrSunGmMean, data=iWUEsumm)) #bad
-# THIS IS FOR FIGURE S4C
+# THIS IS FOR FIGURE S5C
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrAvg1Mean, data=iWUEsumm)) #bad
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrAvg2Mean, data=iWUEsumm)) #bad
 summary(lm(iWUEgeCorrMean ~ iWUEphUncorrMean, data=iWUEsumm)) # good
