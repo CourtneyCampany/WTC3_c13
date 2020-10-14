@@ -1,4 +1,4 @@
-source('scripts/theGoodiWUEcorrV2.R')
+source('scripts/iWUE_comparison_Ubierna.R')
 
 myMon <- c('Oct','Dec','Jan','Feb','Mar')
 myChar <- c(21:25)
@@ -10,9 +10,9 @@ iWUEdf <- as.data.frame(iWUEsumm)
 plot(x=subset(iWUEdf, month==myMon[1] & T_treatment=='ambient')[,'iWUEphCorrMean'],
      y=subset(iWUEdf, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMean'],
      pch=NA, col='black', bg=scales::alpha('blue', 0.5), cex=1.1,
-     xlab=expression(iWUE[Delta~ph~corr]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
+     xlab=expression(iWUE[Delta-ph-corr-gm]~(mu*mol~mol^-1)),
      ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), cex.lab=1.5,
-     xlim=c(105, 210), ylim=c(105, 210))
+     xlim=c(65, 145), ylim=c(65, 145))
 abline(0, 1, lty = 2, lwd = 2)
 # plotrix::ablineclip(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEdf), x1 = min(iWUEdf$iWUEphCorrMean, na.rm = T),
 #                     x2 = max(iWUEdf$iWUEphCorrMean, na.rm = T), col='darkgrey', lwd=2)

@@ -8,9 +8,12 @@ windows(12,6)
 par(mfrow=c(1,2), las=1, cex=1.25, mar=c(5, 5, 0.5, 0))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_uncorrMD'], pch=myChar[1],
-     col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
-     ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(25, 200),
-     xlab=expression(iWUE[Delta~ph]~(mu*mol~mol^-1)), ylim=c(25, 200), cex.lab=1.3)
+     axes = F, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
+     ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(25, 165),
+     xlab=expression(iWUE[Delta-ph]~(mu*mol~mol^-1)), ylim=c(25, 165), cex.lab=1.3)
+axis(1, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
+axis(2, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
+box()
 for(i in 2:length(myMon)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment=='control')[,'iWUEgeMD']~
            subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment=='control')[,'iWUEph_uncorrMD'],
@@ -70,17 +73,17 @@ for(i in 1:length(myMon)){
            subset(iWUEdf, month==myMon[i] & T_treatment=='warmed')[,'iWUEphUncorrSE'],
          length = 0.03, angle = 90, code = 2)
 }
-legend('bottomleft', legend=myMon, pch=myChar, cex=1.3, bty='n')
-legend(x=25, y=260, legend=c('(a) Uncorrected'), text.font = 2, cex = 1.3, bty = 'n', pch=NA)
+legend('bottomright', legend=myMon, pch=myChar, cex=1.3, bty='n')
+legend(x = 7, y = 170, legend=c('(a)'), text.font = 2, cex = 1.3, bty = 'n', pch=NA)
 
 par(las=1, cex=1.25, mar=c(5, 0, 0.5, 5))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_corrMD'], pch=myChar[1],
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3), axes = F,
-     xlab=expression(iWUE[Delta~ph]~'-'~italic(A)/italic(g)[m]~(mu*mol~mol^-1)),
-     xlim=c(25, 200), ylim=c(25, 200), cex.lab=1.3)
-axis(1, at=seq(50, 200, 50), labels = seq(50, 200, 50), las=1)
-axis(4, at=seq(100, 250, 50), labels = seq(100, 250, 50), las=1)
+     xlab=expression(iWUE[Delta-ph-gm]~(mu*mol~mol^-1)),
+     xlim=c(25, 165), ylim=c(25, 165), cex.lab=1.3)
+axis(1, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
+axis(4, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
 box()
 for(i in 2:length(myMon)){
   points(subset(phl, month==myMon[i] & T_treatment=='ambient' & W_treatment=='control')[,'iWUEgeMD']~
@@ -143,6 +146,6 @@ for(i in 1:length(myMon)){
 }
 plotrix::ablineclip(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl),
                     x1=min(phl$iWUEph_corrMD, na.rm=T), x2=max(phl$iWUEph_corrMD, na.rm=T))
-legend(x=25, y=260, legend=c('(b) Corrected'), text.font = 2, cex = 1.3, bty = 'n')
+legend(x = 7, y = 170, legend='(b)', text.font = 2, cex = 1.3, bty = 'n')
 legend('topright', legend = c('Amb', 'Warm'), pch = 19, col = c('blue', 'red'), bty = 'n', cex = 1.3)
 legend('bottomright', legend = c('Control', 'Drought'), pch = c(19, 21), col = c('darkgrey', 'black'), bty = 'n', cex = 1.3)
