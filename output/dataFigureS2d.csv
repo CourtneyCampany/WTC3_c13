@@ -1,4 +1,8 @@
 "month","T_treatment","W_treatment","d13CphMean","d13CphSE"
+"Apr","ambient","control",NA,NA
+"Apr","ambient","drydown",NA,NA
+"Apr","warmed","control",NA,NA
+"Apr","warmed","drydown",NA,NA
 "Dec","ambient","control",-30.6583333333333,0.431905982567709
 "Dec","warmed","control",-30.8916666666667,0.779664101463644
 "Feb","ambient","control",-30.6766666666667,0.675705392739896

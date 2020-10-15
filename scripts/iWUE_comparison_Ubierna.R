@@ -52,6 +52,8 @@ summary(nlme::lme(iWUEgeMD ~ iWUEph_uncorrMD, random = ~1 | fchamber,
 summary(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
+nlme::intervals(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
+                  data = phl, na.action = na.omit), level = 0.92, which = 'fixed')
 # significant correlation between iWUE estimates when incorporating gm limitation
 summary(nlme::lme(iWUEgeMD ~ iWUEph_corrMD, random = ~1 | fchamber,
                   data = subset(phl, W_treatment == 'control'), na.action = na.omit))
@@ -139,31 +141,14 @@ summary(lm(iWUEgeMean ~ iWUEphUncorrMean, data=iWUEsumm)) #bad
 # THIS IS THE ONE FOR FIGURE 4B
 summary(lm(iWUEgeMean ~ iWUEphCorrMean, data=iWUEsumm)) # good
 summary(lm(iWUEgeMean ~ iWUEphCorr2Mean, data=iWUEsumm)) # better
-summary(lm(iWUEgeMean ~ iWUEsunLeafCorrMean, data=iWUEsumm)) # quite good
-summary(lm(iWUEgeMean ~ iWUEleafSunAvgCorrSunGmMean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafSunAvgCorrAvg1Mean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafSunAvgCorrAvg2Mean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEshLeafCorrMean, data=iWUEsumm)) # not the worst
-summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrShGmHMean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrShGmLMean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrAvg1Mean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafShAvgCorrAvg2Mean, data=iWUEsumm)) #bad
+
 # THIS IS FOR FIGURE S5A
-summary(lm(iWUEgeMean ~ iWUEleafAvgUncorrMean, data=iWUEsumm)) # very bad
+
 # THIS IS FOR FIGURE S5B
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrMean, data=iWUEsumm)) # good
 summary(lm(iWUEgeMean ~ iWUEleafAvgCorrSunGmMean, data=iWUEsumm)) #bad
-# THIS IS FOR FIGURE S5C
-summary(lm(iWUEgeMean ~ iWUEleafAvgCorrAvg1Mean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeMean ~ iWUEleafAvgCorrAvg2Mean, data=iWUEsumm)) #bad
-summary(lm(iWUEgeCorrMean ~ iWUEphUncorrMean, data=iWUEsumm)) # good
-summary(lm(iWUEgeCorrMean ~ iWUEphUncorr2Mean, data=iWUEsumm)) # good too
-summary(lm(iWUEphCorrMean ~ iWUEsunLeafCorrMean, data=iWUEsumm)) # good
-summary(lm(iWUEphCorrMean ~ iWUEshLeafCorrMean, data=iWUEsumm)) # quite good
+
 summary(lm(iWUEphCorrMean ~ iWUEleafAvgCorrMean, data=iWUEsumm)) #better
-summary(lm(iWUEphCorrMean ~ iWUEleafAvgCorrSunGmMean, data=iWUEsumm)) # bad
-summary(lm(d13CleafAvgMean ~ d13CphMean, data=iWUEsumm))
-summary(lm(d13CsunLeafMean ~ d13CphMean, data=iWUEsumm))
 
 
 write.csv(iWUEsumm, file='output/iWUEsumm.csv', row.names = F)

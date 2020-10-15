@@ -1,0 +1,13 @@
+chamber,T_treatment,Water_treatment
+C01,ambient,drydown
+C02,warmed,control
+C03,ambient,drydown
+C04,warmed,drydown
+C05,ambient,control
+C06,warmed,drydown
+C07,ambient,control
+C08,warmed,drydown
+C09,ambient,control
+C10,warmed,control
+C11,ambient,drydown
+C12,warmed,control

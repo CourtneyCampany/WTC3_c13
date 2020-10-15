@@ -9,8 +9,8 @@ par(mfrow=c(1,1), las=1, cex=1.25, mar=c(5, 5, 0.5, 0.5))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'d13Cph']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'d13CAnet'], pch=myChar[1],
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
-     xlab=expression(delta^13*C[Anet]~('\211')), xlim=c(-33, -25),
-     ylab=expression(delta^13*C[ph]~('\211')), ylim=c(-33, -25), cex.lab=1.3)
+     xlab=expression(delta^13*C[Anet]~('\211')), xlim=c(-33, -24),
+     ylab=expression(delta^13*C[ph]~('\211')), ylim=c(-33, -24), cex.lab=1.3)
 abline(0,1, lty=2)
 plotrix::ablineclip(lm(d13Cph ~ d13CAnet, data=phl), x1 = min(phl$d13CAnet, na.rm = T),
                     x2 = -25, col='darkgrey', lwd=2)

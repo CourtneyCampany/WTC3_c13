@@ -1,50 +1,50 @@
 "variable","factor","Fvalue","Pvalue","R2m","R2c"
-"log(gmes_area * 1000) "," month ",132,0,0.28,0.38
-"log(gmes_area * 1000) "," T_treatment ",1,0.35,0.28,0.38
-"log(gmes_area * 1000) "," month:T_treatment",22,0,0.28,0.38
-"gsc_area "," month ",260,0,0.33,0.57
-"gsc_area "," T_treatment ",3,0.136,0.33,0.57
-"gsc_area "," month:T_treatment",43,0,0.33,0.57
-"A_area "," month ",315,0,0.39,0.53
-"A_area "," T_treatment ",6,0.036,0.39,0.53
-"A_area "," month:T_treatment",29,0,0.39,0.53
-"iWUE "," month ",128,0,0.19,0.26
-"iWUE "," T_treatment ",0,0.719,0.19,0.26
-"iWUE "," month:T_treatment",1,0.535,0.19,0.26
+"log(gmes_area * 1000) "," month ",103,0,0.25,0.39
+"log(gmes_area * 1000) "," T_treatment ",1,0.302,0.25,0.39
+"log(gmes_area * 1000) "," month:T_treatment",32,0,0.25,0.39
+"gsc_area "," month ",323,0,0.35,0.63
+"gsc_area "," T_treatment ",2,0.165,0.35,0.63
+"gsc_area "," month:T_treatment",63,0,0.35,0.63
+"A_area "," month ",333,0,0.4,0.54
+"A_area "," T_treatment ",6,0.036,0.4,0.54
+"A_area "," month:T_treatment",34,0,0.4,0.54
+"iWUE "," month ",121,0,0.18,0.27
+"iWUE "," T_treatment ",0,0.956,0.18,0.27
+"iWUE "," month:T_treatment",1,0.322,0.18,0.27
 "d13Cph "," month ",19,0,0.41,0.64
 "d13Cph "," T_treatment ",0,0.716,0.41,0.64
 "d13Cph "," month:T_treatment",1,0.42,0.41,0.64
-"d13CAnet "," month ",8,0.004,0.32,0.64
-"d13CAnet "," T_treatment ",0,0.925,0.32,0.64
-"d13CAnet "," month:T_treatment",3,0.062,0.32,0.64
-"log(gmes_area * 1000) "," month ",6,0.002,0.22,0.37
-"log(gmes_area * 1000) "," T_treatment ",1,0.347,0.22,0.37
-"log(gmes_area * 1000) "," Water_treatment ",5,0.064,0.22,0.37
-"log(gmes_area * 1000) "," month:T_treatment ",17,0,0.22,0.37
-"log(gmes_area * 1000) "," month:Water_treatment ",24,0,0.22,0.37
-"log(gmes_area * 1000) "," T_treatment:Water_treatment ",3,0.107,0.22,0.37
-"log(gmes_area * 1000) "," month:T_treatment:Water_treatment",9,0,0.22,0.37
-"gsc_area "," month ",40,0,0.25,0.59
-"gsc_area "," T_treatment ",6,0.041,0.25,0.59
-"gsc_area "," Water_treatment ",1,0.443,0.25,0.59
-"gsc_area "," month:T_treatment ",10,0,0.25,0.59
-"gsc_area "," month:Water_treatment ",4,0.026,0.25,0.59
-"gsc_area "," T_treatment:Water_treatment ",0,0.55,0.25,0.59
-"gsc_area "," month:T_treatment:Water_treatment",22,0,0.25,0.59
-"A_area "," month ",37,0,0.54,0.67
-"A_area "," T_treatment ",34,0,0.54,0.67
-"A_area "," Water_treatment ",8,0.022,0.54,0.67
-"A_area "," month:T_treatment ",22,0,0.54,0.67
-"A_area "," month:Water_treatment ",17,0,0.54,0.67
-"A_area "," T_treatment:Water_treatment ",0,0.901,0.54,0.67
-"A_area "," month:T_treatment:Water_treatment",6,0.003,0.54,0.67
-"iWUE "," month ",29,0,0.09,0.32
-"iWUE "," T_treatment ",0,0.658,0.09,0.32
-"iWUE "," Water_treatment ",0,0.634,0.09,0.32
-"iWUE "," month:T_treatment ",4,0.027,0.09,0.32
-"iWUE "," month:Water_treatment ",0,0.647,0.09,0.32
-"iWUE "," T_treatment:Water_treatment ",1,0.418,0.09,0.32
-"iWUE "," month:T_treatment:Water_treatment",21,0,0.09,0.32
+"d13CAnet "," month ",9,0.003,0.38,0.66
+"d13CAnet "," T_treatment ",0,0.743,0.38,0.66
+"d13CAnet "," month:T_treatment",5,0.027,0.38,0.66
+"log(gmes_area * 1000) "," month ",5,0.007,0.21,0.38
+"log(gmes_area * 1000) "," T_treatment ",1,0.36,0.21,0.38
+"log(gmes_area * 1000) "," Water_treatment ",5,0.051,0.21,0.38
+"log(gmes_area * 1000) "," month:T_treatment ",16,0,0.21,0.38
+"log(gmes_area * 1000) "," month:Water_treatment ",18,0,0.21,0.38
+"log(gmes_area * 1000) "," T_treatment:Water_treatment ",3,0.098,0.21,0.38
+"log(gmes_area * 1000) "," month:T_treatment:Water_treatment",5,0.009,0.21,0.38
+"gsc_area "," month ",36,0,0.27,0.57
+"gsc_area "," T_treatment ",8,0.025,0.27,0.57
+"gsc_area "," Water_treatment ",1,0.393,0.27,0.57
+"gsc_area "," month:T_treatment ",13,0,0.27,0.57
+"gsc_area "," month:Water_treatment ",4,0.025,0.27,0.57
+"gsc_area "," T_treatment:Water_treatment ",0,0.603,0.27,0.57
+"gsc_area "," month:T_treatment:Water_treatment",20,0,0.27,0.57
+"A_area "," month ",33,0,0.53,0.67
+"A_area "," T_treatment ",33,0,0.53,0.67
+"A_area "," Water_treatment ",8,0.025,0.53,0.67
+"A_area "," month:T_treatment ",22,0,0.53,0.67
+"A_area "," month:Water_treatment ",17,0,0.53,0.67
+"A_area "," T_treatment:Water_treatment ",0,0.824,0.53,0.67
+"A_area "," month:T_treatment:Water_treatment",7,0.002,0.53,0.67
+"iWUE "," month ",23,0,0.07,0.26
+"iWUE "," T_treatment ",0,0.621,0.07,0.26
+"iWUE "," Water_treatment ",0,0.696,0.07,0.26
+"iWUE "," month:T_treatment ",3,0.037,0.07,0.26
+"iWUE "," month:Water_treatment ",2,0.163,0.07,0.26
+"iWUE "," T_treatment:Water_treatment ",1,0.394,0.07,0.26
+"iWUE "," month:T_treatment:Water_treatment",14,0,0.07,0.26
 "d13Cph "," month ",8,0.02,0.38,0.75
 "d13Cph "," T_treatment ",0,0.814,0.38,0.75
 "d13Cph "," W_treatment ",6,0.045,0.38,0.75
@@ -52,10 +52,10 @@
 "d13Cph "," month:W_treatment ",0,0.86,0.38,0.75
 "d13Cph "," T_treatment:W_treatment ",0,0.709,0.38,0.75
 "d13Cph "," month:T_treatment:W_treatment",0,0.773,0.38,0.75
-"d13CAnet "," month ",0,0.711,0.38,0.43
-"d13CAnet "," T_treatment ",0,0.888,0.38,0.43
-"d13CAnet "," W_treatment ",14,0.005,0.38,0.43
-"d13CAnet "," month:T_treatment ",1,0.522,0.38,0.43
-"d13CAnet "," month:W_treatment ",0,0.959,0.38,0.43
-"d13CAnet "," T_treatment:W_treatment ",0,0.687,0.38,0.43
-"d13CAnet "," month:T_treatment:W_treatment",1,0.418,0.38,0.43
+"d13CAnet "," month ",1,0.588,0.35,0.41
+"d13CAnet "," T_treatment ",0,0.954,0.35,0.41
+"d13CAnet "," W_treatment ",13,0.008,0.35,0.41
+"d13CAnet "," month:T_treatment ",1,0.537,0.35,0.41
+"d13CAnet "," month:W_treatment ",0,0.976,0.35,0.41
+"d13CAnet "," T_treatment:W_treatment ",0,0.675,0.35,0.41
+"d13CAnet "," month:T_treatment:W_treatment",1,0.569,0.35,0.41

@@ -1,6 +1,6 @@
 source('scripts/canopy_gmes_more3.R')
 source('master_scripts/phloem_plotting.R')
-photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & PAR >= 800
+photoSumm <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & A_area > 0 & E_area > 0 & PAR >= 800
                                                            & deltaSubstrate >= -60 & deltaSubstrate <= 0)),
                                               chamber, month), d13CAnet=mean(deltaSubstrate, na.rm=T))
 phl <- merge(phl, photoSumm, by=c('month', 'chamber'), all = T)
@@ -8,30 +8,30 @@ chambs <- read.csv('data/trtkey2.csv')
 phl <- as.data.frame(dplyr::left_join(phl, chambs, by=c('chamber', 'month')))
 
 
-allPaired$iWUE <- ifelse(allPaired$iWUE > 500, NA, allPaired$iWUE)
-gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800 & A_area > 0)),
+allPaired$iWUE <- ifelse(allPaired$iWUE > 400, NA, allPaired$iWUE)
+gmesMDsumm1 <- dplyr::summarise(dplyr::group_by(setDT(subset(allPaired, midday=='yes' & PAR >= 800 & A_area > 0 & E_area > 0)),
                                                 month, chamber), gmesCh = mean.na(gmes_area),
                                 gmesChSE=s.err.na(gmes_area), gmesChN=lengthWithoutNA(gmes_area),
-                                gscCh = mean.na(gsc_area), gscChSE=s.err.na(gsc_area),
+                                gsCh = mean.na(gs_area), gsChSE=s.err.na(gs_area),
                                 ACh = mean.na(A_area), AChSE=s.err.na(A_area),
                                 iWUEch = mean.na(iWUE), iWUEse=s.err.na(iWUE))
 gmesMDsumm1 <- dplyr::left_join(gmesMDsumm1, chambs, by=c('chamber','month'))
 gmesMDsumm2 <- dplyr::summarise(dplyr::group_by(subset(gmesMDsumm1, gmesChN >= 3),
                                                 month, T_treatment, W_treatment),
                                 gmesT=mean.na(gmesCh), gmesTse=s.err.na(gmesCh),
-                                gscT=mean.na(gscCh), gscTse=s.err.na(gscCh),
+                                gsT=mean.na(gsCh), gsTse=s.err.na(gsCh),
                                 AT=mean.na(ACh), ATse=s.err.na(ACh),
                                 iWUEt=mean.na(iWUEch), iWUEtSE=s.err.na(iWUEch))
 gmesMDsumm3 <- dplyr::summarise(dplyr::group_by(gmesMDsumm2, T_treatment, W_treatment),
                                 gmesTem=mean.na(gmesT), gmesTemSe=s.err.na(gmesT),
-                                gscTem=mean.na(gscT), gscTemSE=s.err.na(gscT),
+                                gsTem=mean.na(gsT), gsTemSE=s.err.na(gsT),
                                 Atem=mean.na(AT), AtemSE=s.err.na(AT),
                                 iWUEtem=mean.na(iWUEt), iWUEtemSE=s.err.na(iWUEt))
-# phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
-#                              d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
-# write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
-# write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
-# write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
+phlSumm1 <- dplyr::summarise(dplyr::group_by(setDT(phl), month, T_treatment, W_treatment),
+                              d13CphMean = mean.na(d13Cph), d13CphSE = s.err.na(d13Cph))
+write.csv(gmesMDsumm2, file='output/dataFigure1a.csv', row.names = F)
+write.csv(gmesMDsumm3, file='output/dataFigure1b.csv', row.names = F)
+write.csv(phlSumm1, file='output/dataFigureS2d.csv', row.names = F)
 
 gmesL <- list()
 chambs <- c(paste0('C0', 1:9), paste0('C', 10:12))
