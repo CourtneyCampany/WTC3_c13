@@ -1,3 +1,4 @@
+source('scripts/basicFunTEG.R')
 # equation 3.8 in Campbell & Norman 'Introduction to environ. biophysics'
 calcVapSat <- function(temp){0.61365 * exp(17.502 * temp/(240.97 + temp))}
 # combining eq. 3.8 & 3.11 in Campbell & Norman
@@ -33,14 +34,16 @@ sunset <- doBy::orderBy(~DateTime, data=sunset)
 sunset$sunset <- ifelse((sunset$PAR - data.table::shift(sunset$PAR, type='lag')) < 0 & sunset$dayNight == 'night'
                         & sunset$Time >= 17 & sunset$Time <= 20.5, sunset$Time, NA) 
 sunset <- sunset[which(!is.na(sunset$sunset)), c('nightID','sunset','Date')]
+sunset <- dplyr::summarise(dplyr::group_by(sunset, nightID), sunset = max(sunset, na.rm = T), Date = Date)
 sunsetSpl <- spline(sunset$nightID, sunset$sunset, xout=c(min(WTCraw$nightID, na.rm=T):max(WTCraw$nightID, na.rm=T)))
 sunsetP <- data.frame(row.names = 1:length(sunsetSpl$x))
 sunsetP$nightID <- sunsetSpl$x
 sunsetP$sunsetP <- sunsetSpl$y
-sunset <- merge(sunset, sunsetP, by='nightID', all=T)
+sunset <- merge(sunset, sunsetP, by='nightID')
 sunset$sunset <- ifelse(is.na(sunset$sunset), sunset$sunsetP, sunset$sunset)
 sunset <- sunset[which(!is.na(sunset$Date)),c('nightID','sunset','Date')]
 names(sunset)[ncol(sunset)] <- 'DateSunset'
+sunset <- rmDup(sunset, 'nightID')
 WTCraw <- as.data.frame(dplyr::left_join(WTCraw, sunset, by='nightID'))
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time >= 17, (WTCraw$Time - WTCraw$sunset), NA)
 WTCraw$timeSinceSunset <- ifelse(WTCraw$nightID >= 1 & WTCraw$Time <= 9, (24 - WTCraw$sunset + WTCraw$Time),
@@ -70,7 +73,7 @@ deltaPaired <- dplyr::bind_rows(mergeL)[,c('datetimeFM', 'DateTime','chamber','F
                                         'Taref_al','T_treatment','Water_treatment',
                                         'PAR','CO2Injection','H2Oin','H2Oout',
                                         'CO2in','CO2out','Air_in','Air_out','VPDair',
-                                        'Time','nightID','timeSinceSunset','DateSunset',
+                                        'Time','nightID','timeSinceSunset', 'DateSunset',
                                         'i.start','i.end','totalCO2','totalCO2_ref',
                                         'Corrdel13C_Avg','Corrdel13C_Avg_ref')]
 # assuming the flow addition by the injection is negligible
@@ -109,7 +112,7 @@ deltaPaired$totalCO2_ref_flow <- deltaPaired$totalCO2_ref * deltaPaired$Air_in/(
 deltaPaired$del13C_theor_ref <- (deltaPaired$totalCO2_ref_flow * deltaPaired$Corrdel13C_Avg_ref +
                                    deltaPaired$CO2Injection*(-31.9))/
   (deltaPaired$totalCO2_ref_flow + deltaPaired$CO2Injection)
-# calculate raw isotopic discrimination (no filter) eq. S4 in Stangl et al. (unpublished)
+# calculate raw isotopic discrimination (no filter) eq. S4 in Stangl et al. 2019
 deltaPaired$deltaSubstrate <- (deltaPaired$del13C_theor_ref * deltaPaired$Cin -
                         deltaPaired$Corrdel13C_Avg * deltaPaired$CO2sampleWTC)/
   (deltaPaired$Cin - deltaPaired$CO2sampleWTC)

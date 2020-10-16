@@ -86,9 +86,6 @@ phl$iWUEsunLeaf_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAsunLeaf)/(27-a))
 summary(lm(iWUEgeMD ~ iWUEsunLeaf_uncorrMD, data=phl))
 summary(nlme::lme(iWUEgeMD ~ iWUEsunLeaf_uncorrMD, random = ~1 | fchamber,
                   data = phl, na.action = na.omit))
-summary(lm(iWUEgeMD ~ iWUEsunLeaf_corrMD, data=phl))
-summary(nlme::lme(iWUEgeMD ~ iWUEsunLeaf_corrMD, random = ~1 | fchamber,
-                  data = phl, na.action = na.omit))
 phl$iWUEshLeaf_corrMD <- (phl$CO2chMD*(b-phl$DELTAshLeaf)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
 phl$iWUEshLeaf_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAshLeaf)/(27-a))
 summary(lm(iWUEgeMD ~ iWUEshLeaf_uncorrMD, data=phl))

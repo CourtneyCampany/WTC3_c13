@@ -203,14 +203,14 @@ model <- lme4::lmer(A_area ~ month * T_treatment + (1|fchamber),
                                   & datetimeFM <= as.Date('2014-02-01')))
 emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
-model <- lme4::lmer(iWUE ~ month + (1|fchamber),
+model <- lme4::lmer(iWUE ~ month * T_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0
                                   & datetimeFM <= as.Date('2014-02-01')))
-emmeans::emmeans(model, pairwise ~ month)
+emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
-model <- lme4::lmer(d13Cph ~ month + (1|chamber),
+model <- lme4::lmer(d13Cph ~ month * T_treatment + (1|chamber),
                     data = subset(phl, month != 'Feb' & month != 'Mar'))
-emmeans::emmeans(model, pairwise ~ month)
+emmeans::emmeans(model, pairwise ~ T_treatment | month)
 
 model <- lme4::lmer(log(gmes_area*1000) ~ month * T_treatment * Water_treatment + (1|fchamber),
                     data = subset(allPaired, midday == 'yes' & PAR >= 800  & A_area > 0 & Date >= as.Date('2014-02-01')))

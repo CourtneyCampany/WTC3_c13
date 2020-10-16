@@ -1,4 +1,16 @@
-phl <- read.csv('march_Ci_calc.csv')
+# read the data
+phl <- read.csv('phl_Ci.csv')
+# a is 13C diffusion fractionation through the stomata in permil
+a <- 4.4
+# b is 13C combined fractionation during carboxylation by Rubisco and PEP-K
+b <- 29
+# f is fractionation factor in permil of photorespiration according to Evans & VonCaemmerer 2013
+f <- 16.2
+# ai is diffusion through water in permil
+ai <-  1.8
+# eResp is respiration fractionation in permil
+eResp <- 3.38
+
 # calculate Delta-obs
 phl$DELTAobs <- (phl$d13chMD - phl$d13Cph) * 1000/(1000 + phl$d13Cph)
 # following the equations and terminology in Ubierna & Farquhar 2014 PCE
@@ -30,3 +42,45 @@ phl$IIIb <- -phl$DELTAobs*phl$CO2chMD*(2*phl$A.E-a*0.001*phl$CO2chMD)
 phl$IIIc <- (phl$CO2chMD*(2+a*0.001)+2*phl$A.E)*(phl$A.gm*(ai-b+eResp*phl$Rd.AplusRd)+(eResp*phl$Rd.AplusRd-f)*phl$gammaStar_MD)
 phl$III <- phl$IIIa + phl$IIIb + phl$IIIc
 phl$Ci5 <- (-phl$II + sqrt(phl$II^2 - 4 * phl$I * phl$III))/(2*phl$I)
+
+# correlations between Ci estimates and Ci from gas exchange
+summary(lm(CiMD ~ Ci1, data = phl))
+#  no significant correlation with Ci estimated from the simple discrimination model with b = 29
+summary(lm(CiMD ~ Ci1b, data = phl))
+#  no significant correlation with Ci estimated from the simple discrimination model with b = 27
+summary(lm(CiMD ~ Ci2, data = phl))
+# significant correlation between Ci from gas-exchange and Ci estimated from d13C-phloem incorporating the effect of gm
+summary(lm(CiMD ~ Ci3, data = phl))
+# significant correlation between Ci from gas-exchange and Ci estimated from d13C-phloem incorporating the effect of 
+#gm and photorespration but worse R2
+summary(lm(CiMD ~ Ci4, data = phl))
+# significant correlation between Ci from gas-exchange and Ci estimated from d13C-phloem incorporating the effect of 
+#gm, photorespration and respiration but worse R2
+summary(lm(CiMD ~ Ci5, data = phl))
+# significant correlation between Ci from gas-exchange and Ci estimated from d13C-phloem incorporating the effect of 
+# gm, photorespration, respiration and ternary correction but worse R2
+
+# calculated iWUE from d13C of the phloem incorporating the effect of gm on 13C-discrimination
+
+# calcule iWUE with the simplest discrimination model with b = 27
+phl$iWUEph_uncorrMD <- (phl$CO2chMD/1.6)*((27-phl$DELTAobs)/(27-a))
+# linear relationship between iWUE from gas-exchange and iWUE from Delta-phloem
+summary(lm(iWUEgeMD ~ iWUEph_uncorrMD, data=phl))
+# no significant correlation between iWUE estimates when gm limitation is not incorporated
+
+# calculate iWUE from Delta incorporating gm and b = 29. Eq. 9 in the main text
+phl$iWUEph_corrMD <- (phl$CO2chMD*(b-phl$DELTAobs)+(ai-b)*(phl$A_MD/phl$gmesMD))/(1.6*(b-a))
+# linear relationship between iWUE from gas-exchange and iWUE from Delta-phloem incorporating the effect of gm
+summary(lm(iWUEgeMD ~ iWUEph_corrMD, data=phl))
+# significant correlation between iWUE estimates when gm limitation is not incorporated
+
+# incorporate the presumed effect of post-photosynthetic fractionation. 2.5 permil
+# this is the diference betwen d13C of the phloem and d13C of photosynthesis (from d13C online measurements)
+postPhoto <- 2.5
+phl$d13Cph_corr <- phl$d13Cph + postPhoto
+phl$DELTAph_corr <- (phl$d13chMD - phl$d13Cph_corr) * 1000/(1000 + phl$d13Cph_corr)
+# calculate iWUE from Delta incorporating the effect of post-photosynthetic fractionation, gm and b = 29. 
+phl$iWUEph_corrMDmyAv <- (phl$CO2chMD*(b-phl$DELTAph_corr)+(ai-b)*(phl$A_MD/phl$gmesMD))/(1.6*(b-a))
+# linear relationship between iWUE from gas-exchange and iWUE from Delta-phloem incorporating the effect of gm
+summary(lm(iWUEgeMD ~ iWUEph_corrMDmyAv, data=phl))
+# the slope is the same, but the intercept now is not signficantly different from cero.
