@@ -1,7 +1,7 @@
 source('scripts/canopy_gmes_more3.R')
 
 
-windows(8, 12)
+windows(10, 14)
 par(mfrow=c(6, 2))
 palette(c('blue', 'cyan', 'cornflowerblue'))
 mar <- subset(allPaired, Date == as.Date('2014-03-22'))
@@ -56,6 +56,7 @@ plot(marAmb$A_area ~ marAmb$Time, ylim = c(-2, 13), axes = F,
      pch = 19, col = as.factor(marAmb$chamber), cex.lab = 1.5,  xlim = c(7.5, 18),
      ylab = expression(italic(A)[net]~(mu*mol~m^-2~s^-1)), xlab = '' )
 axis(2, at=seq(0, 10, 5), label=seq(0, 10, 5))
+axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
 box()
 palette(c('red', 'orange', 'magenta'))
 par(mar=c(1.5, 0, 1.5, 6))
@@ -101,18 +102,18 @@ axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
 box()
 
 palette(c('blue', 'cyan', 'cornflowerblue'))
-par(mar=c(3, 6, 0, 0))
+par(mar=c(4, 6, 0, 0))
 plot(marAmb$gmes_area ~ marAmb$Time, ylim = c(0, 1.05), axes = F,
-     pch = 19, col = as.factor(marAmb$chamber), cex.lab = 1.5,xlim = c(7.5, 18),
-     ylab = expression(italic(g)[mes]~(mol~m^-2~s^-1)), xlab = '' )
+     pch = 19, col = as.factor(marAmb$chamber), cex.lab = 1.25,xlim = c(7.5, 18),
+     ylab = expression(italic(g)[m]~(mol~m^-2~s^-1)), xlab = 'Time (h)' )
 axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
 axis(2, at=seq(0, 1, .2), label=seq(0, 1, .2))
 box()
 palette(c('red', 'orange', 'magenta'))
-par(mar=c(3, 0, 0, 6))
+par(mar=c(4, 0, 0, 6))
 plot(marWarm$gmes_area ~ marWarm$Time, ylim = c(0, 1.05),
-     pch = 19, col = as.factor(marWarm$chamber), cex.lab = 1.5, axes = F,
-     ylab = ' ', xlab = '' , xlim = c(7.5, 18))
+     pch = 19, col = as.factor(marWarm$chamber), cex.lab = 1.25, axes = F,
+     ylab = ' ', xlab = 'Time (h)' , xlim = c(7.5, 18))
 axis(1, at=c(8, 11, 14, 17), label = c(8, 11, 14, 17))
 axis(4, at=seq(0, 1, .2), label=seq(0, 1, .2))
 box()
