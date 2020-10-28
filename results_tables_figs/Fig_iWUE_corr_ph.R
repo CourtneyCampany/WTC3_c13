@@ -10,7 +10,7 @@ plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_uncorrMD'], pch=myChar[1],
      axes = F, col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3),  
      ylab=expression(iWUE[ge]~(mu*mol~mol^-1)), xlim=c(25, 165),
-     xlab=expression(iWUE[Delta-ph]~(mu*mol~mol^-1)), ylim=c(25, 165), cex.lab=1.3)
+     xlab=expression(iWUE[Delta]~(mu*mol~mol^-1)), ylim=c(25, 165), cex.lab=1.3)
 axis(1, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
 axis(2, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
 box()
@@ -80,7 +80,7 @@ par(las=1, cex=1.25, mar=c(5, 0, 0.5, 5))
 plot(subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEgeMD']~
        subset(phl, month==myMon[1] & T_treatment=='ambient')[,'iWUEph_corrMD'], pch=myChar[1],
      col=scales::alpha('blue', 0.3), bg=scales::alpha('blue',0.3), axes = F,
-     xlab=expression(iWUE[Delta-ph-gm]~(mu*mol~mol^-1)),
+     xlab=expression(iWUE[Delta-italic(g)*m]~(mu*mol~mol^-1)),
      xlim=c(25, 165), ylim=c(25, 165), cex.lab=1.3)
 axis(1, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
 axis(4, at=seq(25, 150, 25), labels = seq(25, 150, 25), las=1)
