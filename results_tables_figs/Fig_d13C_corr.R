@@ -1,4 +1,4 @@
-source('scripts/theGoodiWUEcorrV2.R')
+source('scripts/iWUE_comparison_Ubierna.R')
 
 myMon <- c('Oct','Dec','Jan','Feb','Mar')
 myChar <- c(21:25)
