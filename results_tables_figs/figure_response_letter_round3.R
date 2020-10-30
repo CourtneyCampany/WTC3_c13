@@ -10,7 +10,7 @@ myMon <- c('Oct','Dec','Jan','Feb','Mar','Apr')
 windows(12, 6)
 par(mfrow=c(1, 3), mar = c(5, 5, 2, 2), cex = 1.3)
 hist(allPairedMD$gmes_area, ylab= 'Frequency', xlab = expression(italic(g)[m]~(mol~m^-2~s^-1)), main = ' ', cex.lab = 1.2)
-hist(log(allPairedMD$gmes_area*1000), ylab= ' ', xlab = expression(Log(italic(g)[m]~(mmol~m^-2~s^-1))), main = ' ', cex.lab = 1.2)
+hist(log(allPairedMD$gmes_area*1000), ylab= ' ', xlab = expression(Ln(italic(g)[m]~(mmol~m^-2~s^-1))), main = ' ', cex.lab = 1.2)
 hist((1/allPairedMD$gmes_area), ylab= '', xlab = expression((italic(g)[m]~(mol~m^-2~s^-1))^-1), main = ' ', cex.lab = 1.2)
 
 myChar <- c(21:25, 8)
