@@ -5,7 +5,7 @@ allPaired <- merge(allPaired, chambs[, c('month', 'chamber', 'W_treatment')], by
 allPaired <- merge(allPaired, camps, by = 'month', all = T)
 gmesExport <- subset(allPaired, PAR >= 800 & midday == 'yes' & gmes_area > 0 & W_treatment == 'control')
 gmesExport <- gmesExport[, c('campaign', 'chamber', 'T_treatment', 'W_treatment', 'datetimeFM', 'CO2sampleWTC',
-                            'Tair_al', 'VPDmol', 'PAR', 'A_area', 'E_area', 'Ci', 'gmes_area')]
+                            'Tair_al', 'VPDmol', 'PAR', 'A_area', 'E_area', 'gmes_area')]
 names(gmesExport)[c(5:7)] <- c('DateTime', 'Ca', 'Tair')
 gmesExport <- doBy::orderBy(~ chamber + DateTime, data = gmesExport)
 write.csv(gmesExport, 'output/WTC_TEMP_gmes_subdaily_20131018-20140420_L2.csv', row.names = F)
@@ -53,10 +53,12 @@ phl$iWUEph_corrMD <- (phl$CO2chMD*(b-phl$DELTAph)+(ai-b)*(phl$AMD/phl$gmMD))/(1.
 
 # calculate iWUE using d13Cph corrected for presumed post-photosynthetic fractionation
 phl$iWUEph_corrMDmyAv <- (phl$CO2chMD*(b-phl$DELTAph_corr)+(ai-b)*(phl$AMD/phl$gmMD))/(1.6*(b-a))
-phlExport <- merge(phl, camps, by = 'month', all.x = T, all.y = F)
+phlExport <- subset(merge(phl, camps, by = 'month', all.x = T, all.y = F), AMD >= 0)
 phlExport <- phlExport[, c('campaign.y', 'chamber', 'T_treatment', 'W_treatment', 'AMD', 'iWUEgeMD',
-                           'gmMD', 'CO2chMD', 'd13chMD', 'd13Cph', 'd13CAnet', 'GstarMD', 'RdayMD')]
+                           'gmMD', 'CO2chMD', 'd13chMD', 'd13Cph', 'd13CAnet', 'GstarMD', 'RdayMD',
+                           'iWUEph_uncorrMD', 'iWUEph_corrMD', 'iWUEph_corrMDmyAv')]
 names(phlExport) <- c('campaign', 'chamber', 'T_treatment', 'W_treatment', 'Anet_Avg','iWUEge_Avg',
-                      'gmes_Avg', 'Ca_Avg', 'd13Cch_Avg', 'd13Cph', 'd13Anet', 'Gstar_Avg', 'Rday_Avg')
+                      'gmes_Avg', 'Ca_Avg', 'd13Cch_Avg', 'd13Cph', 'd13Anet_Avg', 'Gstar_Avg', 'Rday_Avg',
+                      'iWUEph_Delta', 'iWUEph_Delta-gm', 'iWUEph_Delta-gm-post')
 write.csv(phlExport, 'output/WTC_TEMP_gmes_20131018-20140420_L2.csv', row.names = F)
 
